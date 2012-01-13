@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path=""/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="executable/lib/commons-math-2.1-javadoc.jar"/>
+	<classpathentry kind="lib" path="executable/lib/commons-math-2.1-sources.jar"/>
+	<classpathentry kind="lib" path="executable/lib/commons-math-2.1.jar"/>
+	<classpathentry kind="lib" path="executable/lib/itext-1.4.8.jar"/>
+	<classpathentry kind="lib" path="executable/lib/jai_codec.jar"/>
+	<classpathentry kind="lib" path="executable/lib/jai_core.jar"/>
+	<classpathentry kind="lib" path="executable/lib/mlibwrapper_jai.jar"/>
+	<classpathentry kind="output" path=""/>
+</classpath>
