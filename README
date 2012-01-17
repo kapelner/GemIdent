@@ -1,0 +1,26 @@
+GemIdent --- Interactive Image Segmentation Software via Supervised Statistical Learning
+http://gemident.com
+
+For GemIdent to be used in tandem with the global labor force of Mechanical Turk, see DistributeEyes
+http://distributeeyes.com
+
+For GemIdent to be used to track objects in videos see GemVident (https://github.com/kapelner/GemVident)
+	
+Copyright (C) 2012
+Professor Susan Holmes, Stanford University & Adam Kapelner, The Wharton School of the University of Pennsylvania
+
+For demos see:
+http://www.youtube.com/watch?v=i3VXZf260mg
+http://www.youtube.com/watch?v=Uc6YPamErrU
+http://www.youtube.com/watch?v=j9HXbHVXu2s
+
+GemIdent is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details:
+
+http://www.gnu.org/licenses/gpl-2.0.txt
+
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
