@@ -31,7 +31,7 @@ import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.*;
 import javax.swing.JPanel;
 
@@ -85,7 +85,7 @@ public class KThumbnail extends JPanel{
 		this.trainPanel=trainPanel;
 		try {
 			identifierImage = IOTools.OpenImage(Thumbnails.getThumbnailFilename(filename));
-		} catch (FileNotFoundException e){
+		} catch (IOException e){
 			identifierImage = new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB);
 		}
 		setLayout(new BorderLayout());

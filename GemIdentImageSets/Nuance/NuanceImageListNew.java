@@ -31,8 +31,8 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.concurrent.ExecutorService;
@@ -235,7 +235,7 @@ public final class NuanceImageListNew extends NuanceImageListInterface {
 		if (overview_image == null){
 			try {
 				overview_image = IOTools.OpenImage(OverviewImageFilename);
-			} catch (FileNotFoundException e){ //overview image not generated yet
+			} catch (IOException e){ //overview image not generated yet
 				//now try to build it once again from raw files
 				GenerateAndSaveOverViewImageFromRawSpectralFiles();
 			}
@@ -314,7 +314,7 @@ public final class NuanceImageListNew extends NuanceImageListInterface {
 		//only do this if overview image is null, otherwise it was run prior
 		try {
 			overview_image = IOTools.OpenImage(OverviewImageFilename);
-		} catch (FileNotFoundException e){ //overview image not generated yet
+		} catch (IOException e){ //overview image not generated yet
 			//two options - we've got the full directory structure or not
 			if (new File(homedir + File.separator + "HPF" + File.separator + "fullres").list() == null){
 				GenerateAndSaveOverViewImageFromRawSpectralFiles();
@@ -373,7 +373,7 @@ public final class NuanceImageListNew extends NuanceImageListInterface {
 					buildOverviewPool.execute(new Runnable(){
 						public void run(){
 							BufferedImage image = new NuanceSubImage(that, stage, false).getAsBufferedImage();
-							BufferedImage thumbnail = Thumbnails.ScaleImage(image, OverviewThumbWidth / (float)image.getWidth(), OverviewThumbHeight / (float)image.getHeight());
+							BufferedImage thumbnail = Thumbnails.ScaleImage(image, OverviewThumbWidth, OverviewThumbHeight);
 							for (int i = 0; i < OverviewThumbWidth; i++){
 								for (int j = 0; j <OverviewThumbHeight; j++){
 									overview_image.setRGB(final_x * OverviewThumbWidth + i, final_y * OverviewThumbHeight + j, thumbnail.getRGB(i, j));
@@ -424,12 +424,12 @@ public final class NuanceImageListNew extends NuanceImageListInterface {
 					BufferedImage image = null;
 					try {
 						image = IOTools.OpenImage("HPF" + File.separator + "fullres" + File.separator + filename);
-					} catch (FileNotFoundException e) {
+					} catch (IOException e) {
 						e.printStackTrace();
 					}
 					int stage_x = coords.x - xmin;
 					int stage_y = coords.y - ymin;
-					BufferedImage thumbnail = Thumbnails.ScaleImage(image, OverviewThumbWidth / (float)image.getWidth(), OverviewThumbHeight / (float)image.getHeight());
+					BufferedImage thumbnail = Thumbnails.ScaleImage(image, OverviewThumbWidth, OverviewThumbHeight);
 					for (int i = 0; i < OverviewThumbWidth; i++){
 						for (int j = 0; j <OverviewThumbHeight; j++){
 							overview.setRGB(stage_x * OverviewThumbWidth + i, stage_y * OverviewThumbHeight + j, thumbnail.getRGB(i, j));

@@ -29,9 +29,9 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.List;
 import java.awt.Point;
-import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -39,7 +39,6 @@ import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
-import java.awt.image.renderable.ParameterBlock;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -49,9 +48,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import javax.media.jai.BorderExtender;
-import javax.media.jai.Interpolation;
-import javax.media.jai.JAI;
+import javax.imageio.ImageIO;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -172,8 +169,6 @@ public class Thumbnails {
 		 * by being used inside a {java.util.concurrent.ExecutorService threadpool}
 		 */
 		public static class MakeThumbnail implements Runnable{
-			/** the original image */
-			private BufferedImage image;
 			/** the filename of the original image */
 			private String file;
 			/** whether or not the thumbnail should be saved */
@@ -198,10 +193,9 @@ public class Thumbnails {
 			/** scales the image to tWidth x tHeight */
 			public void run() {
 				try {
-					image = IOTools.OpenImage(file);			
-					thumbnail = ScaleImage(image, (float)tWidth/image.getWidth(), (float)tHeight/image.getHeight());
+					thumbnail = ScaleImage(IOTools.OpenImage(file), tWidth, tHeight);
 					if (save){
-						JAI.create("filestore", thumbnail, Run.it.imageset.getFilenameWithHomePath(getThumbnailFilename(file)), "JPEG");
+						ImageIO.write(thumbnail, "JPEG", new File(Run.it.imageset.getFilenameWithHomePath(getThumbnailFilename(file))));
 					}
 					if (loader != null){
 						loader.update += 1 / ((double)filelist.length) * 100; //push up the update						
@@ -336,31 +330,15 @@ public class Thumbnails {
 	 *	resolve issues. 
      *
 	 * @param image				the original image
-	 * @param scaledWidth		the width scale (required)
-	 * @param scaledHeight		the height scale (not required, if null uses aspect ratio)
+	 * @param h 
+	 * @param w 
 	 * @return					the thumbnail
 	 */
-	public static BufferedImage ScaleImage(BufferedImage image, Float scaledWidth, Float scaledHeight){
-		
-		if (scaledWidth == 1 && scaledHeight == 1) //duh
-			return image;
-		
-		if (scaledHeight == null){
-			float scale=scaledWidth/((float)image.getWidth());
-			scaledHeight=((float)image.getHeight())*scale;
-		}
-		
-		ParameterBlock pb=new ParameterBlock(); //I don't know how this works, don't ask
-		pb.addSource(image);    // The source image
-		pb.add(scaledWidth);    // The xScale
-		pb.add(scaledHeight);   // The yScale
-		pb.add(0.0F);           // The x translation
-		pb.add(0.0F);           // The y translation
-		pb.add(Interpolation.getInstance(Interpolation.INTERP_BICUBIC_2));
-		
-		RenderingHints hints = new RenderingHints(JAI.KEY_BORDER_EXTENDER,BorderExtender.createInstance(BorderExtender.BORDER_WRAP));
-		
-		return JAI.create("scale", pb, hints).getAsBufferedImage();
+	public static BufferedImage ScaleImage(BufferedImage image, int w, int h){
+		Image thumbnail = image.getScaledInstance(w, h, Image.SCALE_SMOOTH);
+		BufferedImage bufferedThumbnail = new BufferedImage(thumbnail.getWidth(null), thumbnail.getHeight(null), BufferedImage.TYPE_INT_RGB);
+		bufferedThumbnail.getGraphics().drawImage(thumbnail, 0, 0, null);
+		return bufferedThumbnail;
 	}
 	/** an convenience method to create thumbnails */
 	public static BufferedImage makeIntoThumbnail(String filename) {

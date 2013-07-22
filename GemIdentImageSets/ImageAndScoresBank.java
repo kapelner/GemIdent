@@ -25,7 +25,7 @@
 package GemIdentImageSets;
 
 import java.awt.image.BufferedImage;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
@@ -199,7 +199,7 @@ public class ImageAndScoresBank {
 		if (image == null){	
 			try {
 				image = IOTools.OpenImage(filename);
-			} catch (FileNotFoundException e) {
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
 			synchronized (allNuanceRawImages){
@@ -270,7 +270,7 @@ public class ImageAndScoresBank {
 		if (image == null){
 			try {
 				image = IOTools.OpenImage(Thumbnails.getThumbnailFilename(filename));
-			} catch (FileNotFoundException e) {
+			} catch (IOException e) {
 				image = null;
 			} 
 			thumbnailImages.put(filename, image);

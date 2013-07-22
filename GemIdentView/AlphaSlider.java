@@ -234,7 +234,6 @@ public class AlphaSlider extends JSlider{
 	 * @param plus		the actionwrapper for the increase alpha function
 	 * @param minus		the actionwrapper for the decrease alpha function
 	 */
-	@SuppressWarnings("serial")
 	public void addGlobalKeyListeners(ActionWrap plus,ActionWrap minus){
 		//pointer isn't passed by reference
 		plus.setAction(

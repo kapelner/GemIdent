@@ -29,7 +29,6 @@ import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -610,10 +609,10 @@ public abstract class BlissImageList extends ImageSetInterfaceWithUserColors imp
 						BufferedImage thumb = null;
 						try {
 							thumb = IOTools.OpenImage(Thumbnails.getThumbnailFilename(filename));
-						} catch (FileNotFoundException e1) {
+						} catch (IOException e1) {
 							e1.printStackTrace();
 						}
-						BufferedImage scaled=Thumbnails.ScaleImage(thumb, scale, scale);
+						BufferedImage scaled=Thumbnails.ScaleImage(thumb, newThumbW, newThumbH);
 						for (int x=0;x<newThumbW;x++)
 							for (int y=0;y<newThumbH;y++)
 								try {
@@ -636,7 +635,6 @@ public abstract class BlissImageList extends ImageSetInterfaceWithUserColors imp
 
 	@Override
 	public ArrayList<String> GetImages() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -674,7 +672,6 @@ public abstract class BlissImageList extends ImageSetInterfaceWithUserColors imp
 	
 	@Override
 	public HashSet<String> getClickedonimages() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	
@@ -688,10 +685,7 @@ public abstract class BlissImageList extends ImageSetInterfaceWithUserColors imp
 		return null;
 	}	
 	@Override
-	public void RunUponNewProject() {
-		// TODO Auto-generated method stub
-		
-	}
+	public void RunUponNewProject() {}
 	
 	public void ThumbnailsCompleted(){}
 

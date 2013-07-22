@@ -27,7 +27,7 @@ package GemIdentImageSets;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import GemIdentOperations.Run;
 import GemIdentTools.IOTools;
@@ -91,8 +91,7 @@ public abstract class DataImage implements Cloneable{
 		this.filename=filename;
 		try {
 			displayimage = IOTools.OpenImage(filename);
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
@@ -119,7 +118,7 @@ public abstract class DataImage implements Cloneable{
 	 */
 	public DataImage(String filename,boolean crop,float magn) {
 		this(filename,crop);
-		displayimage=Thumbnails.ScaleImage(displayimage, magn, magn);
+		displayimage = Thumbnails.ScaleImage(displayimage, (int)(displayimage.getWidth() * magn), (int)(displayimage.getHeight() * magn));
 	}
 	
 	/**

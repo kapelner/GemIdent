@@ -27,7 +27,7 @@ package GemIdentTools.Matrices;
 import java.awt.Point;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import GemIdentTools.IOTools;
 
@@ -74,7 +74,7 @@ public class ShortMatrix extends SimpleMatrix {
 	 * @param filename					the filename of the image
 	 * @throws FileNotFoundException	if the file is not found
 	 */
-	public ShortMatrix(String filename) throws FileNotFoundException{
+	public ShortMatrix(String filename) throws IOException{
 		Raster raster = IOTools.OpenImage(filename).getRaster();
 		
 		width = raster.getWidth();

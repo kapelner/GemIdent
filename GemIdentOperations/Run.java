@@ -95,7 +95,7 @@ public class Run implements Serializable{
 		System.out.println("For GemIdent to be used in tandem with the global labor force of Mechanical Turk, see DistributeEyes");
 		System.out.println("http://distributeeyes.com");
 		System.out.println("");		
-		System.out.println("Copyright (C) 2012");
+		System.out.println("Copyright (C) 2013");
 		System.out.println("Professor Susan Holmes, Stanford University &");
 		System.out.println("Adam Kapelner, The Wharton School of the University of Pennsylvania");
 		System.out.println("");

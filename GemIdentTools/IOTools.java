@@ -39,12 +39,10 @@ import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.Collection;
 
-import javax.media.jai.JAI;
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
-
-import com.sun.media.jai.codec.FileSeekableStream;
 
 import GemIdentAnalysisConsole.ConsoleParser;
 import GemIdentImageSets.DataImage;
@@ -82,33 +80,10 @@ public class IOTools {
 	 * 
 	 * @param filename 		the filename (the path is the project directory) of the image of interest
 	 * @return				the loaded image as a buffered image
+	 * @throws IOException 
 	 */
-	public static BufferedImage OpenImage(String filename) throws FileNotFoundException {
-		FileSeekableStream stream = null;
-		BufferedImage image = null;
-        try {
-        	String abs_path = Run.it.imageset.getFilenameWithHomePath(filename);
-            stream = new FileSeekableStream(abs_path);
-            // use the stream operator because the fileload operator does not allow to release the handle on the opened file
-            image = JAI.create("stream", stream).getAsBufferedImage();
-        }
-        catch (FileNotFoundException e){
-//        	System.err.println("could not find file: " + filename);
-        	throw new FileNotFoundException();
-        }        
-        catch (IOException e){
-        	e.printStackTrace();
-        }
-        finally {
-			try {
-				if (stream != null){ //ie if the file was opened at all
-					stream.close();
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}            
-        }
-        return image;
+	public static BufferedImage OpenImage(String filename) throws IOException {
+		return ImageIO.read(new File(Run.it.imageset.getFilenameWithHomePath(filename)));
 	}
 	
 	/**
@@ -130,7 +105,11 @@ public class IOTools {
 	 * @param image			the image to be saved
 	 */
 	public static void WriteImage(String filename,String format,BufferedImage image){
-		JAI.create("filestore",image,Run.it.imageset.getFilenameWithHomePath(filename),format);
+		try {
+			ImageIO.write(image, format, new File(Run.it.imageset.getFilenameWithHomePath(filename)));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	/**
 	 * Use the Java Advanced Imaging library to write a project DataImage 

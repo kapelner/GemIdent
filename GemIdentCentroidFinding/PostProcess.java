@@ -27,7 +27,6 @@ package GemIdentCentroidFinding;
 import java.awt.Point;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -438,7 +437,7 @@ public class PostProcess {
 			IOTools.WriteImage(GetBothName(filename) + ".tiff", "TIFF", actualImageBoth);
 			try {
 				actualImageBoth = new RegularSubImage(IOTools.OpenImage(GetBothName(filename) + ".tiff"));
-			} catch (FileNotFoundException e) {
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
 			for (int i=0;i<rows;i++){
