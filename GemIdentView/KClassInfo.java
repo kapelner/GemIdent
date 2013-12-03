@@ -379,7 +379,7 @@ public abstract class KClassInfo extends JPanel{
 	}
 	/** returns the name of the color / phenotype */
 	public String getName(){
-		return trainer.getName();
+		return trainer == null ? "" : trainer.getName();
 	}
 	protected BufferedImage getIdentifierImage() {
 		return identifierImage;
