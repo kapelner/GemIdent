@@ -355,7 +355,7 @@ public class PostProcess {
 			if (!stop.get()){
 				if (new Random().nextDouble() <= ApproxNumCheckImages / (double)filenames.size()){
 					CreateBothImage();
-					IOTools.WriteImage(GetBothName(filename) + ".tiff", "TIFF", actualImageBoth);
+					IOTools.WriteImage(GetBothName(filename) + ".jpg", "JPG", actualImageBoth);
 				}
 				for (String phenotype:postProcessSet)
 					IOTools.WriteIsMatrix(GetIsCentroidName(filename,phenotype),isCentroid.get(phenotype));
@@ -424,22 +424,6 @@ public class PostProcess {
 		 * mark a phenotype centroid} at its location and for every pixel that it was classified,
 		 */
 		private void CreateBothImage() {
-//			for (int i=0;i<rows;i++){
-//				for (int j=0;j<cols;j++){
-//						HashMap<String,Boolean> isij=new HashMap<String,Boolean>(postProcessSet.size());
-//						for (String phenotype:postProcessSet)
-//							isij.put(phenotype,is.get(phenotype).get(i,j));
-//						for (String phenotype:postProcessSet)
-//							if (isij.get(phenotype))
-//								actualImageBoth.WaterMarkIs(i,j,phenotype);
-//				}
-//			}
-			IOTools.WriteImage(GetBothName(filename) + ".tiff", "TIFF", actualImageBoth);
-			try {
-				actualImageBoth = new RegularSubImage(IOTools.OpenImage(GetBothName(filename) + ".tiff"));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
 			for (int i=0;i<rows;i++){
 				for (int j=0;j<cols;j++){
 					HashMap<String,Boolean> isij=new HashMap<String,Boolean>(postProcessSet.size());

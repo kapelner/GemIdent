@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project basedir="." default="clean_temp_build_files" name="GemIdent">
+    <property environment="env"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.7"/>
+    <property name="source" value="1.7"/>
+    <path id="GemIdent.classpath">
+        <pathelement location="bin"/>
+        <pathelement location="lib/commons-codec-1.3.jar"/>
+        <pathelement location="lib/commons-httpclient-3.1.jar"/>
+        <pathelement location="lib/commons-logging-1.1.jar"/>
+        <pathelement location="lib/itext-1.4.8.jar"/>
+        <pathelement location="lib/jgrapht-jdk1.5.jar"/>
+        <pathelement location="lib/logi.crypto1.1.2.jar"/>
+        <pathelement location="lib/mtj.jar"/>
+        <pathelement location="lib/zonelayout-1.0.jar"/>
+    </path>
+              	
+    <!-- This compiles the java files in class files -->
+    <target name="compile_java_code">
+        <mkdir dir="bin"/>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir=".">
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
+            <src path="."/>
+            <classpath refid="GemIdent.classpath"/>
+        </javac>
+    </target>
+    
+    <!-- This creates the JAR file -->        	
+	<target name="distribute_as_jar" depends="compile_java_code" description="generate the jar file" >
+	    <jar destfile="executable/gemident_v1.2.jar" basedir="bin" excludes="executable/**,examples_image_sets/**,r_scripts/**,*.pdf,*.MF,README,build.xml,.project,.classpath">
+            <manifest>
+                <attribute name="Main-Class" value="GemIdentOperations.Run"/>
+                <attribute name="Class-Path" value="lib/itext-1.4.8.jar lib/commons-math-2.1.jar"/>
+            </manifest>
+		</jar>
+	</target> 
+
+	<!-- This cleans the temp class files-->  
+    <target name="clean_temp_build_files" depends="distribute_as_jar">
+        <delete dir="bin"/>
+    </target>             	
+</project>
