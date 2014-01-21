@@ -1,2 +1,3 @@
 Manifest-Version: 1.0
 Main-Class: GemIdentOperations.Run
+Class-Path: lib/jai_codec.jar lib/jai_core.jar lib/mlibwrapper_jai.jar lib/itext-1.4.8.jar lib/commons-math-2.1.jar
