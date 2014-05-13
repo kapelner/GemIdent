@@ -6,8 +6,6 @@
     <property name="source" value="1.7"/>
     <path id="GemIdent.classpath">
         <pathelement location="bin"/>
-        <pathelement location="itext-1.4.8.jar"/>
-        <pathelement location="commons-math-2.1.jar"/>
     </path>
               	
     <!-- This compiles the java files in class files -->
@@ -27,10 +25,10 @@
     
     <!-- This creates the JAR file -->        	
 	<target name="distribute_as_jar" depends="compile_java_code" description="generate the jar file" >
-	    <jar destfile="executable/gemident_v1.2.jar" basedir="bin" excludes="executable/**,GemIdentManual/**,examples_image_sets/**,r_scripts/**,*.pdf,*.MF,README,build.xml,.project,.classpath,commons-math-2.1-javadoc.jar,commons-math-2.1-sources.jar">
+	    <jar destfile="executable/gemident_v1.2.jar" basedir="bin" excludes="executable/**,GemIdentManual/**,examples_image_sets/**,r_scripts/**,*.pdf,*.MF,README,build.xml,.project,.classpath,*.jar">
             <manifest>
                 <attribute name="Main-Class" value="GemIdentOperations.Run"/>
-                <attribute name="Class-Path" value="itext-1.4.8.jar commons-math-2.1.jar"/>
+                <attribute name="Class-Path" value="lib/itext-1.4.8.jar lib/commons-math-2.1.jar"/>
             </manifest>
 		</jar>
 	</target> 

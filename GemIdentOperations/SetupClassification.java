@@ -223,13 +223,13 @@ public class SetupClassification extends Thread {
 	
 	/** Upon construction, dumps the classifier to disk in XML. Threaded as to not hog swing */
 	private void SaveClassifierToHardDrive(){
-//		final Classifier final_classifier = classifier;
+		final Classifier final_classifier = classifier;
 		new Thread(){
 			public void run(){
 				setPriority(Thread.MIN_PRIORITY);
-//				System.out.println("saving classifier to HD...");
-//				IOTools.saveToXML(final_classifier, imageset.getFilenameWithHomePath(it.projectName+".classifier"));
-//				System.out.println("done saving classifier");							
+				System.out.println("saving classifier to HD...");
+				IOTools.saveToXML(final_classifier, imageset.getFilenameWithHomePath(it.projectName+".classifier"));
+				System.out.println("done saving classifier");							
 			}
 		}.start();
 	}
