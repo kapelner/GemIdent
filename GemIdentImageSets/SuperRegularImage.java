@@ -244,4 +244,9 @@ public final class SuperRegularImage extends RegularSubImage implements SuperIma
 	public SuperRegularImage(String filename, BufferedImage clone, boolean crop) {
 		super(filename, clone, crop);
 	}
+
+	@Override
+	public String filename() {
+		return filename;
+	}
 }

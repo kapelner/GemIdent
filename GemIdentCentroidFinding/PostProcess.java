@@ -49,7 +49,6 @@ import GemIdentImageSets.ExclusionRuleStruct;
 import GemIdentImageSets.ImageAndScoresBank;
 import GemIdentImageSets.ImageSetInterface;
 import GemIdentImageSets.NonGlobalImageSet;
-import GemIdentImageSets.RegularSubImage;
 import GemIdentImageSets.Nuance.NuanceImageListInterface;
 import GemIdentOperations.FindErrorRateViaReconcilation;
 import GemIdentOperations.Run;

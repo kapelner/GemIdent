@@ -430,6 +430,7 @@ public class KFrame extends JFrame{
 		tabs.remove(analysisPanel);		
 	}
 	public void SwitchToAnalysisTab(){
+		System.out.println("SwitchToAnalysisTab analysisPanel:" + analysisPanel);
 		tabs.setSelectedComponent(analysisPanel);
 	}
 	public ConsoleParser getParser(){

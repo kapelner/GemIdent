@@ -75,4 +75,9 @@ public final class SuperNuanceImage extends NuanceSubImage implements SuperImage
 	public Point AdjustPointForSuper(Point t){
 		return new Point(t.x+c,t.y+c);
 	}
+	
+	@Override
+	public String filename() {
+		return filename;
+	}	
 }

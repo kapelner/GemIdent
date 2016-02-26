@@ -158,7 +158,7 @@ public class ImageAndScoresBank {
 		DataImage dataImage=isImages.get(filename);
 		if (dataImage == null){
 			dataImage=new RegularSubImage(filename,false);
-//			isImages.put(filename,dataImage);
+			isImages.put(filename,dataImage);
 		}
 		if (isImages.size() > IS_IMAGES_MAX_SIZE)
 			isImages.flushToSize(IS_IMAGES_MAX_SIZE);

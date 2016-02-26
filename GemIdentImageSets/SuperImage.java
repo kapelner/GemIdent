@@ -66,4 +66,6 @@ public interface SuperImage {
 	 */
 	public BufferedImage getAsBufferedImage();
 	
+	public String filename();
+	
 }

@@ -88,16 +88,12 @@ public class Run implements Serializable{
 	
 	/** Prints the source code license to the terminal */
 	private static void ShowGplMessage() {
-		System.out.println("GemIdent v1.2b");
+		System.out.println("GemIdent v1.3b --- http://gemident.com");
 		System.out.println("Interactive Image Segmentation Software via Supervised Statistical Learning");
-		System.out.println("http://gemident.com");
-		System.out.println("");
-		System.out.println("For GemIdent to be used in tandem with the global labor force of Mechanical Turk, see DistributeEyes");
-		System.out.println("http://distributeeyes.com");
 		System.out.println("");		
-		System.out.println("Copyright (C) 2014");
-		System.out.println("Professor Susan Holmes, Stanford University &");
-		System.out.println("Adam Kapelner, The Wharton School of the University of Pennsylvania");
+		System.out.println("Copyright (C) 2016");
+		System.out.println("Adam Kapelner, Queens College, City University of New York and");
+		System.out.println("Professor Susan Holmes, Stanford University");
 		System.out.println("");
 		System.out.println("GemIdent comes with ABSOLUTELY NO WARRANTY. This is free software, and you are ");
 		System.out.println("welcome to redistribute it under certain conditions. Please see the GPL v2");
@@ -110,7 +106,7 @@ public class Run implements Serializable{
 	/** the program title */
 	private static final String ProgramName = "GemIdent";
 	/** the string to be used when building the window title (<b>GemIdent</b> is still in beta on the first release) */
-	private static final String VER = "1.2b";
+	private static final String VER = "1.3b";
 	/** The title of the program */
 	public static final String Title = ProgramName + " v" + VER + " - ";	
 	

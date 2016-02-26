@@ -103,13 +103,16 @@ public class Classify {
 		progress.StartTimer();
 		Run.it.imageset.LOG_AddToHistory("begun classification of " + filenames.size() + " images");
 
-		classifyPool=Executors.newFixedThreadPool(Run.it.num_threads);
+/*		classifyPool=Executors.newFixedThreadPool(Run.it.num_threads);
 		for (String filename:filenames)
 	    	classifyPool.execute(new SingleImageClassifier(filename));
 		classifyPool.shutdown();
 		try {	         
 	         classifyPool.awaitTermination(Long.MAX_VALUE,TimeUnit.SECONDS); //effectively infinity
-	    } catch (InterruptedException ignored){}
+	    } catch (InterruptedException ignored){}*/
+		
+		for (String filename:filenames)
+			new SingleImageClassifier(filename).run();
 		progress.RemoveClassifyBars();
 	}
 	/**
@@ -212,8 +215,10 @@ public class Classify {
 			System.out.println("done classifying pixels in image "+filename);
 			if (!stop){
 				progress.WritingImages(threadName);
-				for (String phenotype:Run.it.getPhenotyeNamesSaveNONAndFindPixels())
+				for (String phenotype:Run.it.getPhenotyeNamesSaveNONAndFindPixels()){
+					System.out.println("about to write ismatrix for file " + filename + " and phenotype " + phenotype + " and is matrix " + is.get(phenotype).toString());
 					IOTools.WriteIsMatrix(GetIsName(filename,phenotype),is.get(phenotype));
+				}
 				
 				if (!(Run.it.imageset instanceof NuanceImageListInterface)){ //too complicated to do this if its Nuance
 					MarkIntermediatePixels();
@@ -296,10 +301,9 @@ public class Classify {
 					HashMap<String,Boolean> isij=new HashMap<String,Boolean>(Run.it.numPhenotypes());
 					for (String phenotype:Run.it.getPhenotyeNamesSaveNON())
 						isij.put(phenotype,is.get(phenotype).get(i,j));
-					int T=0;
+					
 					for (String phenotype:Run.it.getPhenotyeNamesSaveNON()){
 						if (isij.get(phenotype)){
-							T++;
 							actualImageInter.MarkPheno(i,j,phenotype);
 						}	
 					}

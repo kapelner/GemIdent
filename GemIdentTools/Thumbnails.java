@@ -109,7 +109,8 @@ public class Thumbnails {
 	}
 	/**
 	 * This {@link java.io.FilenameFilter file filter} returns
-	 * only image files of type "jpg", "tif", "tiff, and "bmp"
+	 * only image files of type listed below 
+	 * (thanks to TwelveMonkeys ImageIO extensions).
 	 *
 	 */
 	public static class ImageFileFilter implements FilenameFilter{
@@ -124,7 +125,18 @@ public class Thumbnails {
 			String[] fileparts=name.split("\\.");
 			if (fileparts.length >= 2){
 				String ext=fileparts[fileparts.length - 1].toLowerCase();
-				if (ext.equals("jpg") || ext.equals("tif") || ext.equals("tiff") || ext.equals("TIFF") || ext.equals("bmp") || ext.equals("png"))
+				if (ext.equals("jpg") || 
+						ext.equals("jpeg") || 
+						ext.equals("tif") || 
+						ext.equals("tiff") || 
+						ext.equals("bmp") || 
+						ext.equals("png") ||
+						ext.equals("ico") ||
+						ext.equals("pcx") ||
+						ext.equals("pnm") ||
+						ext.equals("psd") ||
+						ext.equals("sgi") ||
+						ext.equals("tga"))
 					return true;
 				else 
 					return false;

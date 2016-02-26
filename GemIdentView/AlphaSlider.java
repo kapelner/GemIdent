@@ -116,8 +116,6 @@ public class AlphaSlider extends JSlider{
 	}
 	/** sets up a mask for an is-pixel image - loads it from the hard disk, creates the 32-bit alpha image, and displays it */
 	private void SetUpIs(){
-//		String name=imagePanel.displayImage.getFilename();
-//		String name2=phenotype.getName();
 		String isName=Classify.GetIsName(imagePanel.displayImage.getFilename(),phenotype.getName());
 		if (IOTools.FileExists(isName)){
 			BufferedImage raw=ImageAndScoresBank.getOrAddIs(isName,null);
