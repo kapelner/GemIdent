@@ -46,4 +46,8 @@ public class DatumSetupForImage {
 		SuperImage superImage = ImageAndScoresBank.getOrAddSuperImage(filename);
 		return new Datum(this, superImage.AdjustPointForSuper(t));
 	}
+	
+	public String filename(){
+		return filename;
+	}
 }

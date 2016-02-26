@@ -80,7 +80,6 @@ public class SetupClassification extends Thread {
 	private KFrame gui;
 	/** pointer to the object that holds the image set data */
 	private ImageSetInterface imageset;
-	private DatumSetupForEntireRun datumSetupForEntireRun;
 
 	
 	/** default constructor - also begins the thread */
@@ -133,13 +132,6 @@ public class SetupClassification extends Thread {
 	private void DoTheClassification(Collection<String> files, ClassifyProgress progress) {	
 		CreateDirectoriesAndFlushRAM();
 		
-		//what features are we using? Declare a new datum setup for this run
-		datumSetupForEntireRun = new DatumSetupForEntireRun(Run.it.imageset);
-		datumSetupForEntireRun.addFeatureSet(FeatureSetName.ColorRingScores);
-//		datumSetupForEntireRun.addFeatureSet(FeatureSetName.MaxLineScores);
-//		datumSetupForEntireRun.addFeatureSet(FeatureSetName.EdgeRingScores);
-		datumSetupForEntireRun.initialize();
-		
 		//if the user didn't supply a classifier, we're going to have to build one:
 		if (classifier == null){
 			if (imageset instanceof ImageSetInterfaceWithUserColors){ //this is ugly but conceptually it's the only way to go I believe
@@ -150,7 +142,7 @@ public class SetupClassification extends Thread {
 				}
 			}
 			//now we're good to go:
-			trainingData = new TrainingData(datumSetupForEntireRun, it.num_threads, trainingProgress);
+			trainingData = new TrainingData(it.num_threads, trainingProgress);
 
 			if (!stopped){
 				CreateClassifier();
@@ -159,9 +151,19 @@ public class SetupClassification extends Thread {
 		}
 		
 		if (!stopped){
-			classify = new Classify(datumSetupForEntireRun, files, classifier, progress, gui.getClassifyPanel());
+			classify = new Classify(files, classifier, progress, gui.getClassifyPanel());
 		}
 		gui.getClassifyPanel().ClassificationDone();
+	}
+	
+	public static DatumSetupForEntireRun initDatumSetupForEntireRun(){
+		//what features are we using? Declare a new datum setup for this run
+		DatumSetupForEntireRun datumSetupForEntireRun = new DatumSetupForEntireRun(Run.it.imageset);
+		datumSetupForEntireRun.addFeatureSet(FeatureSetName.ColorRingScores);
+//		datumSetupForEntireRun.addFeatureSet(FeatureSetName.MaxLineScores);
+//		datumSetupForEntireRun.addFeatureSet(FeatureSetName.EdgeRingScores);
+		datumSetupForEntireRun.initialize();	
+		return datumSetupForEntireRun;
 	}
 	
 	/** The name of the "Random Forest" machine learning classifier */
@@ -184,10 +186,10 @@ public class SetupClassification extends Thread {
 		//this is where you can switch the machine learning engine if desired:
 		classifier = null;
 		if (classifierType.equals(RandomForestSymbol)){
-			classifier = new RandomForest(datumSetupForEntireRun, buildProgress, it.num_trees);
+			classifier = new RandomForest(initDatumSetupForEntireRun(), buildProgress, it.num_trees);
 		}
 		else if (classifierType.equals(CARTSymbol)){
-			classifier = new DTree(datumSetupForEntireRun, buildProgress);
+			classifier = new DTree(initDatumSetupForEntireRun(), buildProgress);
 		}
 		//COMING SOON
 //		else if (classifierType.equals(BayesianCARTSymbol)){

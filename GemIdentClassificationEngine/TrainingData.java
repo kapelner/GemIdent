@@ -36,6 +36,7 @@ import GemIdentImageSets.DataImage;
 import GemIdentImageSets.ImageAndScoresBank;
 import GemIdentModel.Phenotype;
 import GemIdentOperations.Run;
+import GemIdentOperations.SetupClassification;
 import GemIdentTools.Geometry.Solids;
 import GemIdentTools.Matrices.BoolMatrix;
 import GemIdentView.JProgressBarAndLabel;
@@ -65,7 +66,6 @@ public class TrainingData {
 	private boolean stop;
 	/** the number of threads to utilize when constructing the training data */
 	private int nthreads;
-	private DatumSetupForEntireRun datumSetupForEntireRun;
 
 	/**
 	 * Initializes shared objects, then generates the data from the training set
@@ -73,8 +73,7 @@ public class TrainingData {
 	 * @param nthreads				the number of threads to use when generating the data
 	 * @param trainingProgress		the progress bar that keeps track of the progress
 	 */
-	public TrainingData(DatumSetupForEntireRun datumSetupForEntireRun, int nthreads,JProgressBarAndLabel trainingProgress){
-		this.datumSetupForEntireRun = datumSetupForEntireRun;
+	public TrainingData(int nthreads,JProgressBarAndLabel trainingProgress){
 		this.trainingProgress=trainingProgress;
 		this.nthreads=nthreads;
 		increment=100 / ((double)Run.it.numPhenTrainingPoints());
@@ -113,7 +112,7 @@ public class TrainingData {
 		/** default constructor */
 		public TrainingDataMaker(String filename){
 			this.filename = filename;
-			datumSetupForImage = new DatumSetupForImage(datumSetupForEntireRun, filename);
+			datumSetupForImage = new DatumSetupForImage(SetupClassification.initDatumSetupForEntireRun(), filename);
 		}	
 		/**
 		 * For all phenotypes, if the user has trained in this image, then
