@@ -26,5 +26,6 @@
 	<classpathentry kind="lib" path="executable/lib/twelvemonkeys-imageio-tga-3.3-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="executable/lib/twelvemonkeys-imageio-thumbsdb-3.3-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="executable/lib/twelvemonkeys-imageio-tiff-3.3-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="deeplearning4j-core-0.5.0.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>
