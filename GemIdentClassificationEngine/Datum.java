@@ -42,7 +42,7 @@ public class Datum implements Cloneable {
 
 	/** the coordinate in the that a Datum is being generated for in the {@link GemIdentImageSets.SuperImage SuperImage} of interest */
 	protected Point to;
-	/** the data record as an integer array (holds the attribute values as entries, the last entry is the class - the response value) */ 
+	/** the data record as an double array (holds the attribute values as entries, the last entry is the class - the response value) */ 
 	protected double[] record;
 	/** the object that contains common information for each Datum by image */	
 	private DatumSetupForImage datumSetupForImage;

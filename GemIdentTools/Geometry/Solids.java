@@ -26,6 +26,8 @@ package GemIdentTools.Geometry;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 
 /**
@@ -71,8 +73,34 @@ public class Solids {
 			for (int y=-r;y<=r;y++)
 				if (x*x + y*y <= rsq)
 					solidList.add(new Point(x,y));
-		solidLists.put(r,solidList);
+		solidLists.put(r, sortByDistance(solidList));
 		return solidList;
+	}
+	
+	/**
+	 * This sorts points by their distance from the origin
+	 * 
+	 * @param point_list	The list to be sorted
+	 * @return				The list, sorted
+	 */
+	@SuppressWarnings("unchecked")
+	private static ArrayList<Point> sortByDistance(ArrayList<Point> point_list) {
+		Collections.sort(point_list, new EuclideanDistanceComparator());
+		return point_list;
+	}
+	
+	@SuppressWarnings("rawtypes")
+	private static class EuclideanDistanceComparator implements Comparator {
+		@Override
+		public int compare(Object o1, Object o2) {
+			Point t1 = (Point)o1;
+			Point t2 = (Point)o2;
+			double d1 = Math.pow(t1.x, 2) + Math.pow(t1.y, 2);
+			double d2 = Math.pow(t2.x, 2) + Math.pow(t2.y, 2);
+			return (int)(d1 - d2);
+		}
+		
+		
 	}
 	/**
 	 * Return a solid of radius r. If the solid is not yet generated, 
