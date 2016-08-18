@@ -23,7 +23,9 @@
 */
 
 package GemIdentTools.Geometry;
-
+import GemIdentClassificationEngine.Features.RawPixels;
+import GemIdentClassificationEngine.Features.RawPixels.RGB_Store;
+import GemIdentClassificationEngine.Features.RawPixels.RGB_Reader;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,15 +33,15 @@ import java.util.Comparator;
 import java.util.HashMap;
 
 /**
- * Provides masks of filled circles of varius radii 
- * similiar to the {@link Rings Rings} class
+ * Provides masks of filled circles of various radii 
+ * similar to the {@link Rings Rings} class
  * which provides masks of unfilled circles
  * 
  * @author Adam Kapelner
  */
 public class Solids {
 	
-	/** the maxium solid's radius for the initial build */
+	/** the maximum solid's radius for the initial build */
 	public static final int INIT_MAX_SOLID=50;
 	/** the mapping from radius to the solid itself stored as a list of {@link java.awt.Point Point} objects */
 	private static HashMap<Integer,ArrayList<Point>> solidLists;
@@ -131,4 +133,32 @@ public class Solids {
 			points.add(new Point(to.x+t.x,to.y+t.y));
 		return points;
 	}
+	
+	
+	/**
+	 * Takes in Sorted list of points from a certain center
+	 * Gets RGB data from all points in surrounding area
+	 */
+	public static ArrayList<Pair<Point,ArrayList<Pair<Point,RGB_Store>>>> Generate_RGB_Matrix(ArrayList<Point> sorted_points,RGB_Reader Our_Image){
+		ArrayList<Pair<Point,ArrayList<Pair<Point,RGB_Store>>>> matrix = new ArrayList<Pair<Point,ArrayList<Pair<Point,RGB_Store>>>>();
+		int i = 0;
+		 for(Point iter : sorted_points){
+			 matrix.add(new Pair(new Point(iter.x,iter.y),new ArrayList<Pair<Point,RGB_Store>>()));
+			 int j = 0;
+			for(Point iter2 : sorted_points){
+				//need to find out how file is being read
+				int x_comp = iter2.x;
+				int y_comp = iter2.y;
+				matrix.get(i).getSecond().add(new Pair(new Point(iter2.x,iter2.y),new RGB_Store(Our_Image.RGB_matrix[x_comp][y_comp].Red,Our_Image.RGB_matrix[x_comp][y_comp].Green,Our_Image.RGB_matrix[x_comp][y_comp].Blue)));
+				j++;
+			}
+			i++;
+		}
+		 
+		 return matrix;
+	}
+	
+
+	
+	
 }

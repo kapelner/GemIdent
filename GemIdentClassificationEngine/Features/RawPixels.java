@@ -1,4 +1,9 @@
 package GemIdentClassificationEngine.Features;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.*;
+
+import javax.imageio.ImageIO;
 
 import java.awt.Color;
 import java.awt.Point;
@@ -43,5 +48,4 @@ public class RawPixels extends DatumFeatureSet {
 
 	@Override
 	public void UpdateFeatureColors(ArrayList<Color> feature_colors, int p_0) {}
-
 }
