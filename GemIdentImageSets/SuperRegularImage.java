@@ -38,6 +38,8 @@ import GemIdentTools.Matrices.StringMatrix;
  */
 public final class SuperRegularImage extends RegularSubImage implements SuperImage {
 
+	private static final int SLACK = 15;
+	
 	/** the center image */
 	private RegularSubImage C;
 	/** the number of surrounding pixels */
@@ -69,7 +71,7 @@ public final class SuperRegularImage extends RegularSubImage implements SuperIma
 		localPics = (StringMatrix)Run.it.imageset.GetLocalPics(filename, null);
 
 		//get number of pixels to surround by
-		c = Run.it.getMaxPhenotypeRadiusPlusMore(null)+15;
+		c = Run.it.getMaxPhenotypeRadiusPlusMore(null) + SLACK;
 		
 		//initialize the SuperImage
 		displayimage=new BufferedImage(w+2*c,h+2*c,BufferedImage.TYPE_INT_RGB);
