@@ -87,6 +87,10 @@ public class Solids {
 	 * @return			the solid as a list of coordinates
 	 */
 	private static ArrayList<Point> GenerateSolidThetaZero(int r){
+		HashMap<Double, ArrayList<Point>> solidListsByTheta = solidLists.get(r);
+		if (solidListsByTheta == null){
+			solidLists.put(r, new HashMap<Double, ArrayList<Point>>());
+		}
 		ArrayList<Point> solidThetaZero = solidLists.get(r).get(0D);
 		if (solidThetaZero == null){
 			int rsq = r * r;
