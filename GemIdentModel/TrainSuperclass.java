@@ -132,7 +132,7 @@ public abstract class TrainSuperclass implements Serializable{
 		for (TrainingImageData i:trainingImagesMap.values()){
 			DataImage image=i.getImage();
 			for (Point to:i.getPoints())
-				for (Point t:Solids.GetPointsInSolidUsingCenter(rmin,to))
+				for (Point t:Solids.GetPointsInSolidUsingCenter(rmin, 0D, to))
 					try {
 						pixels.add(image.getColorAt(t));
 					} catch (Exception e){}

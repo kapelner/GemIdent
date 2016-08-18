@@ -139,7 +139,7 @@ public class TrainingData {
 							Class=Run.classMapFwd.get(name);
 						}
 						
-						for (Point t : Solids.GetPointsInSolidUsingCenter(phenotype.getRmin(), to)){
+						for (Point t : Solids.GetPointsInSolidUsingCenter(phenotype.getRmin(), 0D, to)){ //0 for theta
 							Datum d = datumSetupForImage.generateDatumAtPoint(t);
 							d.setClass(Class);
 							allData.add(d);

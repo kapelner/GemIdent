@@ -364,7 +364,7 @@ public abstract class KClassInfo extends JPanel{
 		if ( mark )
 			trainer.addPointToTrainingSet(filename,point);
 		else
-			for ( Point t: Solids.GetPointsInSolidUsingCenter(KTrainPanel.EraseRadius,point) )
+			for ( Point t: Solids.GetPointsInSolidUsingCenter(KTrainPanel.EraseRadius, 0D, point) )
 				trainer.deletePointFromTrainingSet(filename,t);
 		
 		SwingUtilities.invokeLater(new Runnable() {

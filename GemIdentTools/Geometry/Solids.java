@@ -23,9 +23,6 @@
 */
 
 package GemIdentTools.Geometry;
-import GemIdentClassificationEngine.Features.RawPixels;
-import GemIdentClassificationEngine.Features.RawPixels.RGB_Store;
-import GemIdentClassificationEngine.Features.RawPixels.RGB_Reader;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,7 +41,7 @@ public class Solids {
 	/** the maximum solid's radius for the initial build */
 	public static final int INIT_MAX_SOLID=50;
 	/** the mapping from radius to the solid itself stored as a list of {@link java.awt.Point Point} objects */
-	private static HashMap<Integer,ArrayList<Point>> solidLists;
+	private static HashMap<Integer, HashMap<Double, ArrayList<Point>>> solidLists;
 	
 	/** To construct the static object, call Build */
 	static {
@@ -53,31 +50,61 @@ public class Solids {
 	/** Build the initial solids for radius = {0, 1, . . ., INIT_MAX_SOLID} */
 	public static void Build(){
 		//init the mapping
-		solidLists=new HashMap<Integer,ArrayList<Point>>(INIT_MAX_SOLID);
+		solidLists=new HashMap<Integer, HashMap<Double, ArrayList<Point>>>(INIT_MAX_SOLID);
 		//init the first solid
 		ArrayList<Point> zeroList=new ArrayList<Point>();
 		zeroList.add(new Point(0,0));
-		solidLists.put(0,zeroList);
+		HashMap<Double, ArrayList<Point>> solid_list_theta_zero = new HashMap<Double, ArrayList<Point>>(1);
+		solid_list_theta_zero.put(0D, zeroList);
+		solidLists.put(0, solid_list_theta_zero);
 		//init all other solids
 		for (int r=1;r<=INIT_MAX_SOLID;r++)
-			GenerateSolid(r);
+			GenerateSolid(r, 0D);
 	}	
 	/**
 	 * Generate a solid of radius r using an inefficient algorithm
 	 * 
 	 * @param r			the radius of the solid to be generated
+	 * @param theta		the angle offset from 0 degrees (in radians)
 	 * @return			the solid as a list of coordinates
 	 */
-	private static ArrayList<Point> GenerateSolid(int r){
-		int rsq=r*r;
-		ArrayList<Point> solidList=new ArrayList<Point>();
-		for (int x=-r;x<=r;x++)
-			for (int y=-r;y<=r;y++)
-				if (x*x + y*y <= rsq)
-					solidList.add(new Point(x,y));
-		solidLists.put(r, sortByDistance(solidList));
-		return solidList;
+	private static ArrayList<Point> GenerateSolid(int r, double theta){
+		ArrayList<Point> solidListRadRThetaZero = GenerateSolidThetaZero(r);
+		
+		// have fun using solidListRadRThetaZero to generate this
+		ArrayList<Point> solidListRadRTheta = null;
+		
+		
+		solidLists.get(r).put(theta, solidListRadRTheta);
+		return solidListRadRTheta;
 	}
+	
+	/**
+	 * Generate a solid of radius r using an inefficient algorithm
+	 * 
+	 * @param r			the radius of the solid to be generated
+	 * @param theta		the angle offset from 0 degrees (in radians)
+	 * @return			the solid as a list of coordinates
+	 */
+	private static ArrayList<Point> GenerateSolidThetaZero(int r){
+		ArrayList<Point> solidThetaZero = solidLists.get(r).get(0D);
+		if (solidThetaZero == null){
+			int rsq = r * r;
+			ArrayList<Point> solidList=new ArrayList<Point>();
+			for (int x=-r;x<=r;x++)
+				for (int y=-r;y<=r;y++)
+					if (x*x + y*y <= rsq)
+						solidList.add(new Point(x,y));
+			HashMap<Double, ArrayList<Point>> solid_list_theta_zero = new HashMap<Double, ArrayList<Point>>();
+			solid_list_theta_zero.put(0D, sortByDistance(solidList)); //0D means theta = 0
+			solidLists.put(r, solid_list_theta_zero);
+			
+			return solidList;
+		}
+		return solidThetaZero;
+		
+
+	}	
 	
 	/**
 	 * This sorts points by their distance from the origin
@@ -111,10 +138,10 @@ public class Solids {
 	 * @param r		radius of the solid desired
 	 * @return		the solid
 	 */
-	public static ArrayList<Point> getSolid(int r){
-		ArrayList<Point> solid=solidLists.get(r);
+	public static ArrayList<Point> getSolid(int r, double theta){
+		ArrayList<Point> solid = solidLists.get(r).get(theta);
 		if (solid == null)
-			return GenerateSolid(r);
+			return GenerateSolid(r, theta);
 		else
 			return solid;
 	}
@@ -126,39 +153,13 @@ public class Solids {
 	 * @param to		the center of the solid
 	 * @return			the solid desired
 	 */
-	public static ArrayList<Point> GetPointsInSolidUsingCenter(int r,Point to){
-		ArrayList<Point> solid=getSolid(r);
+	public static ArrayList<Point> GetPointsInSolidUsingCenter(int r, double theta, Point to){
+		ArrayList<Point> solid = getSolid(r, theta);
 		ArrayList<Point> points=new ArrayList<Point>(solid.size());
 		for (Point t:solid)
 			points.add(new Point(to.x+t.x,to.y+t.y));
 		return points;
 	}
-	
-	
-	/**
-	 * Takes in Sorted list of points from a certain center
-	 * Gets RGB data from all points in surrounding area
-	 */
-	public static ArrayList<Pair<Point,ArrayList<Pair<Point,RGB_Store>>>> Generate_RGB_Matrix(ArrayList<Point> sorted_points,RGB_Reader Our_Image){
-		ArrayList<Pair<Point,ArrayList<Pair<Point,RGB_Store>>>> matrix = new ArrayList<Pair<Point,ArrayList<Pair<Point,RGB_Store>>>>();
-		int i = 0;
-		 for(Point iter : sorted_points){
-			 matrix.add(new Pair(new Point(iter.x,iter.y),new ArrayList<Pair<Point,RGB_Store>>()));
-			 int j = 0;
-			for(Point iter2 : sorted_points){
-				//need to find out how file is being read
-				int x_comp = iter2.x;
-				int y_comp = iter2.y;
-				matrix.get(i).getSecond().add(new Pair(new Point(iter2.x,iter2.y),new RGB_Store(Our_Image.RGB_matrix[x_comp][y_comp].Red,Our_Image.RGB_matrix[x_comp][y_comp].Green,Our_Image.RGB_matrix[x_comp][y_comp].Blue)));
-				j++;
-			}
-			i++;
-		}
-		 
-		 return matrix;
-	}
-	
-
-	
+		
 	
 }

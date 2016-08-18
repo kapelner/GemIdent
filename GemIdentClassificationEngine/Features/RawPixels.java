@@ -1,9 +1,4 @@
 package GemIdentClassificationEngine.Features;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.*;
-
-import javax.imageio.ImageIO;
 
 import java.awt.Color;
 import java.awt.Point;
@@ -13,6 +8,8 @@ import GemIdentImageSets.DataImage;
 import GemIdentImageSets.ImageAndScoresBank;
 import GemIdentImageSets.ImageSetInterface;
 import GemIdentImageSets.SuperImage;
+import GemIdentOperations.Run;
+import GemIdentTools.Geometry.Solids;
 
 public class RawPixels extends DatumFeatureSet {
 
@@ -31,13 +28,22 @@ public class RawPixels extends DatumFeatureSet {
 
 	@Override
 	public void BuildFeaturesIntoRecord(Point t, double[] record, int p_0) {
-//		superImage.getColo
 		Point t_adj = superImage.AdjustPointForSuper(t);
 		DataImage image = (DataImage)superImage;
+		ArrayList<Point> solid_offsets = Solids.getSolid(Run.it.getMaxPhenotypeRadiusPlusMore(null), 0D);
+		int num_points = solid_offsets.size();
 		
-		image.getR(i, j);
-		image.getR(i, j);
-		image.getR(i, j);
+		for (int i = 0; i < num_points; i++){
+			Point offset = solid_offsets.get(i);
+			int x = t_adj.x + offset.x;
+			int y = t_adj.y + offset.y;
+			
+			//red, green and blue go in the record IN THAT ORDER
+			record[3 * i    ] = image.getR(x, y);
+			record[3 * i + 1] = image.getR(x, y);
+			record[3 * i + 2] = image.getR(x, y);
+		}
+
 	}
 
 	@Override
