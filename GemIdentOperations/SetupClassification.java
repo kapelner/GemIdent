@@ -159,7 +159,8 @@ public class SetupClassification extends Thread {
 	public static DatumSetupForEntireRun initDatumSetupForEntireRun(){
 		//what features are we using? Declare a new datum setup for this run
 		DatumSetupForEntireRun datumSetupForEntireRun = new DatumSetupForEntireRun(Run.it.imageset);
-		datumSetupForEntireRun.addFeatureSet(FeatureSetName.ColorRingScores);
+		datumSetupForEntireRun.addFeatureSet(FeatureSetName.RawPixelValues);
+//		datumSetupForEntireRun.addFeatureSet(FeatureSetName.ColorRingScores);
 //		datumSetupForEntireRun.addFeatureSet(FeatureSetName.MaxLineScores);
 //		datumSetupForEntireRun.addFeatureSet(FeatureSetName.EdgeRingScores);
 		datumSetupForEntireRun.initialize();	

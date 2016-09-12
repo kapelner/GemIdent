@@ -196,9 +196,9 @@ public class AlphaSlider extends JSlider{
 		for (int i=0;i<rows;i++)
 			for (int j=0;j<cols;j++)
 				if (raw.getRGB(i,j) != (Color.BLACK).getRGB()){
-					for (Point t:Solids.GetPointsInSolidUsingCenter(3, 0D, new Point(i,j)))
+					for (Point t:Solids.GetPointsInSolidUsingCenter(3, new Point(i,j)))
 						try {I.setRGB(t.x,t.y,center.getRGB());} catch (Exception e){}
-					for (Point t:Solids.GetPointsInSolidUsingCenter(2, 0D, new Point(i,j)))
+					for (Point t:Solids.GetPointsInSolidUsingCenter(2, new Point(i,j)))
 						try {I.setRGB(t.x,t.y,around.getRGB());} catch (Exception e){}
 					try {I.setRGB(i,j,center.getRGB());} catch (Exception e){}
 				}

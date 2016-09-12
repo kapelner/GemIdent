@@ -89,6 +89,10 @@ public class Datum implements Cloneable {
 		return record;
 	}
 	
+	public void setRecord(double[] record){
+		this.record = record;
+	}
+	
 //	public Set<String> filterNames(){
 //		return datumSetup.getFilterNamesToColors().keySet();
 //	}

@@ -58,7 +58,7 @@ public class KImageColorTrainPanel extends KImageTrainPanel {
 				if (trainingImagedata != null){ //ie it has it
 					ArrayList<Point> points=trainingImagedata.getPoints();
 					for (Point to:points)
-						for (Point t:Solids.GetPointsInSolidUsingCenter(14, 0D, to)){
+						for (Point t:Solids.GetPointsInSolidUsingCenter(14, to)){
 							try {trainPointsOverImage.setRGB(t.x,t.y,back.getRGB());} catch (Exception e){}
 						}
 				}
@@ -71,7 +71,7 @@ public class KImageColorTrainPanel extends KImageTrainPanel {
 				ArrayList<Point> points=trainingImagedata.getPoints();
 				Color display=stain.getDisplayColor();
 				for (Point to:points)
-					for (Point t:Solids.GetPointsInSolidUsingCenter(stain.getRmin(), 0D, to))
+					for (Point t:Solids.GetPointsInSolidUsingCenter(stain.getRmin(), to))
 						try {trainPointsOverImage.setRGB(t.x,t.y,display.getRGB());} catch (Exception e){}
 			}
 		}		
@@ -92,13 +92,13 @@ public class KImageColorTrainPanel extends KImageTrainPanel {
 		if (stain == null) return;
 		if (alphaLevelForTrainPoints > ALPHA_VISIBILITY_THRESHOLD){ //draw shadows only if it's noticeable:
 			Color back=new Color(0,0,0,alphaLevelForTrainPoints);
-			for (Point t:Solids.GetPointsInSolidUsingCenter(stain.getRmax(), 0D, to)){
+			for (Point t:Solids.GetPointsInSolidUsingCenter(stain.getRmax(), to)){
 				if (t.x >= 0 && t.y >= 0 && t.x < displayImage.getWidth() && t.y < displayImage.getHeight())
 					if ((new Color(trainPointsOverImage.getRGB(t.x,t.y),true)).equals(new Color(0,0,0,0)))
 						trainPointsOverImage.setRGB(t.x,t.y,back.getRGB());
 			}
 		}
-		for (Point t:Solids.GetPointsInSolidUsingCenter(stain.getRmin(), 0D, to))
+		for (Point t:Solids.GetPointsInSolidUsingCenter(stain.getRmin(), to))
 			try {trainPointsOverImage.setRGB(t.x,t.y,stain.getDisplayRGB());} catch (Exception e){}
 	}
 	/**

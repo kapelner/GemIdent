@@ -4,6 +4,7 @@ import java.awt.Point;
 import java.util.LinkedHashSet;
 
 import GemIdentClassificationEngine.Features.DatumFeatureSet;
+import GemIdentClassificationEngine.Features.RawPixels;
 import GemIdentImageSets.ImageAndScoresBank;
 import GemIdentImageSets.SuperImage;
 
@@ -49,5 +50,14 @@ public class DatumSetupForImage {
 	
 	public String filename(){
 		return filename;
+	}
+
+	public boolean containsRawPixelFeatures() {
+		for (DatumFeatureSet feature_set : datumSetupForEntireRun.feature_sets){
+			if (feature_set instanceof RawPixels){
+				return true;
+			}
+		}
+		return false;
 	}
 }

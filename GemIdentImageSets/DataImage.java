@@ -245,9 +245,9 @@ public abstract class DataImage implements Cloneable{
 	 * @param displayColor		the display color of the centroid
 	 */
 	public void MarkPhenoCentroid(int i,int j,Color displayColor){
-		for (Point t:Solids.GetPointsInSolidUsingCenter(3, 0D, new Point(i,j)))
+		for (Point t:Solids.GetPointsInSolidUsingCenter(3, new Point(i,j)))
 			try {setPixel(t.x,t.y,Color.BLACK);} catch (Exception e){}
-		for (Point t:Solids.GetPointsInSolidUsingCenter(2, 0D, new Point(i,j)))
+		for (Point t:Solids.GetPointsInSolidUsingCenter(2, new Point(i,j)))
 			try {setPixel(t.x,t.y,displayColor);} catch (Exception e){}
 		try {setPixel(i,j,Color.BLACK);} catch (Exception e){}
 	}

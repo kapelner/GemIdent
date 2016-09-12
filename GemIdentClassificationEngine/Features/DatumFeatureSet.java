@@ -22,7 +22,7 @@ public abstract class DatumFeatureSet {
 	public enum FeatureType {NUMBER, ORDINAL, NOMINAL};
 	
 	/** the different feature sets themselves as symbols -- ADD TO THIS MASTER LIST */
-	public enum FeatureSetName {ColorRingScores, MaxLineScores, EdgeRingScores};
+	public enum FeatureSetName {ColorRingScores, MaxLineScores, EdgeRingScores, RawPixelValues};
 	
 	/**
 	 * Each type of feature set requires all sorts of custom information based on the image

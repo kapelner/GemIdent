@@ -32,6 +32,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import GemIdentClassificationEngine.Features.DatumFeatureSet;
+import GemIdentClassificationEngine.Features.RawPixels;
 import GemIdentImageSets.DataImage;
 import GemIdentImageSets.ImageAndScoresBank;
 import GemIdentModel.Phenotype;
@@ -139,10 +141,21 @@ public class TrainingData {
 							Class=Run.classMapFwd.get(name);
 						}
 						
-						for (Point t : Solids.GetPointsInSolidUsingCenter(phenotype.getRmin(), 0D, to)){ //0 for theta
-							Datum d = datumSetupForImage.generateDatumAtPoint(t);
-							d.setClass(Class);
-							allData.add(d);
+						for (Point t : Solids.GetPointsInSolidUsingCenter(phenotype.getRmin(), to)){ //0 for theta
+							if (datumSetupForImage.containsRawPixelFeatures()){
+								//generate raw pixel featuers at every theta
+								for (double theta : RawPixels.thetasForTrainingData()){
+									Datum d = RawPixels.generateDatum(datumSetupForImage, t, theta);
+									d.setClass(Class);
+									allData.add(d);
+								}
+							}
+							else {
+								Datum d = datumSetupForImage.generateDatumAtPoint(t);
+								d.setClass(Class);
+								allData.add(d);
+							}
+
 						}
 						//update progress bar
 						trainingProgress.setValue((int)Math.round(totalvalue += increment));

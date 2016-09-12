@@ -1211,7 +1211,7 @@ public class ConsoleParser {
 								public void mouseExited(MouseEvent arg0){}
 								public void mousePressed(MouseEvent e){
 									Point to=e.getPoint();	
-									for (Point t:Solids.GetPointsInSolidUsingCenter(3, 0D, to)){
+									for (Point t:Solids.GetPointsInSolidUsingCenter(3, to)){
 										Point test=new Point(t.x,t.y+segment.getrowA());
 										for (String phenotype:set){
 											BoolMatrix centroids=Load(phenotype);
@@ -1908,12 +1908,12 @@ public class ConsoleParser {
 					for (int j=rowA;j<=rowB;j++){
 						for (int i=0;i<Run.it.imageset.getGlobalWidth(true);i++){
 							if (centroids.get(i,j)){
-								for (Point t:Solids.GetPointsInSolidUsingCenter(3, 0D, new Point(i,j))){
+								for (Point t:Solids.GetPointsInSolidUsingCenter(3, new Point(i,j))){
 									try {
 										trueImage.setRGB(t.x,t.y-rowA,black);
 									} catch (Exception e){}
 								}
-								for (Point t:Solids.GetPointsInSolidUsingCenter(2, 0D, new Point(i,j))){
+								for (Point t:Solids.GetPointsInSolidUsingCenter(2, new Point(i,j))){
 									try {
 										trueImage.setRGB(t.x,t.y-rowA,color);
 									} catch (Exception e){}

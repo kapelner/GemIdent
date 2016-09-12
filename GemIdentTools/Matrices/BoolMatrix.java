@@ -346,7 +346,7 @@ public class BoolMatrix extends SimpleMatrix {
 	 */
 	public ArrayList<Point> FindPointsInGivenRadius(int i,int j,int R){
 		ArrayList<Point> points=new ArrayList<Point>();
-		ArrayList<Point> solid=Solids.GetPointsInSolidUsingCenter(R, 0D, new Point(i,j));
+		ArrayList<Point> solid=Solids.GetPointsInSolidUsingCenter(R, new Point(i,j));
 		for (Point t:solid) 
 			if (get(t))
 				points.add(t);
@@ -602,7 +602,7 @@ public class BoolMatrix extends SimpleMatrix {
 		for (int i = 0; i < if_matrix.getWidth(); i++){
 			for (int j = 0; j < if_matrix.getHeight(); j++){
 				if (if_matrix.get(i, j)){
-					for (Point t : Solids.GetPointsInSolidUsingCenter(num_pixels, 0D, new Point(i, j))){
+					for (Point t : Solids.GetPointsInSolidUsingCenter(num_pixels, new Point(i, j))){
 						set(t, false);
 					}
 				}
