@@ -24,7 +24,7 @@ public class RawPixels extends DatumFeatureSet {
 	private static final double RotationsPropOfCircumferencePoints = 0.5;
 	private static final double TwoPI = 2 * Math.PI;
 	public static ArrayList<Double> thetasForTrainingData(){
-		ArrayList<Double> thetas = new ArrayList<Double>();
+		ArrayList<Double> thetas = new ArrayList<>();
 		int r_max = Run.it.getMaxPhenotypeRadiusPlusMore(null);
 		int number_of_thetas = (int)Math.round(2 * Math.PI * r_max * RotationsPropOfCircumferencePoints);
 		for (int i = 0; i < number_of_thetas; i++){
@@ -60,20 +60,22 @@ public class RawPixels extends DatumFeatureSet {
 		SuperImage super_image = ImageAndScoresBank.getOrAddSuperImage(datumSetupForImage.filename());
 		Point t_adj = super_image.AdjustPointForSuper(t);
 		int r_max = Run.it.getMaxPhenotypeRadiusPlusMore(null);
-		int w = 2 * r_max + 1;
+		int w = 2 * r_max + 1; // width of Phenotype Subset
 		
 		//get the piece of the image with all the data we can ever need
 		BufferedImage local_window = super_image.getAsBufferedImage().getSubimage(t_adj.x - r_max, t_adj.y - r_max, w, w);
 		//build a storage image for the rotated image to be... it's going to be bigger... use Pythagorean theorem
-		int w_rotated = (int)Math.ceil(w / Math.sqrt(2));
-		BufferedImage local_window_rotated = new BufferedImage(w_rotated, w_rotated, BufferedImage.TYPE_INT_RGB);
+
+		int w_rotated = (int) Math.ceil(w * Math.sqrt(2));
+		BufferedImage local_window_rotated = new BufferedImage(w_rotated, w_rotated, local_window.getType());
 		
 		//setup the rotation function
 		AffineTransform at = new AffineTransform();
-		at.translate(w + 1, w + 1);
+		//Get to center of local_window_rotated so rotation works well
+		at.translate(local_window_rotated.getWidth()/2, local_window_rotated.getHeight()/2);
 		at.rotate(theta);
-		at.translate(-(w + 1), -(w + 1));
-		AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
+		at.translate(-local_window_rotated.getWidth()/2, -local_window_rotated.getHeight()/2);
+		AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
 		//do the rotation on the local_window and return the rotated image
 		local_window_rotated = scaleOp.filter(local_window, local_window_rotated);
 		
