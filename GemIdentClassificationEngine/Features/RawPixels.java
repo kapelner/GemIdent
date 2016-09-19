@@ -57,6 +57,10 @@ public class RawPixels extends DatumFeatureSet {
 	public void UpdateFeatureColors(ArrayList<Color> feature_colors, int p_0) {}
 
 	public static Datum generateDatum(DatumSetupForImage datumSetupForImage, Point t, double theta) {
+		System.err.println("Datum generateDatum");
+		
+		
+		
 		SuperImage super_image = ImageAndScoresBank.getOrAddSuperImage(datumSetupForImage.filename());
 		Point t_adj = super_image.AdjustPointForSuper(t);
 		int r_max = Run.it.getMaxPhenotypeRadiusPlusMore(null);
@@ -69,16 +73,24 @@ public class RawPixels extends DatumFeatureSet {
 		int w_rotated = (int) Math.ceil(w * Math.sqrt(2));
 		BufferedImage local_window_rotated = new BufferedImage(w_rotated, w_rotated, local_window.getType());
 		
+		System.err.println("setup the rotation function");
 		//setup the rotation function
 		AffineTransform at = new AffineTransform();
 		//Get to center of local_window_rotated so rotation works well
+
+		System.err.println("at.translate 1");
 		at.translate(local_window_rotated.getWidth()/2, local_window_rotated.getHeight()/2);
+		System.err.println("at.rotate");
 		at.rotate(theta);
+		System.err.println("at.translate 2");
 		at.translate(-local_window_rotated.getWidth()/2, -local_window_rotated.getHeight()/2);
+		System.err.println("scaleOp = new AffineTransformOp");
 		AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
 		//do the rotation on the local_window and return the rotated image
+		System.err.println("scaleOp.filter");
 		local_window_rotated = scaleOp.filter(local_window, local_window_rotated);
 		
+		System.err.println("Solids.getSolid");
 		//now we need to use the solid circle mask to generate the feature vector
 		ArrayList<Point> solid_mask = Solids.getSolid(r_max);
 		int num_points = solid_mask.size();
