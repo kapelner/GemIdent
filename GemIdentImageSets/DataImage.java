@@ -172,6 +172,8 @@ public abstract class DataImage implements Cloneable{
 	 * @param j		The y coordinate of desired pixel
 	 * @return		the 8bit Red intensity value
 	 */
+
+	//messes up here I believe
 	public int getR(int i,int j){
 		return (displayimage.getRGB(i,j) >> 16) & 0xff;
 	}

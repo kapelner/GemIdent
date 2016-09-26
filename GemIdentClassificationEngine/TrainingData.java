@@ -144,7 +144,8 @@ public class TrainingData {
 						for (Point t : Solids.GetPointsInSolidUsingCenter(phenotype.getRmin(), to)){ //0 for theta
 							if (datumSetupForImage.containsRawPixelFeatures()){
 								//generate raw pixel featuers at every theta
-								for (double theta : RawPixels.thetasForTrainingData()){
+								ArrayList<Double> listoftheta = RawPixels.thetasForTrainingData();
+								for (double theta : listoftheta){
 									Datum d = RawPixels.generateDatum(datumSetupForImage, t, theta);
 									d.setClass(Class);
 									allData.add(d);
