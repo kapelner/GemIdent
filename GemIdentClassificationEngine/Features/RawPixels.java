@@ -6,6 +6,8 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import GemIdentClassificationEngine.Datum;
@@ -73,14 +75,15 @@ public class RawPixels extends DatumFeatureSet {
 		int r_max = Run.it.getMaxPhenotypeRadiusPlusMore(null);
 		int w = 2 * r_max + 1; // width of Phenotype Subset
 		//get the piece of the image with all the data we can ever need
-		int w_rotated = (int) Math.ceil(w * Math.sqrt(2));
+		//int w_rotated = (int) Math.ceil(w * Math.sqrt(2));
 		int topleft_x = t_adj.x - r_max;
 		int topleft_y = t_adj.y - r_max;
 		BufferedImage whole_image = super_image.getAsBufferedImage();
 
-		BufferedImage local_window = super_image.getAsBufferedImage().getSubimage(t_adj.x - r_max  , t_adj.y - r_max , w, w );
-		//BufferedImage local_window =  super_image.getAsBufferedImage().getSubimage((t_adj.x - r_max) - (w_rotated - w), (t_adj.y - r_max) + (w_rotated + w), w_rotated, w_rotated);
+		//BufferedImage local_window = super_image.getAsBufferedImage().getSubimage(t_adj.x - r_max, t_adj.y - r_max, w , w);
+		BufferedImage local_window =  super_image.getAsBufferedImage().getSubimage((t_adj.x - r_max) - (10), (t_adj.y - r_max) + (10),w + 10, w + 10);
 		BufferedImage local_window_rotated = new BufferedImage(local_window.getWidth(),local_window.getHeight(),local_window.getType());
+		int w_rotated = local_window_rotated.getWidth();
 		//build a storage image for the rotated image to be... it's going to be bigger... use Pythagorean theorem
 
 
@@ -108,24 +111,24 @@ public class RawPixels extends DatumFeatureSet {
 		local_window_rotated = scaleOp.filter(local_window,local_window_rotated);
 		//BufferedImage sub = whole_image_rotated.getSubimage(new_x - (w/2) ,new_y ,w_rotated ,w_rotated );
         System.out.println("Print sub");
-       // File f = new File("MyFile" + (idx++) + ".jpg");
 
-        File g = new File(super_image.filename()+"_Theta_"+ String.format("%.4f",theta) + ".jpg");
-            //ImageIO.write(local_window, "JPEG", f);
-		try{
-            ImageIO.write(local_window_rotated, "JPEG", g);
-        }catch(Exception e){
-            System.out.println(e);
-        }
+//        File g = new File(super_image.filename()+"_Theta_"+ String.format("%.4f",theta)+".jpg");
+//            //ImageIO.write(local_window, "JPEG", f);
+//
+//		try {
+//			ImageIO.write(local_window_rotated, "JPEG", g);
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 
 
-        System.out.println("Solids.getSolid before");
+		System.out.println("Solids.getSolid before");
 		//now we need to use the solid circle mask to generate the feature vector
 		ArrayList<Point> solid_mask = Solids.getSolid(r_max);
         System.out.println("Solids.getSolid after");
 		int num_points = solid_mask.size();
 		//this is the center of the final rotated image
-		Point center_rotated_image = new Point(w_rotated, w_rotated);
+		Point center_rotated_image = new Point(w_rotated/2, w_rotated/2);
 
 		//make the datum with the record (the vector)
 		double[] record = new double[num_points * 3];
@@ -137,30 +140,56 @@ public class RawPixels extends DatumFeatureSet {
         //What is this even suppose to do ?
 		d.setRecord(record);
         System.out.println("After set record");
-		
+
 		//use this object for convenience (getR, getG, getB)
 
-		//DataImage local_window_rotated_dataimage = new RegularSubImage(local_window_rotated);
-		
+		DataImage local_window_rotated_dataimage = new RegularSubImage(local_window_rotated);
+
 		//for each point in the mask, get the R,G,B values in the rotated image and enter them into the data vector (record)
         System.out.println("Before RGB loop");
-//		for (int i = 0; i < num_points; i++){
-//			Point offset = solid_mask.get(i);
-//            int x = offset.x;
-//            int y = offset.y;
-//			int x0 = center_rotated_image.x + offset.x;
-//			int y0 = center_rotated_image.y + offset.y;
+		try {
+			FileWriter fileout = new FileWriter(super_image.filename()+"output.csv",true);
+			if(filecount == 1) {
+				fileout.write("Theta,");
+
+				for (int i = 0; i < num_points; i++) {
+					Point offset = solid_mask.get(i);
+					fileout.write(offset.x + ":" + offset.y + "R," + offset.x + ":" + offset.y + "G," + offset.x + ":" + offset.y + "B,");
+				}
+			}
+				fileout.write(System.getProperty("line.separator"));
+				fileout.write(String.format("%.4f", theta) + ",");
+			for (int i = 0; i < num_points; i++) {
+				int j = i  + 1 ;
+				Point offset = solid_mask.get(i);
+				int x = offset.x;
+				int y = offset.y;
+				int x0 = center_rotated_image.x + offset.x;
+				int y0 = center_rotated_image.y + offset.y;
+				//System.out.println("x:" + x + "  x0:" + x0 + " y:" + y + " y0:" + y0 + "Record size:" + record.length);
+
+				//red, green and blue go in the record IN THAT ORDER
+				System.out.println("Before R set");
+				record[3 * i] = local_window_rotated_dataimage.getR(x0, y0);
+				System.out.println("Before G set");
+				record[3 * i + 1] = local_window_rotated_dataimage.getG(x0, y0);
+				System.out.println("Before B set");
+				record[3 * i + 2] = local_window_rotated_dataimage.getB(x0, y0);
+				fileout.write(record[3*i]+ ","+ record[3*i+1]+ ","+record[3*i+ 2]+",");
+//				if(j % 10 == 0){
+//					fileout.write(System.getProperty("line.separator"));
 //
-//			//red, green and blue go in the record IN THAT ORDER
-//            System.out.println("Before R set");
-//			record[3 * i    ] = local_window_rotated_dataimage.getR(x0, y0);
-//            System.out.println("Before G set");
-//			record[3 * i + 1] = local_window_rotated_dataimage.getG(x0, y0);
-//            System.out.println("Before B set");
-//			record[3 * i + 2] = local_window_rotated_dataimage.getB(x0, y0);
-//		}
-        System.out.println("After RGB loop");
-		//return the newly minted datum
+//					fileout.write(super_image.filename()+" Theta_" +theta+",");
+//					j = 0;
+//				}
+			}
+			//fileout.write(System.getProperty("line.separator"));
+			System.out.println("After RGB loop");
+			fileout.close();
+			//return the newly minted datum
+		}catch(Exception e){
+			System.out.print(e);
+		}
 		return d;
 	}
 }

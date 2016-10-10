@@ -78,6 +78,7 @@ public class TrainingData {
 	public TrainingData(int nthreads,JProgressBarAndLabel trainingProgress){
 		this.trainingProgress=trainingProgress;
 		this.nthreads=nthreads;
+		//this.nthreads = 1;
 		increment=100 / ((double)Run.it.numPhenTrainingPoints());
 		totalvalue=0;
 		stop=false;	
