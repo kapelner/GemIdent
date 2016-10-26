@@ -39,6 +39,7 @@ import GemIdentImageSets.ImageSetInterface;
 import GemIdentImageSets.ImageSetInterfaceWithUserColors;
 import GemIdentStatistics.Classifier;
 import GemIdentStatistics.CART.DTree;
+import GemIdentStatistics.DeepLearning.DL4JLearner;
 import GemIdentStatistics.RandomForest.RandomForest;
 import GemIdentTools.IOTools;
 import GemIdentView.ClassifyProgress;
@@ -175,6 +176,8 @@ public class SetupClassification extends Thread {
 	public static final String BayesianCARTSymbol = "BayesianCART";	
 	/** The name of the "Bayesian Additive Regression Trees" machine learning classifier */
 	public static final String BARTSymbol = "BART";
+	/** deep learning CNN via DL4J */
+	public static final String DL4JCNN = "DL4JCNN";
 	
 	
 	/** The current classifier the user is using */	
@@ -193,12 +196,9 @@ public class SetupClassification extends Thread {
 			classifier = new DTree(initDatumSetupForEntireRun(), buildProgress);
 		}
 		//COMING SOON
-//		else if (classifierType.equals(BayesianCARTSymbol)){
-//			classifier = new CGMClassificationTree(datumSetupForEntireRun, buildProgress, Run.it.numPhenotypes());
-//		}
-//		else if (classifierType.equals(BARTSymbol)){
-//			classifier = new CGMBARTClassification(datumSetupForEntireRun, buildProgress, Run.it.numPhenotypes());
-//		}		
+		else if (classifierType.equals(DL4JCNN)){
+			classifier = new DL4JLearner(initDatumSetupForEntireRun(), buildProgress, Run.it.numPhenotypes());
+		}		
 		classifier.setData(trainingData.getData());
 		classifier.Build();	
 //		classifier.dumpDataToFile(); //debugging
