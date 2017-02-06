@@ -514,7 +514,7 @@ public class DTree extends ClassificationAndRegressionTree implements Serializab
 		if (forest == null){ //vanilla DTree
 			//return em all
 			ArrayList<Integer> shortRecord=new ArrayList<Integer>(p);
-			for (int j=0;j<p;j++){
+ 			for (int j=0;j<p;j++){
 				shortRecord.add(j);
 			}
 			return shortRecord;			

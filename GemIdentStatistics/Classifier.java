@@ -80,7 +80,8 @@ public abstract class Classifier implements Serializable {
 	public Classifier(DatumSetupForEntireRun datumSetupForEntireRun, JProgressBarAndLabel buildProgress){
 		this.datumSetupForEntireRun = datumSetupForEntireRun;
 		p = datumSetupForEntireRun.numFeatures();
-//		System.out.println("classifier has " + p + " total features");
+
+		System.out.println("classifier has " + p + " total features");
 		this.buildProgress = buildProgress;
 	}
 	

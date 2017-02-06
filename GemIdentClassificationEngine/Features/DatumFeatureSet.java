@@ -16,7 +16,7 @@ import GemIdentImageSets.ImageSetInterface;
 public abstract class DatumFeatureSet {
 	
 	/** how many features is represented by this feature set? */
-	protected int num_features;
+	protected static int num_features;
 	
 	/** what type of feature is this, a number, and ordinal category, or a category? */
 	public enum FeatureType {NUMBER, ORDINAL, NOMINAL};
