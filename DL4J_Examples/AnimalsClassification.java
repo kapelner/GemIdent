@@ -92,7 +92,7 @@ public class AnimalsClassification {
         ParentPathLabelGenerator labelMaker = new ParentPathLabelGenerator();
 //        File mainPath = new File(System.getProperty("user.dir"), "dl4j-examples/src/main/resources/animals/");
         //add your file path here
-        File mainPath = new File("C:/Users/chris/Desktop/Code/dl4j-examples/dl4j-examples/src/main/resources/animals/");
+        File mainPath = new File("C:\\Users\\stefh\\DL4J_examples\\dl4j-examples\\dl4j-examples\\src\\main\\resources\\animals");
         FileSplit fileSplit = new FileSplit(mainPath, NativeImageLoader.ALLOWED_FORMATS, rng);
         BalancedPathFilter pathFilter = new BalancedPathFilter(rng, labelMaker, numExamples, numLabels, batchSize);
 
