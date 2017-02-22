@@ -25,6 +25,7 @@
 package GemIdentClassificationEngine;
 
 import java.awt.Point;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
@@ -90,7 +91,14 @@ public class TrainingData {
 	 * for each image to it. */
 	private void GenerateData() {
 		trainPool=Executors.newFixedThreadPool(nthreads);
+		
+		/** Create directories for each phenotype*/
+		for(String pName: Run.it.getPhenotyeNames()){
+				(new File("C:/Users/stefh/Project GemIdent/GemIdent/examples_image_sets/"+pName+"/")).mkdirs();
+		}
+		
 		for (String filename:Run.it.getPhenotypeTrainingImages()){
+			
 			trainPool.execute(new TrainingDataMaker(filename));
 		}
 		trainPool.shutdown();
@@ -131,7 +139,11 @@ public class TrainingData {
 		 * @see <a href="http://www.gemident.com/publication.html">the 2007 IEEE paper</a>
 		 */
 		public void run(){
+			
+			int counter = 0;
+			
 			for (Phenotype phenotype:Run.it.getPhenotypeObjects()){
+				
 				if (phenotype.hasImage(filename)){
 					for (Point to:phenotype.getPointsInImage(filename)){	
 						if (stop)
@@ -147,9 +159,17 @@ public class TrainingData {
 								//generate raw pixel featuers at every theta
 								ArrayList<Double> listoftheta = RawPixels.thetasForTrainingData();
 								for (double theta : listoftheta){
-									Datum d = RawPixels.generateDatum(datumSetupForImage, t, theta);
+									Datum d;
+									try {
+										d = RawPixels.generateDatum(datumSetupForImage, t, theta, name,counter);
+									} catch (Exception e) {
+										// TODO Auto-generated catch block
+										d=null;
+										e.printStackTrace();
+									}
 									d.setClass(Class);
 									allData.add(d);
+									counter++;
 								}
 							}
 							else {

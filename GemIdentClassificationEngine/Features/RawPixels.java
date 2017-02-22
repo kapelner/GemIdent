@@ -69,7 +69,7 @@ public class RawPixels extends DatumFeatureSet {
 	public void UpdateFeatureColors(ArrayList<Color> feature_colors, int p_0) {
 	}
 
-	public static Datum generateDatum(DatumSetupForImage datumSetupForImage, Point t, double theta) {
+	public static Datum generateDatum(DatumSetupForImage datumSetupForImage, Point t, double theta, String phenoName, int counterNum) throws Exception {
 		//System.err.println("Datum generateDatum");
 
 		SuperImage super_image = ImageAndScoresBank.getOrAddSuperImage(datumSetupForImage.filename());
@@ -122,7 +122,14 @@ public class RawPixels extends DatumFeatureSet {
 //		} catch (IOException e) {
 //			e.printStackTrace();
 //		}
-
+		
+		//(new File("C:/Users/stefh/Project GemIdent/GemIdent/examples_image_sets/"+phenoName+"/")).mkdirs();
+		
+		/** Create file for rotate independent phenotypes*/
+		File g = new File("C:/Users/stefh/Project GemIdent/GemIdent/examples_image_sets/"+phenoName+"/"+counterNum+"_Theta_"+ String.format("%.4f",theta)+".jpg");
+		
+		/** Insert file into Directory*/
+        ImageIO.write(local_window_rotated, "JPEG", g); 
 
 		//System.out.println("Solids.getSolid before");
 		//now we need to use the solid circle mask to generate the feature vector
