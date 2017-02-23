@@ -126,10 +126,14 @@ public class RawPixels extends DatumFeatureSet {
 		//(new File("C:/Users/stefh/Project GemIdent/GemIdent/examples_image_sets/"+phenoName+"/")).mkdirs();
 		
 		/** Create file for rotate independent phenotypes*/
-		File g = new File("C:/Users/stefh/Project GemIdent/GemIdent/examples_image_sets/"+phenoName+"/"+counterNum+"_Theta_"+ String.format("%.4f",theta)+".jpg");
-		
+
+        //File g = new File(System.getProperty("user.dir")+"/test/"+phenoName+"/"+counterNum+"_Theta_"+ String.format("%.4f",theta)+".jpg");
+
+
+        File outputimage = new File(System.getProperty("user.dir")+"/ClassLabels/"+phenoName+"/"+counterNum+"_Theta_"+ String.format("%.4f",theta)+".jpg");
+
 		/** Insert file into Directory*/
-        ImageIO.write(local_window_rotated, "JPEG", g); 
+        ImageIO.write(local_window_rotated, "JPEG", outputimage);
 
 		//System.out.println("Solids.getSolid before");
 		//now we need to use the solid circle mask to generate the feature vector

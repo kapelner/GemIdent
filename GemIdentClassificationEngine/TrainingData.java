@@ -92,9 +92,11 @@ public class TrainingData {
 	private void GenerateData() {
 		trainPool=Executors.newFixedThreadPool(nthreads);
 		
-		/** Create directories for each phenotype*/
+		/** Create directories for each phenotype, Data is labeled through directory
+         * For example is directory is called NON all images inside that directory
+         * will be labeled NON*/
 		for(String pName: Run.it.getPhenotyeNames()){
-				(new File("C:/Users/stefh/Project GemIdent/GemIdent/examples_image_sets/"+pName+"/")).mkdirs();
+				(new File(System.getProperty("user.dir")+"/ClassLabels/"+pName+"/")).mkdirs();
 		}
 		
 		for (String filename:Run.it.getPhenotypeTrainingImages()){
@@ -143,7 +145,6 @@ public class TrainingData {
 			int counter = 0;
 			
 			for (Phenotype phenotype:Run.it.getPhenotypeObjects()){
-				
 				if (phenotype.hasImage(filename)){
 					for (Point to:phenotype.getPointsInImage(filename)){	
 						if (stop)
