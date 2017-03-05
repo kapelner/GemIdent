@@ -6,7 +6,6 @@
 *.exe
 *.o
 *.so
-*.classpath
 
 # Packages #
 ############
@@ -40,3 +39,10 @@ bin/*
 .gitignore~
 .gitignore.swp
 .settings/*
+.idea/*
+.idea/
+target/
+ClassLabels/
+ClassLabels/*
+*.iml
+out/*
