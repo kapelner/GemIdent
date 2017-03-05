@@ -12,15 +12,22 @@ public class DL4JLearner extends Classifier {
 	}
 
 	@Override
-	public void Build() {
+	public void Build(){
 		// play with Xy to get it into a Dl4j model
 		//build / train the CNN here
+		AnimalsClassification ConvNet = new AnimalsClassification();
+        try {
+            ConvNet.run(null);
+        }catch (Exception e){
+            System.out.println(e);
+        }
 		
 	}
 
 	@Override
 	protected void FlushData() {
 		// TODO Auto-generated method stub
+		//
 		
 	}
 
