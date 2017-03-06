@@ -1,4 +1,4 @@
-package DL4J_Examples;
+package GemIdentStatistics.DeepLearning;
 
 import org.apache.commons.io.FilenameUtils;
 import org.datavec.api.io.filters.BalancedPathFilter;
@@ -66,7 +66,7 @@ public class AnimalsClassification {
     protected static int width = 100;
     protected static int channels = 3;
     protected static int numExamples = 80;
-    protected static int numLabels = 4;
+    protected static int numLabels = 2;
     protected static int batchSize = 20;
 
     protected static long seed = 42;

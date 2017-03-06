@@ -141,9 +141,6 @@ public class TrainingData {
 		 * @see <a href="http://www.gemident.com/publication.html">the 2007 IEEE paper</a>
 		 */
 		public void run(){
-			
-			int counter = 0;
-			
 			for (Phenotype phenotype:Run.it.getPhenotypeObjects()){
 				if (phenotype.hasImage(filename)){
 					for (Point to:phenotype.getPointsInImage(filename)){	
@@ -158,11 +155,11 @@ public class TrainingData {
 						for (Point t : Solids.GetPointsInSolidUsingCenter(phenotype.getRmin(), to)){ //0 for theta
 							if (datumSetupForImage.containsRawPixelFeatures()){
 								//generate raw pixel featuers at every theta
-								ArrayList<Double> listoftheta = RawPixels.thetasForTrainingData();
-								for (double theta : listoftheta){
+								//ArrayList<Double> listoftheta = RawPixels.thetasForTrainingData();
+								//for (double theta : listoftheta){
 									Datum d;
 									try {
-										d = RawPixels.generateDatum(datumSetupForImage, t, theta, name,counter);
+										d = RawPixels.generateDatum(datumSetupForImage, t,name);
 									} catch (Exception e) {
 										// TODO Auto-generated catch block
 										d=null;
@@ -170,8 +167,8 @@ public class TrainingData {
 									}
 									d.setClass(Class);
 									allData.add(d);
-									counter++;
-								}
+
+								//}
 							}
 							else {
 								Datum d = datumSetupForImage.generateDatumAtPoint(t);

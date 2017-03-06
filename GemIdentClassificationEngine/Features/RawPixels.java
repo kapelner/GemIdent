@@ -69,8 +69,9 @@ public class RawPixels extends DatumFeatureSet {
 	public void UpdateFeatureColors(ArrayList<Color> feature_colors, int p_0) {
 	}
 
-	public static Datum generateDatum(DatumSetupForImage datumSetupForImage, Point t, double theta, String phenoName, int counterNum) throws Exception {
+	public static Datum generateDatum(DatumSetupForImage datumSetupForImage, Point t, String phenoName) throws Exception {
 		//System.err.println("Datum generateDatum");
+		double theta = 0;
 
 		SuperImage super_image = ImageAndScoresBank.getOrAddSuperImage(datumSetupForImage.filename());
 		Point t_adj = super_image.AdjustPointForSuper(t);
@@ -130,8 +131,8 @@ public class RawPixels extends DatumFeatureSet {
         //File g = new File(System.getProperty("user.dir")+"/test/"+phenoName+"/"+counterNum+"_Theta_"+ String.format("%.4f",theta)+".jpg");
 
 
-        File outputimage = new File(System.getProperty("user.dir")+"/ClassLabels/"+phenoName+"/"+counterNum+"_Theta_"+ String.format("%.4f",theta)+".jpg");
-
+        File outputimage = new File(System.getProperty("user.dir")+"/ClassLabels/"+phenoName+"/"+"_Theta_"+ String.format("%.4f",theta)+idx+".jpg");
+        ++idx;
 		/** Insert file into Directory*/
         ImageIO.write(local_window_rotated, "JPEG", outputimage);
 
@@ -178,7 +179,7 @@ public class RawPixels extends DatumFeatureSet {
 			record[3 * i + 1] = local_window_rotated_dataimage.getG(x0, y0);
 			//System.out.println("Before B set");
 			record[3 * i + 2] = local_window_rotated_dataimage.getB(x0, y0);
-			num_features += 1;
+			num_features += 3;
 			//System.out.println("After RGB loop");
 
 			//return the newly minted datum

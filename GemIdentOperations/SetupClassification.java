@@ -160,8 +160,8 @@ public class SetupClassification extends Thread {
 	public static DatumSetupForEntireRun initDatumSetupForEntireRun(){
 		//what features are we using? Declare a new datum setup for this run
 		DatumSetupForEntireRun datumSetupForEntireRun = new DatumSetupForEntireRun(Run.it.imageset);
-		datumSetupForEntireRun.addFeatureSet(FeatureSetName.RawPixelValues);
-//		datumSetupForEntireRun.addFeatureSet(FeatureSetName.ColorRingScores);
+		//datumSetupForEntireRun.addFeatureSet(FeatureSetName.RawPixelValues);
+		datumSetupForEntireRun.addFeatureSet(FeatureSetName.ColorRingScores);
 //		datumSetupForEntireRun.addFeatureSet(FeatureSetName.MaxLineScores);
 //		datumSetupForEntireRun.addFeatureSet(FeatureSetName.EdgeRingScores);
 		datumSetupForEntireRun.initialize();	
@@ -181,7 +181,8 @@ public class SetupClassification extends Thread {
 	
 	
 	/** The current classifier the user is using */	
-	public static String classifierType = RandomForestSymbol; //default is random forests for now
+	//public static String classifierType = RandomForestSymbol; //default is random forests for now
+	public static String classifierType = DL4JCNN;
 	
 	/**
 	 * This method creates the machine learning classifier for this analysis
