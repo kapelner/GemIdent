@@ -73,10 +73,11 @@ public class AnimalsClassification {
     protected static Random rng = new Random(seed);
     protected static int listenerFreq = 1;
     protected static int iterations = 1;
-    protected static int epochs = 50;
+    protected static int epochs = 1;
     protected static double splitTrainTest = 0.8;
     protected static int nCores = 2;
     protected static boolean save = false;
+    protected double buildProgress = 0; //progress for model training
 
     protected static String modelType = "AlexNet"; // LeNet, AlexNet or Custom but you need to fill it out
 
@@ -116,6 +117,7 @@ public class AnimalsClassification {
 //	        ImageTransform colorTransform = new ColorConversionTransform(new Random(seed), COLOR_BGR2YCrCb);
         List<ImageTransform> transforms = Arrays.asList(new ImageTransform[]{flipTransform1, warpTransform, flipTransform2});
 
+        double progressIncrementor = 100 / (transforms.size() + 1); //
         /**
          * Data Setup -> normalization
          *  - how to normalize images and generate large dataset to train on
@@ -163,6 +165,7 @@ public class AnimalsClassification {
         dataIter.setPreProcessor(scaler);
         trainIter = new MultipleEpochsIterator(epochs, dataIter, nCores);
         network.fit(trainIter);
+        buildProgress += progressIncrementor;
 
         // Train with transformations
         for (ImageTransform transform : transforms) {
@@ -173,6 +176,8 @@ public class AnimalsClassification {
             dataIter.setPreProcessor(scaler);
             trainIter = new MultipleEpochsIterator(epochs, dataIter, nCores);
             network.fit(trainIter);
+            buildProgress += progressIncrementor;
+
         }
 
         log.info("Evaluate model....");
@@ -316,6 +321,10 @@ public class AnimalsClassification {
 
     public static void main(String[] args) throws Exception {
         new AnimalsClassification().run(args);
+    }
+
+    public double getBuildProgress(){
+        return buildProgress;
     }
 
 }
