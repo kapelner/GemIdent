@@ -32,7 +32,7 @@ public class DL4JLearner extends Classifier {
                 while (!stop){
 
                     buildProgress.setValue((int)Math.round(progress += ConvNet.getBuildProgress()));
-                    System.err.println(ConvNet.getBuildProgress());
+                    //System.err.println(ConvNet.getBuildProgress());
                     if(progress >= 100)
                         stop = true;
                     try {
