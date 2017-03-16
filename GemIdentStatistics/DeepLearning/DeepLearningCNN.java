@@ -136,7 +136,6 @@ public class DeepLearningCNN {
         }
         network.init();
         network.setListeners(new ScoreIterationListener(listenerFreq));
-        network.
 
         /**
          * Data Setup -> define how to load data into net:

@@ -28,7 +28,7 @@ public class DeepLearningCNNClassifier extends Classifier {
 		//build / train the CNN here
         stop = false;
 
-        cnn = new AnimalsClassification();
+        cnn = new DeepLearningCNN();
 
         ExecutorService coupled_threads = Executors.newFixedThreadPool(1);
         coupled_threads.execute(new Runnable(){
@@ -44,7 +44,7 @@ public class DeepLearningCNNClassifier extends Classifier {
             public void run(){
                 while (!stop){
 
-                    buildProgress.setValue((int)Math.round(progress += ConvNet.getBuildProgress()));
+                    buildProgress.setValue((int)Math.round(progress += cnn.getBuildProgress()));
                     //System.err.println(ConvNet.getBuildProgress());
                     if(progress >= 100)
                         stop = true;
@@ -62,13 +62,13 @@ public class DeepLearningCNNClassifier extends Classifier {
         coupled_threads.shutdown();
         /*Builds and train network*/
         try {
-            ConvNet.run(null);
+        	cnn.run(null);
         }catch (Exception e){
             e.printStackTrace();
         }
 
         try {
-            treePool.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS); //effectively infinity
+        	coupled_threads.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS); //effectively infinity
         } catch (InterruptedException ignored){}
 
 
@@ -90,7 +90,11 @@ public class DeepLearningCNNClassifier extends Classifier {
 	
 	@Override
 	public double Evaluate(String filename, int i, int j){
-		
+		//Step 1: load image 
+		//Step 2: extract region of interest +- w
+		//Step 3: write file
+		//Step 4: create testDataSet filelist from this one file
+		//Step 5: return network.predict(testDataSet).get(0);
 		
 		return 0;
 	}
