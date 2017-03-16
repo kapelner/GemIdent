@@ -87,6 +87,9 @@ public class Classify {
 		//go for the gold
 		BeginClassification();
 	}
+	
+	public static enum MODEL_TYPE {CLASSIC_MACHINE_LEARNING, DEEP_LEARNING}
+	public static MODEL_TYPE MODEL = MODEL_TYPE.DEEP_LEARNING;
 
 	/** 
 	 * Begins the classification. Starts the timer, initializes the thread pool, 
@@ -97,8 +100,14 @@ public class Classify {
 		Run.it.imageset.LOG_AddToHistory("begun classification of " + filenames.size() + " images");
 
 		classifyPool=Executors.newFixedThreadPool(Run.it.num_threads);
-		for (String filename:filenames)
-	    	classifyPool.execute(new SingleImageClassifier(filename, progress, classifyPanel, classifier, stop));
+		for (String filename:filenames){
+			switch(MODEL){
+				case CLASSIC_MACHINE_LEARNING: 
+					classifyPool.execute(new SingleImageClassicClassifier(filename, progress, classifyPanel, classifier, stop)); break;
+				case DEEP_LEARNING:
+					classifyPool.execute(new SingleImageDeepLearningClassifier(filename, progress, classifyPanel, classifier, stop)); break;
+			}
+		}	
 		classifyPool.shutdown();
 		try {	         
 	         classifyPool.awaitTermination(Long.MAX_VALUE,TimeUnit.SECONDS); //effectively infinity

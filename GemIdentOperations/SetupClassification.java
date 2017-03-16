@@ -39,7 +39,7 @@ import GemIdentImageSets.ImageSetInterface;
 import GemIdentImageSets.ImageSetInterfaceWithUserColors;
 import GemIdentStatistics.Classifier;
 import GemIdentStatistics.CART.DTree;
-import GemIdentStatistics.DeepLearning.DL4JLearner;
+import GemIdentStatistics.DeepLearning.DeepLearningCNNClassifier;
 import GemIdentStatistics.RandomForest.RandomForest;
 import GemIdentTools.IOTools;
 import GemIdentView.ClassifyProgress;
@@ -198,7 +198,7 @@ public class SetupClassification extends Thread {
 		}
 		//COMING SOON
 		else if (classifierType.equals(DL4JCNN)){
-			classifier = new DL4JLearner(initDatumSetupForEntireRun(), buildProgress, Run.it.numPhenotypes());
+			classifier = new DeepLearningCNNClassifier(initDatumSetupForEntireRun(), buildProgress, Run.it.numPhenotypes());
 		}		
 		classifier.setData(trainingData.getData());
 		classifier.Build();	

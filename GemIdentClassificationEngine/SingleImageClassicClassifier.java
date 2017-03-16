@@ -19,40 +19,40 @@ import GemIdentView.KClassifyPanel;
 /**
  * Class responsible for classifying one image, threaded in a thread pool
  */
-public class SingleImageClassifier implements Runnable {
+public class SingleImageClassicClassifier implements Runnable {
 	
 	/** the image being classified */
-	private String filename;
+	protected String filename;
 	/** the beginning time of the classification */
-	private long time_o;
+	protected long time_o;
 	/** the expanded {@link GemIdentImageSets.SuperImage SuperImage} of this image */
-	private SuperImage superImage;
+	protected SuperImage superImage;
 	/** a copy of the original image */
-	private DataImage actualImageInter;
+	protected DataImage actualImageInter;
 	/** a mapping from the phenotypes to their results matrix for this image */
-	private HashMap<String,BoolMatrix> is;
+	protected HashMap<String,BoolMatrix> is;
 	/** the width of this image */
-	private int width;
+	protected int width;
 	/** the height of this image */
-	private int height;
+	protected int height;
 	/** the name of the thread this image is being classified on (for debugging purposes only) */
 	private String threadName;
 	/** common information for all datums in this image */
-	private DatumSetupForImage datumSetupForImage;
+	protected DatumSetupForImage datumSetupForImage;
 	/** the progress bars associated with this classification */
-	private ClassifyProgress progress;
+	protected ClassifyProgress progress;
 	/** the panel this classification is taking place in */
-	private KClassifyPanel classifyPanel;
+	protected KClassifyPanel classifyPanel;
 	/** the machine learning classifier that will classify the image pixels */
-	private Classifier classifier;
+	protected Classifier classifier;
 	/** should the classification be stopped? */
-	private AtomicBoolean stop;
+	protected AtomicBoolean stop;
 	
 	/** initializes a new Classifier worker
 	 * 
 	 * @param filename		the filename of the image
 	 */
-	public SingleImageClassifier(String filename, ClassifyProgress progress, KClassifyPanel classifyPanel, Classifier classifier, AtomicBoolean stop){
+	public SingleImageClassicClassifier(String filename, ClassifyProgress progress, KClassifyPanel classifyPanel, Classifier classifier, AtomicBoolean stop){
 		this.filename = filename;
 		this.progress = progress;
 		this.classifyPanel = classifyPanel;
@@ -135,7 +135,7 @@ public class SingleImageClassifier implements Runnable {
 	 * 
 	 * @see <a href="http://www.gemident.com/publication.html">the 2007 IEEE paper</a>
 	 */
-	private void ClassifyPixels(){
+	protected void ClassifyPixels(){
 		int counter=0;
 		classify_all_pixels : {
 			for (int j=0;j<height;j++){
@@ -165,7 +165,7 @@ public class SingleImageClassifier implements Runnable {
 		}
 	}
 	/** update the progress bar for the user */
-	private void UpdateProgressBar(){
+	void UpdateProgressBar(){
 		progress.update(threadName);
 		progress.setTime(threadName,TimeElapsed());			
 	}

@@ -8,13 +8,15 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public class DL4JLearner extends Classifier {
+public class DeepLearningCNNClassifier extends Classifier {
 	private static final long serialVersionUID = 5794871567404918608L;
     /** For progress bar display for the creation of this DL4J Learner, this records the total progress */
     private transient double progress;
     private transient boolean stop;
+    /** the deep learning model */
+	private DeepLearningCNN cnn;
 
-    public DL4JLearner(DatumSetupForEntireRun initDatumSetupForEntireRun, JProgressBarAndLabel buildProgress, int numPhenotypes) {
+    public DeepLearningCNNClassifier(DatumSetupForEntireRun initDatumSetupForEntireRun, JProgressBarAndLabel buildProgress, int numPhenotypes) {
 		// TODO Auto-generated constructor stub
         super(initDatumSetupForEntireRun, buildProgress);
 
@@ -25,9 +27,20 @@ public class DL4JLearner extends Classifier {
 		// play with Xy to get it into a Dl4j model
 		//build / train the CNN here
         stop = false;
-		AnimalsClassification ConvNet = new AnimalsClassification();
-        ExecutorService treePool = Executors.newFixedThreadPool(1);
-        treePool.execute(new Runnable(){
+
+        cnn = new AnimalsClassification();
+
+        ExecutorService coupled_threads = Executors.newFixedThreadPool(1);
+        coupled_threads.execute(new Runnable(){
+            public void run(){
+                try {
+                    cnn.run(null);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        coupled_threads.execute(new Runnable(){
             public void run(){
                 while (!stop){
 
@@ -45,7 +58,8 @@ public class DL4JLearner extends Classifier {
 
 
         });
-        treePool.shutdown();
+
+        coupled_threads.shutdown();
         /*Builds and train network*/
         try {
             ConvNet.run(null);
@@ -70,7 +84,14 @@ public class DL4JLearner extends Classifier {
 
 	@Override
 	public double Evaluate(double[] record) {
-		// TODO Auto-generated method stub
+		// UNUSED!!!!!!
+		return 0;
+	}
+	
+	@Override
+	public double Evaluate(String filename, int i, int j){
+		
+		
 		return 0;
 	}
 

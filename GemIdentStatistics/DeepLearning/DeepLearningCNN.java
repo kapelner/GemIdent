@@ -43,28 +43,8 @@ import java.util.List;
 import java.util.Random;
 
 
-
-
-
-/**
- * Animal Classification
- *
- * Example classification of photos from 4 different animals (bear, duck, deer, turtle).
- *
- * References:
- *  - U.S. Fish and Wildlife Service (animal sample dataset): http://digitalmedia.fws.gov/cdm/
- *  - Tiny ImageNet Classification with CNN: http://cs231n.stanford.edu/reports/leonyao_final.pdf
- *
- * CHALLENGE: Current setup gets low score results. Can you improve the scores? Some approaches:
- *  - Add additional images to the dataset
- *  - Apply more transforms to dataset
- *  - Increase epochs
- *  - Try different model configurations
- *  - Tune by adjusting learning rate, updaters, activation & loss functions, regularization, ...
- */
-
-public class AnimalsClassification {
-    protected static final Logger log = LoggerFactory.getLogger(AnimalsClassification.class);
+public class DeepLearningCNN {
+    protected static final Logger log = LoggerFactory.getLogger(DeepLearningCNN.class);
     protected static int height = 77; // 57 x 57 instead?
     protected static int width = 77;
     protected static int channels = 3;
@@ -84,6 +64,8 @@ public class AnimalsClassification {
     protected double buildProgress = 0; //progress for model training
 
     protected static String modelType = "AlexNet"; // LeNet, AlexNet or Custom but you need to fill it out
+    private MultiLayerNetowrk network;
+
 
     public void run(String[] args) throws Exception {
 
@@ -100,7 +82,7 @@ public class AnimalsClassification {
         File mainPath = new File(System.getProperty("user.dir"), "ClassLabels/");
 
 
-        FileSplit fileSplit = new FileSplit(mainPath, NativeImageLoader.ALLOWED_FORMATS, rng);
+      MultiLayerNetwork  FileSplit fileSplit = new FileSplit(mainPath, NativeImageLoader.ALLOWED_FORMATS, rng);
         BalancedPathFilter pathFilter = new BalancedPathFilter(rng, labelMaker, numExamples, numLabels, batchSize);
 
         /**
@@ -138,7 +120,7 @@ public class AnimalsClassification {
         // Uncomment below to try AlexNet. Note change height and width to at least 100
 //	        MultiLayerNetwork network = new AlexNet(height, width, channels, numLabels, seed, iterations).init();
 
-        MultiLayerNetwork network;
+        network;
         switch (modelType) {
             case "LeNet":
                 network = lenetModel();
@@ -154,6 +136,7 @@ public class AnimalsClassification {
         }
         network.init();
         network.setListeners(new ScoreIterationListener(listenerFreq));
+        network.
 
         /**
          * Data Setup -> define how to load data into net:

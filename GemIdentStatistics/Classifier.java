@@ -175,6 +175,10 @@ public abstract class Classifier implements Serializable {
 	/** After the classifier has been built, new records can be evaluated */
 	public abstract double Evaluate(double[] record);
 	
+
+	/** After the classifier has been built, new records can be evaluated */
+	public abstract double Evaluate(String filename, int i, int j);
+	
 	/**
 	 * Given a data record, return the Y value - take the last index
 	 * 
