@@ -101,8 +101,7 @@ public class DeepLearningCNNClassifier extends Classifier {
 
 	@Override
 	public void StopBuilding() {
-		// TODO Auto-generated method stub
-		
+		stop = true;
 	}
 
 }
