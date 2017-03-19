@@ -152,12 +152,12 @@ public class DeepLearningCNN {
         // Train without transformations
 
         recordReader.initialize(trainData, null);
-       // recordReader.setListeners(new LogRecordListener());
-        //System.out.println(recordReader.getCurrentFile());
+         recordReader.setListeners(new LogRecordListener());
+        System.out.println(recordReader.getCurrentFile());
         dataIter = new RecordReaderDataSetIterator(recordReader, batchSize, 1, numLabels);
 
 
-    /**
+
         for(int i=0; i<3; i++){
 
             DataSet testDataSet2 = dataIter.next();
@@ -165,7 +165,7 @@ public class DeepLearningCNN {
             System.out.println(dataIter.getLabels());
 
         }
-    */
+
 
         scaler.fit(dataIter);
         dataIter.setPreProcessor(scaler);

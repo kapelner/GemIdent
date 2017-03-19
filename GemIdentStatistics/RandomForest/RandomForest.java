@@ -76,6 +76,8 @@ public class RandomForest extends Classifier implements Serializable {
 	/** Serializable is happy */
 	public RandomForest(){}
 
+	public double Evaluate(String string, int a, int b){ return 0;}
+
 	public RandomForest(DatumSetupForEntireRun datumSetupForEntireRun, JProgressBarAndLabel buildProgress){
 		super(datumSetupForEntireRun, buildProgress);
 		numTrees = DEFAULT_NUM_TREES;

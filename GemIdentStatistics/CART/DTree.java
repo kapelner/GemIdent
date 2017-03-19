@@ -66,6 +66,8 @@ public class DTree extends ClassificationAndRegressionTree implements Serializab
 	
 	/** Serializable happy */
 	public DTree(){}
+
+	public double Evaluate(String string, int a, int b){return 0;}
 	
 
 	public DTree(DatumSetupForEntireRun datumSetupForEntireRun, JProgressBarAndLabel buildProgress){
