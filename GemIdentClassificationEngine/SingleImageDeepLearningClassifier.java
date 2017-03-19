@@ -1,7 +1,9 @@
 package GemIdentClassificationEngine;
 
 import java.awt.Point;
+import java.io.File;
 import java.util.concurrent.atomic.AtomicBoolean;
+
 
 import GemIdentOperations.Run;
 import GemIdentStatistics.Classifier;
@@ -32,6 +34,7 @@ public class SingleImageDeepLearningClassifier extends SingleImageClassicClassif
 	 * @see <a href="http://www.gemident.com/publication.html">the 2007 IEEE paper</a>
 	 */
 	protected void ClassifyPixels(){
+		new File((System.getProperty("user.dir")+"/Evaluation/")).mkdirs();
 		int counter=0;
 		classify_all_pixels : {
 			for (int j=0;j<height;j++){

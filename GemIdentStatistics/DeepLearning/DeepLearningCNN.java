@@ -152,12 +152,12 @@ public class DeepLearningCNN {
         // Train without transformations
 
         recordReader.initialize(trainData, null);
-         recordReader.setListeners(new LogRecordListener());
+        recordReader.setListeners(new LogRecordListener());
         System.out.println(recordReader.getCurrentFile());
         dataIter = new RecordReaderDataSetIterator(recordReader, batchSize, 1, numLabels);
 
 
-
+/** Image iterations
         for(int i=0; i<3; i++){
 
             DataSet testDataSet2 = dataIter.next();
@@ -165,7 +165,7 @@ public class DeepLearningCNN {
             System.out.println(dataIter.getLabels());
 
         }
-
+*/
 
         scaler.fit(dataIter);
         dataIter.setPreProcessor(scaler);
@@ -214,6 +214,42 @@ public class DeepLearningCNN {
         }
         log.info("****************Example finished********************");
     }
+
+    public void newEvaluate(File trainingData){
+        DataNormalization scaler = new ImagePreProcessingScaler(0, 1);
+        ImageRecordReader recordReader = new ImageRecordReader(height, width, channels);
+
+        FileSplit fileSplit = new FileSplit(trainingData, NativeImageLoader.ALLOWED_FORMATS, rng);
+
+        InputSplit trainer = fileSplit;
+        try {
+            recordReader.initialize(trainer);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        recordReader.setListeners(new LogRecordListener());
+        System.out.println(recordReader.getCurrentFile());
+        DataSetIterator dataIter;
+        dataIter = new RecordReaderDataSetIterator(recordReader, batchSize, 1, numLabels);
+
+        scaler.fit(dataIter);
+        dataIter.setPreProcessor(scaler);
+        Evaluation eval = network.evaluate(dataIter);
+        System.out.println(eval.confusionToString());
+
+        // Example on how to get predict results with trained model
+        dataIter.reset();
+        DataSet testDataSet = dataIter.next();
+        String expectedResult = testDataSet.getLabelName(0);
+        List<String> predict = network.predict(testDataSet);
+        String modelResult = predict.get(0);
+        System.out.print("\nFor a single example that is labeled " + expectedResult + " the model predicted " + modelResult + "\n\n");
+
+        log.info("****************NEW EVALUATION finished********************");
+    };
+
+
 
     private ConvolutionLayer convInit(String name, int in, int out, int[] kernel, int[] stride, int[] pad, double bias) {
         return new ConvolutionLayer.Builder(kernel, stride, pad).name(name).nIn(in).nOut(out).biasInit(bias).build();

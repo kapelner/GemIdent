@@ -3,6 +3,9 @@ package GemIdentStatistics.DeepLearning;
 import GemIdentClassificationEngine.DatumSetupForEntireRun;
 import GemIdentStatistics.Classifier;
 import GemIdentView.JProgressBarAndLabel;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import javax.imageio.ImageIO;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -89,12 +92,38 @@ public class DeepLearningCNNClassifier extends Classifier {
 	}
 	
 	@Override
-	public double Evaluate(String filename, int i, int j){
-		//Step 1: load image 
-		//Step 2: extract region of interest +- w
-		//Step 3: write file
-		//Step 4: create testDataSet filelist from this one file
-		//Step 5: return network.predict(testDataSet).get(0);
+	public double Evaluate(String filename2, int i, int j){
+
+	    String filename = "C:/Users/stefh/Project GemIdent/GemIdent/examples_image_sets/tissue/Da120.jpg";
+
+	    if( (i>10 && j >10) && (i<47 && j<47)) {
+            //Step 1: load image
+            BufferedImage file;
+            BufferedImage region;
+            try {
+                file = ImageIO.read(new File(filename));
+
+                //Step 2: extract region of interest +- w
+                region = file.getSubimage(i, j, 10, 10);
+
+                File training = new File(System.getProperty("user.dir") + "/Evaluation/X:" + i + "Y:" + j + ".jpg");
+                //if(training.createNewFile()){System.out.println("CREATED FILE");}
+
+                ImageIO.write(region,"JPEG",training);
+                cnn.newEvaluate(training);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            //Step 3: write file
+
+            //Step 4: create testDataSet filelist from this one file
+
+            //Step 5: return network.predict(testDataSet).get(0);
+
+            //Running predictions
+
+        }
 		
 		return 0;
 	}
