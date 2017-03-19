@@ -64,7 +64,7 @@ public class DeepLearningCNN {
     protected double buildProgress = 0; //progress for model training
 
     protected static String modelType = "AlexNet"; // LeNet, AlexNet or Custom but you need to fill it out
-    private MultiLayerNetowrk network;
+    private MultiLayerNetwork network;
 
 
     public void run(String[] args) throws Exception {
@@ -82,7 +82,7 @@ public class DeepLearningCNN {
         File mainPath = new File(System.getProperty("user.dir"), "ClassLabels/");
 
 
-      MultiLayerNetwork  FileSplit fileSplit = new FileSplit(mainPath, NativeImageLoader.ALLOWED_FORMATS, rng);
+        FileSplit fileSplit = new FileSplit(mainPath, NativeImageLoader.ALLOWED_FORMATS, rng);
         BalancedPathFilter pathFilter = new BalancedPathFilter(rng, labelMaker, numExamples, numLabels, batchSize);
 
         /**
@@ -120,7 +120,7 @@ public class DeepLearningCNN {
         // Uncomment below to try AlexNet. Note change height and width to at least 100
 //	        MultiLayerNetwork network = new AlexNet(height, width, channels, numLabels, seed, iterations).init();
 
-        network;
+        network:
         switch (modelType) {
             case "LeNet":
                 network = lenetModel();
@@ -330,7 +330,7 @@ public class DeepLearningCNN {
     }
 
     public static void main(String[] args) throws Exception {
-        new AnimalsClassification().run(args);
+        new DeepLearningCNN().run(args);
     }
 
     public double getBuildProgress(){
