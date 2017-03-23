@@ -29,6 +29,7 @@ import org.deeplearning4j.util.NetSaverLoaderUtils;
 import org.jfree.data.general.Dataset;
 
 import org.nd4j.linalg.activations.Activation;
+import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator;
 import org.nd4j.linalg.dataset.api.preprocessor.DataNormalization;
@@ -37,10 +38,15 @@ import org.nd4j.linalg.lossfunctions.LossFunctions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+
+import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 
 
 public class DeepLearningCNN {
@@ -51,13 +57,13 @@ public class DeepLearningCNN {
 
     protected static int numExamples = 200;
     protected static int numLabels = 2;
-    protected static int batchSize = 1;
+    protected static int batchSize = 20;
 
     protected static long seed = 123;
     protected static Random rng = new Random(seed);
     protected static int listenerFreq = 1;
     protected static int iterations = 3;
-    protected static int epochs = 3;
+    protected static int epochs = 1;
     protected static double splitTrainTest = 0.8;
     protected static int nCores = 2;
     protected static boolean save = false;
@@ -90,9 +96,7 @@ public class DeepLearningCNN {
          *  - inputSplit = define train and test split
          **/
 
-        //InputSplit[] inputSplit = fileSplit.sample(pathFilter, numExamples * (1 + splitTrainTest), numExamples * (1 - splitTrainTest));
-
-        InputSplit[] inputSplit = fileSplit.sample(pathFilter, 70,30);
+        InputSplit[] inputSplit = fileSplit.sample(pathFilter, numExamples * (1 + splitTrainTest), numExamples * (1 - splitTrainTest));
         InputSplit trainData = inputSplit[0];
         InputSplit testData = inputSplit[1];
 
@@ -196,7 +200,6 @@ public class DeepLearningCNN {
         Evaluation eval = network.evaluate(dataIter);
         System.out.println(eval.stats(true));
 
-       System.out.println(eval.confusionToString());
 
         // Example on how to get predict results with trained model
         dataIter.reset();
@@ -213,13 +216,40 @@ public class DeepLearningCNN {
             NetSaverLoaderUtils.saveUpdators(network, basePath);
         }
         log.info("****************Example finished********************");
+
+
     }
 
-    public void newEvaluate(File trainingData){
+    /**
+     *Feeds Buffered Image to model
+     * @param imageData bufferedImage at point of interest
+     * @return classlabel
+     */
+    public double feedForwardImage(BufferedImage imageData){
+        //Using 77 just because that is height and width up top
+        NativeImageLoader unlabeledImage = new NativeImageLoader(77,77,3);
+        //need INDArray to input into network
+        INDArray image = null;
+        try {
+            image = unlabeledImage.asMatrix(imageData);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        int x[] =network.predict(image);
+        return (double)x[0];
+    }
+
+    //don't think this function is a viable strategy
+    public void feedForwardImage(File unlabeledFileName){
         DataNormalization scaler = new ImagePreProcessingScaler(0, 1);
         ImageRecordReader recordReader = new ImageRecordReader(height, width, channels);
 
-        FileSplit fileSplit = new FileSplit(trainingData, NativeImageLoader.ALLOWED_FORMATS, rng);
+
+
+        FileSplit fileSplit = new FileSplit(unlabeledFileName, NativeImageLoader.ALLOWED_FORMATS, rng);
+        //Evaluation eval
 
         InputSplit trainer = fileSplit;
         try {
@@ -235,12 +265,12 @@ public class DeepLearningCNN {
 
         scaler.fit(dataIter);
         dataIter.setPreProcessor(scaler);
-        Evaluation eval = network.evaluate(dataIter);
-        System.out.println(eval.confusionToString());
+//       Evaluation eval = network.evaluate(dataIter);
+        //System.out.println(eval.confusionToString());
 
         // Example on how to get predict results with trained model
         dataIter.reset();
-        DataSet testDataSet = dataIter.next();
+        DataSet testDataSet = dataIter.next(0);
         String expectedResult = testDataSet.getLabelName(0);
         List<String> predict = network.predict(testDataSet);
         String modelResult = predict.get(0);

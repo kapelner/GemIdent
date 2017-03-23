@@ -1,11 +1,13 @@
 package GemIdentStatistics.DeepLearning;
 
 import GemIdentClassificationEngine.DatumSetupForEntireRun;
+import GemIdentImageSets.ImageAndScoresBank;
+import GemIdentImageSets.SuperImage;
 import GemIdentStatistics.Classifier;
 import GemIdentView.JProgressBarAndLabel;
+
+import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import javax.imageio.ImageIO;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -92,28 +94,19 @@ public class DeepLearningCNNClassifier extends Classifier {
 	}
 	
 	@Override
-	public double Evaluate(String filename2, int i, int j){
+	public double Evaluate(String filename, int i, int j){
 
-	    String filename = "C:/Users/stefh/Project GemIdent/GemIdent/examples_image_sets/tissue/Da120.jpg";
+	    //String filename = System.getProperty("user.dir") + "/examples_image_sets/tissue/Da120.jpg";
 
-	    if( (i>10 && j >10) && (i<47 && j<47)) {
-            //Step 1: load image
-            BufferedImage file;
-            BufferedImage region;
-            try {
-                file = ImageIO.read(new File(filename));
+        //Step 1: load image
+        //Use superImage to get reflection at edges
+        SuperImage superImage = ImageAndScoresBank.getOrAddSuperImage(filename);
+        Point adjustedPoint = superImage.AdjustPointForSuper(new Point(i,j));
+        BufferedImage fullImage = superImage.getAsBufferedImage();
+        //Use 57 because of image sizes
+        BufferedImage imageAtPoint = fullImage.getSubimage(adjustedPoint.x - (57/2), adjustedPoint.y + (57/2),57,57);
+        return cnn.feedForwardImage(imageAtPoint);
 
-                //Step 2: extract region of interest +- w
-                region = file.getSubimage(i, j, 10, 10);
-
-                File training = new File(System.getProperty("user.dir") + "/Evaluation/X:" + i + "Y:" + j + ".jpg");
-                //if(training.createNewFile()){System.out.println("CREATED FILE");}
-
-                ImageIO.write(region,"JPEG",training);
-                cnn.newEvaluate(training);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
 
             //Step 3: write file
 
@@ -122,10 +115,6 @@ public class DeepLearningCNNClassifier extends Classifier {
             //Step 5: return network.predict(testDataSet).get(0);
 
             //Running predictions
-
-        }
-		
-		return 0;
 	}
 
 	@Override
