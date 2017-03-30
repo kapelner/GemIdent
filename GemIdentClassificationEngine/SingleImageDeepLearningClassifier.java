@@ -45,6 +45,7 @@ public class SingleImageDeepLearningClassifier extends SingleImageClassicClassif
 						counter++;
 						
 						int resultClass = (int)classifier.Evaluate(filename, i, j);
+						System.out.println("pixel " + filename + "(" +  i + " " + j + ") classified to be a " + resultClass);
 						if (resultClass != 0)
 							(is.get(Run.classMapBck.get(resultClass))).set(i,j,true);
 						if (counter == Run.it.num_pixels_to_batch_updates && counter != 0){
