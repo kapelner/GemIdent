@@ -9,6 +9,7 @@ import GemIdentView.JProgressBarAndLabel;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
+import java.awt.image.RasterFormatException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -104,7 +105,15 @@ public class DeepLearningCNNClassifier extends Classifier {
         Point adjustedPoint = superImage.AdjustPointForSuper(new Point(i,j));
         BufferedImage fullImage = superImage.getAsBufferedImage();
         //Use 57 because of image sizes
-        BufferedImage imageAtPoint = fullImage.getSubimage(adjustedPoint.x - (57/2), adjustedPoint.y + (57/2),57,57);
+        BufferedImage imageAtPoint = null;
+        //not a true fix just want to see how classifications behave. if out of bounds just take center of image.
+        try {
+            imageAtPoint = fullImage.getSubimage(adjustedPoint.x - (57 / 2), adjustedPoint.y + (57 / 2), 57, 57);
+        } catch(RasterFormatException e){
+            System.out.println("Out of bounds raster, Filename is:" + filename + '\n'+
+                            "point IS x:" + adjustedPoint.x + "y" + adjustedPoint.y);
+                    imageAtPoint = fullImage.getSubimage(fullImage.getWidth()/2,fullImage.getHeight()/2,57,57);
+        }
         return cnn.feedForwardImage(imageAtPoint);
 
 

@@ -115,7 +115,7 @@ public class Run implements Serializable{
 	/** the default number of threads to use during most program operations - get the number of available processors from the OS */
 	transient public static final int DEFAULT_NUM_THREADS=Runtime.getRuntime().availableProcessors();
 	/** the default number of pixels to skip when {@link Classify classifying images} */
-	transient public static final int DEFAULT_PIXEL_SKIP=1;
+	transient public static final int DEFAULT_PIXEL_SKIP= 1;
 	/** the default number of pixels to classify before {@link Classify updating the screen} */
 	transient public static final int DEFAULT_R_BATCH_SIZE = 250;
 	/** relevant only for CRI Nuance image sets, this is the default magnification that each picture will be loaded at (see {@link Thumbnails#ScaleImage Scale Image}) */
