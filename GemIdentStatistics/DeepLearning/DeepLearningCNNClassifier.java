@@ -111,7 +111,7 @@ public class DeepLearningCNNClassifier extends Classifier {
             imageAtPoint = fullImage.getSubimage(adjustedPoint.x - (57 / 2), adjustedPoint.y + (57 / 2), 57, 57);
         } catch(RasterFormatException e){
             System.out.println("Out of bounds raster, Filename is:" + filename + '\n'+
-                            "point IS x:" + adjustedPoint.x + "y" + adjustedPoint.y);
+                            "Point IS x:" + adjustedPoint.x + "y" + adjustedPoint.y);
                     imageAtPoint = fullImage.getSubimage(fullImage.getWidth()/2,fullImage.getHeight()/2,57,57);
         }
         return cnn.feedForwardImage(imageAtPoint);
