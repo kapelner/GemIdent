@@ -55,20 +55,20 @@ import GemIdentView.JProgressBarAndLabel;
 public class TrainingData {
 	
 	/** the thread pool responsible for {@link TrainingData.TrainingDataMaker generating the training data from individual images} */
-	private ExecutorService trainPool;
+    protected ExecutorService trainPool;
 	/** the progress bar that keeps track of the training data creation */
-	private JProgressBarAndLabel trainingProgress;
+	protected JProgressBarAndLabel trainingProgress;
 	/** the progress bar will be incremented this amount after each image's training data is created */
-	private double increment;
+    protected double increment;
 	/** the total progress thus far */
-	private double totalvalue;
+    protected double totalvalue;
 	
 	/** the data matrix as a list of {@link Datum Datum} objects */
-	private ArrayList<Datum> allData;
+    protected ArrayList<Datum> allData;
 	/** whether or not to stop the training data creation */
-	private boolean stop;
+    protected boolean stop;
 	/** the number of threads to utilize when constructing the training data */
-	private int nthreads;
+    protected int nthreads;
 
 	/**
 	 * Initializes shared objects, then generates the data from the training set
@@ -89,17 +89,10 @@ public class TrainingData {
 	}
 	/** Initializes the thread pool and adds a {@link TrainingDataMaker TrainingDataMaker} 
 	 * for each image to it. */
-	private void GenerateData() {
+	protected void GenerateData() {
 		trainPool=Executors.newFixedThreadPool(nthreads);
 		
-		/** Create directories for each phenotype, Data is labeled through directory
-         * For example is directory is called NON all images inside that directory
-         * will be labeled NON*/
-		for(String pName: Run.it.getPhenotyeNames()){
-				(new File(System.getProperty("user.dir")+"/ClassLabels/"+pName+"/")).mkdirs();
-		}
-		
-		for (String filename:Run.it.getPhenotypeTrainingImages()){
+        for (String filename:Run.it.getPhenotypeTrainingImages()){
 			
 			trainPool.execute(new TrainingDataMaker(filename));
 		}
@@ -115,7 +108,7 @@ public class TrainingData {
 		stop=true;
 	}
 	/** Framework for building training data in one image and can be threaded in a thread pool */
-	private class TrainingDataMaker implements Runnable{
+	protected class TrainingDataMaker implements Runnable{
 		
 		/** the filename of the image whose training data is being created */
 		private String filename;
@@ -143,7 +136,7 @@ public class TrainingData {
 		public void run(){
 			for (Phenotype phenotype:Run.it.getPhenotypeObjects()){
 				if (phenotype.hasImage(filename)){
-					for (Point to:phenotype.getPointsInImage(filename)){	
+					for (Point to:phenotype.getPointsInImage(filename)){
 						if (stop)
 							return;
 						String name=phenotype.getName();
@@ -154,9 +147,6 @@ public class TrainingData {
 						
 						for (Point t : Solids.GetPointsInSolidUsingCenter(phenotype.getRmin(), to)){ //0 for theta
 							if (datumSetupForImage.containsRawPixelFeatures()){
-								//generate raw pixel featuers at every theta
-								//ArrayList<Double> listoftheta = RawPixels.thetasForTrainingData();
-								//for (double theta : listoftheta){
 									Datum d;
 									try {
 										d = RawPixels.generateDatum(datumSetupForImage, t,name);
@@ -167,8 +157,6 @@ public class TrainingData {
 									}
 									d.setClass(Class);
 									allData.add(d);
-
-								//}
 							}
 							else {
 								Datum d = datumSetupForImage.generateDatumAtPoint(t);

@@ -1,6 +1,5 @@
 package GemIdentClassificationEngine;
 
-import java.awt.Point;
 import java.io.File;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -43,7 +42,7 @@ public class SingleImageDeepLearningClassifier extends SingleImageClassicClassif
 						if (stop.get())
 							break classify_all_pixels;
 						counter++;
-						
+						//Where CNN gives its classification
 						int resultClass = (int)classifier.Evaluate(filename, i, j);
 						System.out.println("pixel " + filename + "(" +  i + " " + j + ") classified to be a " + resultClass);
 						if (resultClass != 0)

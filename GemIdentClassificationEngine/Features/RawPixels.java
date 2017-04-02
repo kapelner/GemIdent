@@ -27,7 +27,7 @@ public class RawPixels extends DatumFeatureSet {
 	private SuperImage superImage;
 	private static final double RotationsPropOfCircumferencePoints = 0.5;
 	private static final double TwoPI = 2 * Math.PI;
-	private static int idx = 0;
+    private static int idx = 0;
 
 	public static ArrayList<Double> thetasForTrainingData() {
 		ArrayList<Double> thetas = new ArrayList<Double>();
@@ -70,23 +70,39 @@ public class RawPixels extends DatumFeatureSet {
 	}
 
 	public static Datum generateDatum(DatumSetupForImage datumSetupForImage, Point t, String phenoName) throws Exception {
-		//System.err.println("Datum generateDatum");
-		double theta = 0;
-
 		SuperImage super_image = ImageAndScoresBank.getOrAddSuperImage(datumSetupForImage.filename());
-		Point t_adj = super_image.AdjustPointForSuper(t);
-		int r_max = Run.it.getMaxPhenotypeRadiusPlusMore(null);
-		int w = 2 * r_max + 1; // width of Phenotype Subset
+	    BufferedImage whole_image = super_image.getAsBufferedImage();
+        //coodinates for point of interest translated to super image
+	    Point t_adj = super_image.AdjustPointForSuper(t);
+        int r_max = Run.it.getMaxPhenotypeRadiusPlusMore(null);
+
+        int distanceFromCornerToMid = (int)(Math.sqrt(2)  * r_max);
+        BufferedImage subImage = whole_image.getSubimage(t_adj.x - distanceFromCornerToMid,
+                t_adj.y - distanceFromCornerToMid, r_max *2, r_max*2);
+        System.out.println(phenoName);
+        File outputimage = new File(System.getProperty("user.dir")+"/ClassLabels/"+phenoName+"/"+idx+".jpg");
+        ++idx;
+        /** Insert file into Directory*/
+        ImageIO.write(subImage, "JPEG", outputimage);
+
+	    //System.err.println("Datum generateDatum");
+
+
+
+
+
+
+		//int w = 2 * r_max + 1; // width of Phenotype Subset
 		//get the piece of the image with all the data we can ever need
 		//int w_rotated = (int) Math.ceil(w * Math.sqrt(2));
-		int topleft_x = t_adj.x - r_max;
-		int topleft_y = t_adj.y - r_max;
-		BufferedImage whole_image = super_image.getAsBufferedImage();
+//		int topleft_x = t_adj.x - r_max;
+//		int topleft_y = t_adj.y - r_max;
+
 
 		//BufferedImage local_window = super_image.getAsBufferedImage().getSubimage(t_adj.x - r_max, t_adj.y - r_max, w , w);
-		BufferedImage local_window = super_image.getAsBufferedImage().getSubimage((t_adj.x - r_max) - (10), (t_adj.y - r_max) + (10), w + 10, w + 10);
-		BufferedImage local_window_rotated = new BufferedImage(local_window.getWidth(), local_window.getHeight(), local_window.getType());
-		int w_rotated = local_window_rotated.getWidth();
+//		BufferedImage local_window = super_image.getAsBufferedImage().getSubimage((t_adj.x - r_max) - (10), (t_adj.y - r_max) + (10), w + 10, w + 10);
+//		BufferedImage local_window_rotated = new BufferedImage(local_window.getWidth(), local_window.getHeight(), local_window.getType());
+//		int w_rotated = local_window_rotated.getWidth();
 		//build a storage image for the rotated image to be... it's going to be bigger... use Pythagorean theorem
 
 
@@ -96,22 +112,22 @@ public class RawPixels extends DatumFeatureSet {
 		//int new_x = (int)Math.round(topleft_y*Math.sin(theta) + topleft_x*Math.cos(theta));
 		//System.err.println("setup the rotation function");
 		//setup the rotation function
-		AffineTransform at = new AffineTransform();
+//		AffineTransform at = new AffineTransform();
 		//Get to center of local_window_rotated so rotation works well
 
 		//System.err.println("at.translate 1");
 		//at.translate((w_rotated + 100)/2, (w_rotated + 100)/2);
 		//System.err.println("at.rotate");
-		at.rotate(theta, local_window.getWidth() / 2, local_window.getHeight() / 2);
+		//at.rotate(theta, local_window.getWidth() / 2, local_window.getHeight() / 2);
 		//at.rotate(theta,0,0);
 		//System.err.println("at.translate 2");
 		//at.translate(-w/2, -w/2);
 		//System.err.println("scaleOp = new AffineTransformOp");
-		AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
+		//AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
 		//do the rotation on the local_window and return the rotated image
 		//System.err.println("scaleOp.filter");
 		//local_window_rotated = scaleOp.filter(local_window, local_window_rotated);
-		local_window_rotated = scaleOp.filter(local_window, local_window_rotated);
+		//local_window_rotated = scaleOp.filter(local_window, local_window_rotated);
 		//BufferedImage sub = whole_image_rotated.getSubimage(new_x - (w/2) ,new_y ,w_rotated ,w_rotated );
 		//System.out.println("Print sub");
 
@@ -131,10 +147,10 @@ public class RawPixels extends DatumFeatureSet {
         //File g = new File(System.getProperty("user.dir")+"/test/"+phenoName+"/"+counterNum+"_Theta_"+ String.format("%.4f",theta)+".jpg");
 
 
-        File outputimage = new File(System.getProperty("user.dir")+"/ClassLabels/"+phenoName+"/"+"_Theta_"+ String.format("%.4f",theta)+idx+".jpg");
-        ++idx;
-		/** Insert file into Directory*/
-        ImageIO.write(local_window_rotated, "JPEG", outputimage);
+//        File outputimage = new File(System.getProperty("user.dir")+"/ClassLabels/"+phenoName+"/"+idx+".jpg");
+//        ++idx;
+//		/** Insert file into Directory*/
+//        ImageIO.write(local_window, "JPEG", outputimage);
 
 		//System.out.println("Solids.getSolid before");
 		//now we need to use the solid circle mask to generate the feature vector
@@ -142,7 +158,7 @@ public class RawPixels extends DatumFeatureSet {
 		//System.out.println("Solids.getSolid after");
 		int num_points = solid_mask.size();
 		//this is the center of the final rotated image
-		Point center_rotated_image = new Point(w_rotated / 2, w_rotated / 2);
+		Point centerOfSubImage = new Point(subImage.getWidth() / 2, subImage.getHeight() / 2);
 
 		//make the datum with the record (the vector)
 		double[] record = new double[num_points * 3];
@@ -157,34 +173,34 @@ public class RawPixels extends DatumFeatureSet {
 
 		//use this object for convenience (getR, getG, getB)
 
-		DataImage local_window_rotated_dataimage = new RegularSubImage(local_window_rotated);
+		DataImage subImageData = new RegularSubImage(subImage);
 
 		//for each point in the mask, get the R,G,B values in the rotated image and enter them into the data vector (record)
 		//System.out.println("Before RGB loop");
 
 
-		for (int i = 0; i < num_points; i++) {
-			int j = i + 1;
-			Point offset = solid_mask.get(i);
-			int x = offset.x;
-			int y = offset.y;
-			int x0 = center_rotated_image.x + offset.x;
-			int y0 = center_rotated_image.y + offset.y;
-			//System.out.println("x:" + x + "  x0:" + x0 + " y:" + y + " y0:" + y0 + "Record size:" + record.length);
-
-			//red, green and blue go in the record IN THAT ORDER
-			//System.out.println("Before R set");
-			record[3 * i] = local_window_rotated_dataimage.getR(x0, y0);
-			//System.out.println("Before G set");
-			record[3 * i + 1] = local_window_rotated_dataimage.getG(x0, y0);
-			//System.out.println("Before B set");
-			record[3 * i + 2] = local_window_rotated_dataimage.getB(x0, y0);
-			num_features += 3;
-			//System.out.println("After RGB loop");
-
-			//return the newly minted datum
-
-		}
+//		for (int i = 0; i < num_points; i++) {
+//			int j = i + 1;
+//			Point offset = solid_mask.get(i);
+//			int x = offset.x;
+//			int y = offset.y;
+//			int x0 = centerOfSubImage.x + offset.x;
+//			int y0 = centerOfSubImage.y + offset.y;
+//			//System.out.println("x:" + x + "  x0:" + x0 + " y:" + y + " y0:" + y0 + "Record size:" + record.length);
+//
+//			//red, green and blue go in the record IN THAT ORDER
+//			//System.out.println("Before R set");
+//			record[3 * i] = subImageData.getR(x0, y0);
+//			//System.out.println("Before G set");
+//			record[3 * i + 1] = subImageData.getG(x0, y0);
+//			//System.out.println("Before B set");
+//			record[3 * i + 2] = subImageData.getB(x0, y0);
+//			num_features += 3;
+//			//System.out.println("After RGB loop");
+//
+//			//return the newly minted datum
+//
+//		}
 		return d;
 	}
 }

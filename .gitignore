@@ -46,3 +46,10 @@ ClassLabels/
 ClassLabels/*
 *.iml
 out/*
+LabelsForAllProjects/
+LabelsForAllProjects/*
+Evaluation/*
+Evaluation/
+Models/
+Models/*
+*.gem

@@ -3,6 +3,7 @@ package GemIdentStatistics.DeepLearning;
 import GemIdentClassificationEngine.DatumSetupForEntireRun;
 import GemIdentImageSets.ImageAndScoresBank;
 import GemIdentImageSets.SuperImage;
+import GemIdentOperations.Run;
 import GemIdentStatistics.Classifier;
 import GemIdentView.JProgressBarAndLabel;
 
@@ -96,25 +97,25 @@ public class DeepLearningCNNClassifier extends Classifier {
 	
 	@Override
 	public double Evaluate(String filename, int i, int j){
-
-	    //String filename = System.getProperty("user.dir") + "/examples_image_sets/tissue/Da120.jpg";
-
         //Step 1: load image
         //Use superImage to get reflection at edges
         SuperImage superImage = ImageAndScoresBank.getOrAddSuperImage(filename);
         Point adjustedPoint = superImage.AdjustPointForSuper(new Point(i,j));
         BufferedImage fullImage = superImage.getAsBufferedImage();
-        //Use 57 because of image sizes
         BufferedImage imageAtPoint = null;
         //not a true fix just want to see how classifications behave. if out of bounds just take center of image.
+        int r_max = Run.it.getMaxPhenotypeRadiusPlusMore(null);
         try {
-            imageAtPoint = fullImage.getSubimage(adjustedPoint.x - (57 / 2), adjustedPoint.y + (57 / 2), 57, 57);
+            imageAtPoint = fullImage.getSubimage(adjustedPoint.x - (r_max / 2), adjustedPoint.y - (r_max / 2), r_max* 2, r_max *2);
         } catch(RasterFormatException e){
             System.out.println("Out of bounds raster, Filename is:" + filename + '\n'+
                             "Point IS x:" + adjustedPoint.x + "y" + adjustedPoint.y);
-                    imageAtPoint = fullImage.getSubimage(fullImage.getWidth()/2,fullImage.getHeight()/2,57,57);
+                    imageAtPoint = fullImage.getSubimage(fullImage.getWidth()/2,fullImage.getHeight()/2,r_max* 2,r_max* 2);
         }
+
         return cnn.feedForwardImage(imageAtPoint);
+
+
 
 
             //Step 3: write file

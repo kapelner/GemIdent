@@ -1,5 +1,6 @@
 package GemIdentStatistics.DeepLearning;
 
+import GemIdentOperations.Run;
 import org.apache.commons.io.FilenameUtils;
 import org.datavec.api.io.filters.BalancedPathFilter;
 import org.datavec.api.io.labels.ParentPathLabelGenerator;
@@ -85,9 +86,9 @@ public class DeepLearningCNN {
         ParentPathLabelGenerator labelMaker = new ParentPathLabelGenerator();
         //File mainPath = new File("C:/Users/chris/Desktop/Code/dl4j-examples/dl4j-examples/src/main/resources/animals/")
         //Class Labels path
-        File mainPath = new File(System.getProperty("user.dir"), "ClassLabels/");
-
-
+        File mainPath = new File(System.getProperty("user.dir"),
+                "LabelsForAllProjects"+File.separator+"ClassLabels"+
+                Run.it.getProjectName());
         FileSplit fileSplit = new FileSplit(mainPath, NativeImageLoader.ALLOWED_FORMATS, rng);
         BalancedPathFilter pathFilter = new BalancedPathFilter(rng, labelMaker, numExamples, numLabels, batchSize);
 
@@ -96,7 +97,7 @@ public class DeepLearningCNN {
          *  - inputSplit = define train and test split
          **/
 
-        InputSplit[] inputSplit = fileSplit.sample(pathFilter, numExamples * (1 + splitTrainTest), numExamples * (1 - splitTrainTest));
+        InputSplit[] inputSplit = fileSplit.sample(pathFilter, splitTrainTest, 1 - splitTrainTest);
         InputSplit trainData = inputSplit[0];
         InputSplit testData = inputSplit[1];
 
@@ -226,8 +227,8 @@ public class DeepLearningCNN {
      * @return classlabel
      */
     public double feedForwardImage(BufferedImage imageData){
-        //Using 77 just because that is height and width up top
-        NativeImageLoader unlabeledImage = new NativeImageLoader(77,77,3);
+        //3 for RGB channels
+        NativeImageLoader unlabeledImage = new NativeImageLoader(imageData.getWidth(),imageData.getHeight(),3);
         //need INDArray to input into network
         INDArray image = null;
         try {
@@ -237,48 +238,9 @@ public class DeepLearningCNN {
             e.printStackTrace();
         }
 
-        int x[] =network.predict(image);
+        int x[] = network.predict(image);
         return (double)x[0];
     }
-
-    //don't think this function is a viable strategy
-    public void feedForwardImage(File unlabeledFileName){
-        DataNormalization scaler = new ImagePreProcessingScaler(0, 1);
-        ImageRecordReader recordReader = new ImageRecordReader(height, width, channels);
-
-
-
-        FileSplit fileSplit = new FileSplit(unlabeledFileName, NativeImageLoader.ALLOWED_FORMATS, rng);
-        //Evaluation eval
-
-        InputSplit trainer = fileSplit;
-        try {
-            recordReader.initialize(trainer);
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
-        recordReader.setListeners(new LogRecordListener());
-        System.out.println(recordReader.getCurrentFile());
-        DataSetIterator dataIter;
-        dataIter = new RecordReaderDataSetIterator(recordReader, batchSize, 1, numLabels);
-
-        scaler.fit(dataIter);
-        dataIter.setPreProcessor(scaler);
-//       Evaluation eval = network.evaluate(dataIter);
-        //System.out.println(eval.confusionToString());
-
-        // Example on how to get predict results with trained model
-        dataIter.reset();
-        DataSet testDataSet = dataIter.next(0);
-        String expectedResult = testDataSet.getLabelName(0);
-        List<String> predict = network.predict(testDataSet);
-        String modelResult = predict.get(0);
-        System.out.print("\nFor a single example that is labeled " + expectedResult + " the model predicted " + modelResult + "\n\n");
-
-        log.info("****************NEW EVALUATION finished********************");
-    };
-
 
 
     private ConvolutionLayer convInit(String name, int in, int out, int[] kernel, int[] stride, int[] pad, double bias) {
