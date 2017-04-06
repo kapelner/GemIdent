@@ -103,6 +103,9 @@ public class KClassifyPanel extends KPanel{
 	private JRadioButton onlyButton;
 //	/** the user chooses to classify the training set plus a specific range */
 //	private JRadioButton rangeButton;
+
+	private ButtonGroup classifyMethod;
+
 	/** the button group that links the above buttons together */
 	private ButtonGroup classifyGroup;
 //	/** the text where the user enters the range of images (@see {@link #rangeButton range option})*/
@@ -156,11 +159,38 @@ public class KClassifyPanel extends KPanel{
 	private Box classifyBox;
 	
 	// labels for the classification parameters
+	private JLabel choiceLabel;
 	private JLabel titleLabel;
 	private JLabel numTreesLabel;
 	private JLabel numThreadsLabel;
 	private JLabel numPixelSkipLabel;
 	private JLabel picturesToClassifyLabel;
+
+	//labels for DL4J parameters or RF
+	private JRadioButton DL4J;
+	private JRadioButton RF;
+
+	private JLabel imageHeiLabel;
+	private JLabel imageWidLabel;
+	private JLabel channelsLabel;
+	private JLabel numExamplesLabel;
+	private JLabel numLabelsLabel;
+	private JLabel batchSizeLabel;
+	private JLabel iterationsLabel;
+	private JLabel epochsLabel;
+	private JLabel splitTrainTestLabel;
+	private JLabel nCoresLabel;
+
+	private JSpinner imageHeight;
+	private JSpinner imageWidth;
+	private JSpinner channels;
+	private JSpinner numExamples;
+	private JSpinner numLabels;
+	private JSpinner batchSize;
+	private JSpinner iterations;
+	private JSpinner epochs;
+	private JSpinner splitTrainTest;
+	private JSpinner nCores;
 
 	private JRadioButton remainButton;
 
@@ -193,6 +223,7 @@ public class KClassifyPanel extends KPanel{
 		super();
 		imagePanel=new KImageClassifyPanel(this);
 		setImagePanel(imagePanel);
+		//SetUpChoices();
 		SetUpOptions();
 		SetUpListeners();		
 		add(options,BorderLayout.WEST);	
@@ -234,6 +265,10 @@ public class KClassifyPanel extends KPanel{
 		imagePanel.setDisplayImage(displayImage);
 	}
 	private static final Font FontForLabels = new Font(null,Font.PLAIN,10);
+
+
+
+
 	/** populate the Western region after instantiating all the options components */
 	private void SetUpOptions() {
 
@@ -244,7 +279,31 @@ public class KClassifyPanel extends KPanel{
 		Box optionBox=Box.createVerticalBox();
 		optionBox.add(Box.createVerticalStrut(10)); //give it some margin
 		optionBox.add(Box.createVerticalStrut(10));
-		
+
+		choiceLabel=new JLabel("<html><u>Classification Choices</u></html>");
+		Box choiceLabelBox=Box.createHorizontalBox();
+		choiceLabelBox.add(choiceLabel);
+		optionBox.add(choiceLabelBox);
+
+		Box ClassificationMethod=Box.createVerticalBox();
+
+		String RFstring = "Random Forest";
+		String DL4Jstring = "Deep Learning 4 Java";
+
+		RF=new JRadioButton(RFstring);
+		DL4J=new JRadioButton(DL4Jstring);
+
+		classifyMethod=new ButtonGroup();
+
+		classifyMethod.add(RF);
+		classifyMethod.add(DL4J);
+
+		ClassificationMethod.add(RF);
+		ClassificationMethod.add(DL4J);
+
+
+		optionBox.add(ClassificationMethod);
+
 		
 		titleLabel=new JLabel("<html><u>Classification Parameters</u></html>");
 		Box titleLabelBox=Box.createHorizontalBox();
@@ -252,6 +311,8 @@ public class KClassifyPanel extends KPanel{
 		optionBox.add(titleLabelBox);
 		 
 		JFormattedTextField textfield;
+
+
 
 		Box numTreesBox=Box.createHorizontalBox();		
 		numTreesLabel=new JLabel("Accuracy Level");
@@ -263,6 +324,7 @@ public class KClassifyPanel extends KPanel{
 		textfield.setFocusable(false);
 		numTreesBox.add(numTreesSpinner);
 		optionBox.add(numTreesBox);
+		numTreesBox.setVisible(false);
 		
 		Box numThreadsBox=Box.createHorizontalBox();		
 		numThreadsLabel=new JLabel("Number of CPUs");
@@ -274,7 +336,8 @@ public class KClassifyPanel extends KPanel{
 		textfield.setFocusable(false);
 		numThreadsBox.add(numThreadsSpinner);
 		optionBox.add(numThreadsBox);
-		
+		numThreadsBox.setVisible(false);
+
 		Box numPixelSkipBox=Box.createHorizontalBox();		
 		numPixelSkipLabel=new JLabel("Pixel Skip");
 		numPixelSkipLabel.setFont(FontForLabels);
@@ -285,11 +348,14 @@ public class KClassifyPanel extends KPanel{
 		textfield.setFocusable(false);
 		numPixelSkipBox.add(numPixelSkipSpinner);
 		optionBox.add(numPixelSkipBox);
-		
+		numPixelSkipBox.setVisible(false);
+
 		Box useEdgesBox = Box.createHorizontalBox();		
 		useEdgesLabel = new JLabel("Use Edges?");
 		useEdgesLabel.setFont(FontForLabels);
 		useEdgesBox.add(useEdgesLabel);
+		numPixelSkipBox.setVisible(false);
+
 		useEdgesCheckBox = new JCheckBox();
 		useEdgesCheckBox.addItemListener(
 			new ItemListener(){
@@ -298,6 +364,131 @@ public class KClassifyPanel extends KPanel{
 				}
 			}
 		);
+
+
+
+		Box imageWidBox=Box.createHorizontalBox();
+		imageWidLabel=new JLabel("Image Width");
+		imageWidLabel.setFont(FontForLabels);
+		imageWidBox.add(imageWidLabel);
+		imageWidth=new JSpinner(new SpinnerNumberModel(Run.DEFAULT_PIXEL_SKIP-1,0,50,1));
+		textfield=((JSpinner.DefaultEditor)imageWidth.getEditor()).getTextField();
+		textfield.setEditable(false);
+		textfield.setFocusable(false);
+		imageWidBox.add(imageWidth);
+		optionBox.add(imageWidBox);
+		imageWidBox.setVisible(false);
+
+		Box imageHeiBox=Box.createHorizontalBox();
+		imageHeiLabel=new JLabel("Image Height");
+		imageHeiLabel.setFont(FontForLabels);
+		imageHeiBox.add(imageHeiLabel);
+		imageHeight=new JSpinner(new SpinnerNumberModel(Run.DEFAULT_PIXEL_SKIP-1,0,50,1));
+		textfield=((JSpinner.DefaultEditor)imageHeight.getEditor()).getTextField();
+		textfield.setEditable(false);
+		textfield.setFocusable(false);
+		imageHeiBox.add(imageHeight);
+		optionBox.add(imageHeiBox);
+		imageHeiBox.setVisible(false);
+
+		Box channelsBox=Box.createHorizontalBox();
+		channelsLabel=new JLabel("NumChannels");
+		channelsLabel.setFont(FontForLabels);
+		channelsBox.add(channelsLabel);
+		channels=new JSpinner(new SpinnerNumberModel(Run.DEFAULT_PIXEL_SKIP-1,0,50,1));
+		textfield=((JSpinner.DefaultEditor)channels.getEditor()).getTextField();
+		textfield.setEditable(false);
+		textfield.setFocusable(false);
+		channelsBox.add(channels);
+		optionBox.add(channelsBox);
+		channelsBox.setVisible(false);
+
+		Box numExamplesBox=Box.createHorizontalBox();
+		numExamplesLabel=new JLabel("Number Examples");
+		numExamplesLabel.setFont(FontForLabels);
+		numExamplesBox.add(numExamplesLabel);
+		numExamples=new JSpinner(new SpinnerNumberModel(Run.DEFAULT_PIXEL_SKIP-1,0,50,1));
+		textfield=((JSpinner.DefaultEditor)numExamples.getEditor()).getTextField();
+		textfield.setEditable(false);
+		textfield.setFocusable(false);
+		numExamplesBox.add(numExamples);
+		optionBox.add(numExamplesBox);
+		numExamplesBox.setVisible(false);
+
+		Box numLabelsBox=Box.createHorizontalBox();
+		numLabelsLabel=new JLabel("Number Labels");
+		numLabelsLabel.setFont(FontForLabels);
+		numLabelsBox.add(numLabelsLabel);
+		numLabels=new JSpinner(new SpinnerNumberModel(Run.DEFAULT_PIXEL_SKIP-1,0,50,1));
+		textfield=((JSpinner.DefaultEditor)numLabels.getEditor()).getTextField();
+		textfield.setEditable(false);
+		textfield.setFocusable(false);
+		numLabelsBox.add(numLabels);
+		optionBox.add(numLabelsBox);
+		numLabelsBox.setVisible(false);
+
+		Box batchSizeBox=Box.createHorizontalBox();
+		batchSizeLabel=new JLabel("Number Examples");
+		batchSizeLabel.setFont(FontForLabels);
+		batchSizeBox.add(batchSizeLabel);
+		batchSize=new JSpinner(new SpinnerNumberModel(Run.DEFAULT_PIXEL_SKIP-1,0,50,1));
+		textfield=((JSpinner.DefaultEditor)batchSize.getEditor()).getTextField();
+		textfield.setEditable(false);
+		textfield.setFocusable(false);
+		batchSizeBox.add(batchSize);
+		optionBox.add(batchSizeBox);
+		batchSizeBox.setVisible(false);
+
+		Box iterationsBox=Box.createHorizontalBox();
+		iterationsLabel=new JLabel("Iterations ");
+		iterationsLabel.setFont(FontForLabels);
+		iterationsBox.add(iterationsLabel);
+		iterations=new JSpinner(new SpinnerNumberModel(Run.DEFAULT_PIXEL_SKIP-1,0,50,1));
+		textfield=((JSpinner.DefaultEditor)iterations.getEditor()).getTextField();
+		textfield.setEditable(false);
+		textfield.setFocusable(false);
+		iterationsBox.add(iterations);
+		optionBox.add(iterationsBox);
+		iterationsBox.setVisible(false);
+
+		Box epochsBox=Box.createHorizontalBox();
+		epochsLabel=new JLabel("Epochs ");
+		epochsLabel.setFont(FontForLabels);
+		epochsBox.add(epochsLabel);
+		epochs=new JSpinner(new SpinnerNumberModel(Run.DEFAULT_PIXEL_SKIP-1,0,50,1));
+		textfield=((JSpinner.DefaultEditor)epochs.getEditor()).getTextField();
+		textfield.setEditable(false);
+		textfield.setFocusable(false);
+		epochsBox.add(epochs);
+		optionBox.add(epochsBox);
+		epochsBox.setVisible(false);
+
+		Box splitTrainTestBox=Box.createHorizontalBox();
+		splitTrainTestLabel=new JLabel("Split Train Test ");
+		splitTrainTestLabel.setFont(FontForLabels);
+		splitTrainTestBox.add(splitTrainTestLabel);
+		splitTrainTest=new JSpinner(new SpinnerNumberModel(Run.DEFAULT_PIXEL_SKIP-1,0,50,1));
+		textfield=((JSpinner.DefaultEditor)splitTrainTest.getEditor()).getTextField();
+		textfield.setEditable(false);
+		textfield.setFocusable(false);
+		splitTrainTestBox.add(splitTrainTest);
+		optionBox.add(splitTrainTestBox);
+		splitTrainTestBox.setVisible(false);
+
+
+
+		Box nCoresBox=Box.createHorizontalBox();
+		nCoresLabel=new JLabel("Number Cores ");
+		nCoresLabel.setFont(FontForLabels);
+		nCoresBox.add(nCoresLabel);
+		nCores=new JSpinner(new SpinnerNumberModel(Run.DEFAULT_PIXEL_SKIP-1,0,50,1));
+		textfield=((JSpinner.DefaultEditor)nCores.getEditor()).getTextField();
+		textfield.setEditable(false);
+		textfield.setFocusable(false);
+		nCoresBox.add(nCores);
+		optionBox.add(nCoresBox);
+		nCoresBox.setVisible(false);
+
 		useEdgesBox.add(useEdgesCheckBox);		
 		optionBox.add(useEdgesBox);
 //		Box numBatchBox=Box.createHorizontalBox();		
@@ -475,6 +666,55 @@ public class KClassifyPanel extends KPanel{
 	    options.add(buttonBox, BorderLayout.SOUTH);
 	    options.add(find_centers_method_panel, BorderLayout.CENTER);
 	    options.add(optionBox, BorderLayout.NORTH);
+
+		RF.addActionListener(
+				new ActionListener(){
+					public void actionPerformed(ActionEvent e){
+						numTreesBox.setVisible(true);
+						numThreadsBox.setVisible(true);
+						numPixelSkipBox.setVisible(true);
+
+
+						imageWidBox.setVisible(false);
+						imageHeiBox.setVisible(false);
+						channelsBox.setVisible(false);
+						numExamplesBox.setVisible(false);
+						numLabelsBox.setVisible(false);
+						batchSizeBox.setVisible(false);
+						iterationsBox.setVisible(false);
+						epochsBox.setVisible(false);
+						splitTrainTestBox.setVisible(false);
+					}
+				}
+		);
+
+		DL4J.addActionListener(
+				new ActionListener(){
+					public void actionPerformed(ActionEvent e){
+
+
+
+						numTreesBox.setVisible(false);
+						numThreadsBox.setVisible(false);
+						numPixelSkipBox.setVisible(false);
+
+
+						imageWidBox.setVisible(true);
+						imageHeiBox.setVisible(true);
+						channelsBox.setVisible(true);
+						numExamplesBox.setVisible(true);
+						numLabelsBox.setVisible(true);
+						batchSizeBox.setVisible(true);
+						iterationsBox.setVisible(true);
+						epochsBox.setVisible(true);
+						splitTrainTestBox.setVisible(true);
+
+					}
+				}
+		);
+
+
+
 	}
 	/** sets up appropriate listeners for all the options and buttons in the Western region */
 	private void SetUpListeners(){		
@@ -502,6 +742,71 @@ public class KClassifyPanel extends KPanel{
 				}
 			}
 		);
+
+		imageWidth.addChangeListener(
+				new ChangeListener(){
+					public void stateChanged(ChangeEvent e){
+						Run.it.imageWid=(Integer)imageWidth.getValue();
+						Run.it.GUIsetDirty(true);
+					}
+				}
+		);
+
+		imageHeight.addChangeListener(
+				new ChangeListener(){
+					public void stateChanged(ChangeEvent e){
+						Run.it.imageHei=(Integer)imageHeight.getValue();
+						Run.it.GUIsetDirty(true);
+					}
+				}
+		);
+
+		channels.addChangeListener(
+				new ChangeListener(){
+					public void stateChanged(ChangeEvent e){
+						Run.it.channels=(Integer)channels.getValue();
+						Run.it.GUIsetDirty(true);
+					}
+				}
+		);
+
+		batchSize.addChangeListener(
+				new ChangeListener(){
+					public void stateChanged(ChangeEvent e){
+						Run.it.batch_num=(Integer)batchSize.getValue();
+						Run.it.GUIsetDirty(true);
+					}
+				}
+		);
+
+		iterations.addChangeListener(
+				new ChangeListener(){
+					public void stateChanged(ChangeEvent e){
+						Run.it.iter_num=(Integer)iterations.getValue();
+						Run.it.GUIsetDirty(true);
+					}
+				}
+		);
+
+		epochs.addChangeListener(
+				new ChangeListener(){
+					public void stateChanged(ChangeEvent e){
+						Run.it.epoch_num=(Integer)epochs.getValue();
+						Run.it.GUIsetDirty(true);
+					}
+				}
+		);
+
+		nCores.addChangeListener(
+				new ChangeListener(){
+					public void stateChanged(ChangeEvent e){
+						Run.it.nCores=(Integer)nCores.getValue();
+						Run.it.GUIsetDirty(true);
+					}
+				}
+		);
+
+
 //		numBatchSpinner.addChangeListener(
 //			new ChangeListener(){
 //				public void stateChanged(ChangeEvent e) {
@@ -536,6 +841,9 @@ public class KClassifyPanel extends KPanel{
 //				}
 //			}
 //		);
+
+
+
 		
 		allButton.addActionListener(
 			new ActionListener(){
@@ -876,7 +1184,8 @@ public class KClassifyPanel extends KPanel{
 		setDisplayImage(null);
 		repaintImagePanel();
 		RemoveAllBars();
-		ReenableMostButtons();
+		ClassificationMethodChoice();
+//		ReenableMostButtons();
 		ChooseClassifierButton.setEnabled(true);
 		RunClassifyButton.setEnabled(true);
 		RunClassifyAndPostProcessButton.setEnabled(true);
@@ -935,8 +1244,71 @@ public class KClassifyPanel extends KPanel{
 		ChooseClassifierButton.setEnabled(true);
 		RunClassifyButton.setEnabled(true);
 		RunClassifyAndPostProcessButton.setEnabled(true);
-		ReenableMostButtons();
+		ClassificationMethodChoice();
+//		 ReenableMostButtons();
 	}
+
+
+
+	private void ClassificationMethodChoice(){
+		RF.setEnabled(true);
+		DL4J.setEnabled(true);
+
+		if (RF.isSelected()){
+			ReenableMostButtons();
+		}
+
+		if(DL4J.isSelected()){
+			EnableDL4JButtons();
+		}
+
+	}
+
+	private void EnableDL4JButtons() {
+
+
+		imageHeight.setEnabled(true);
+		imageWidth.setEnabled(true);
+		channels.setEnabled(true);
+		numExamples.setEnabled(true);
+		numLabels.setEnabled(true);
+		batchSize.setEnabled(true);
+		iterations.setEnabled(true);
+		epochs.setEnabled(true);
+		splitTrainTest.setEnabled(true);
+		nCores.setEnabled(true);
+
+
+		allButton.setEnabled(true);
+		onlyButton.setEnabled(true);
+		remainButton.setEnabled(true);
+//		rangeButton.setEnabled(true);
+		tenRandomButton.setEnabled(true);
+		twentyRandomButton.setEnabled(true);
+		nRandomButton.setEnabled(true);
+		thoseClickedOnButton.setEnabled(true);
+		nRandomText.setEnabled(true);
+//		rangeText.setEnabled(true);
+//		rangeText.setEnabled(true);
+
+		titleLabel.setEnabled(true);
+		numTreesLabel.setEnabled(true);
+		numThreadsLabel.setEnabled(true);
+		numPixelSkipLabel.setEnabled(true);
+//		rotationalLabel.setEnabled(true);
+//		numPiecesLabel.setEnabled(true);
+		picturesToClassifyLabel.setEnabled(true);
+		if (allButton.isSelected())// || rangeButton.isSelected())
+			RunClassifyAndPostProcessButton.setEnabled(true);
+
+	}
+
+
+
+
+
+
+
 	/** option buttons are reenabled */
 	private void ReenableMostButtons(){
 		numTreesSpinner.setEnabled(true);

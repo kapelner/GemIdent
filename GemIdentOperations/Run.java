@@ -175,6 +175,24 @@ public class Run implements Serializable{
 	private float magn;
 	
 	//classify panel settings / user customizations
+
+	/**DL4J Specific classifiers */
+
+	/** Image Width        */
+	public int imageWid;
+	/** Image Height       */
+	public int imageHei;
+	/** Number of channels */
+	public int channels;
+	/** Batch Size         */
+	public int batch_num;
+	/** Number of Cores    */
+	public int nCores;
+	/** Epoch Number       */
+	public int epoch_num;
+	/** Iteration Number   */
+	public int iter_num;
+
 	/** the number of classification trees to use during classification*/
 	public int num_trees;
 	/** the number of threads to use during classification */

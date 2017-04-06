@@ -175,6 +175,10 @@ public class DeepLearningCNN {
         scaler.fit(dataIter);
         dataIter.setPreProcessor(scaler);
         trainIter = new MultipleEpochsIterator(epochs, dataIter, nCores);
+        if(trainIter.hasNext()){
+            System.out.println("trainIter is not empty");
+        }
+        else System.out.println("trainIter is empty");
         network.fit(trainIter);
         buildProgress += progressIncrementor;
 
