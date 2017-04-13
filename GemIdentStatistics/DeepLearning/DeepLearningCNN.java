@@ -52,21 +52,21 @@ import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 
 public class DeepLearningCNN {
     protected static final Logger log = LoggerFactory.getLogger(DeepLearningCNN.class);
-    protected static int height = 77; // 57 x 57 instead?
-    protected static int width = 77;
-    protected static int channels = 3;
+   // protected static int height =  (Run.it.getMaxPhenotypeRadiusPlusMore(1.0)*2)+1; //77
+   // protected static int width =  (Run.it.getMaxPhenotypeRadiusPlusMore(1.0)*2)+1; //77
+    //protected static int channels = Run.it.CNN_channels; // 3
 
-    protected static int numExamples = 200;
-    protected static int numLabels = 2;
-    protected static int batchSize = 20;
+   // protected static int numExamples = Run.it.CNN_num_examples; //200
+   // protected static int numLabels = Run.it.CNN_num_labels;     //2
+   // protected static int batchSize = Run.it.CNN_batch_num; //20
 
     protected static long seed = 123;
     protected static Random rng = new Random(seed);
     protected static int listenerFreq = 1;
-    protected static int iterations = 3;
-    protected static int epochs = 1;
-    protected static double splitTrainTest = 0.8;
-    protected static int nCores = 2;
+   // protected static int iterations = Run.it.CNN_iter_num;  //3
+   // protected static int epochs = Run.it.CNN_epoch_num;     //1
+   //protected static double splitTrainTest = Run.it.CNN_split;  //0.8
+   // protected static int nCores = Run.it.CNN_nCores; //2
     protected static boolean save = false;
     protected double buildProgress = 0; //progress for model training
 
@@ -90,14 +90,14 @@ public class DeepLearningCNN {
                 "LabelsForAllProjects"+File.separator+"ClassLabels"+
                 Run.it.getProjectName());
         FileSplit fileSplit = new FileSplit(mainPath, NativeImageLoader.ALLOWED_FORMATS, rng);
-        BalancedPathFilter pathFilter = new BalancedPathFilter(rng, labelMaker, numExamples, numLabels, batchSize);
+        BalancedPathFilter pathFilter = new BalancedPathFilter(rng, labelMaker, Run.it.CNN_num_examples, Run.it.CNN_num_labels, Run.it.CNN_batch_num);
 
         /**
          * Data Setup -> train test split
          *  - inputSplit = define train and test split
          **/
 
-        InputSplit[] inputSplit = fileSplit.sample(pathFilter, splitTrainTest, 1 - splitTrainTest);
+        InputSplit[] inputSplit = fileSplit.sample(pathFilter, Run.it.CNN_split, 1 - Run.it.CNN_split);
         InputSplit trainData = inputSplit[0];
         InputSplit testData = inputSplit[1];
 
@@ -148,7 +148,9 @@ public class DeepLearningCNN {
          *  - dataIter = a generator that only loads one batch at a time into memory to save memory
          *  - trainIter = uses MultipleEpochsIterator to ensure model runs through the data for all epochs
          **/
-        ImageRecordReader recordReader = new ImageRecordReader(height, width, channels, labelMaker);
+        ImageRecordReader recordReader = new ImageRecordReader((Run.it.getMaxPhenotypeRadiusPlusMore(1.0)*2)+1,
+                                                               (Run.it.getMaxPhenotypeRadiusPlusMore(1.0)*2)+1,
+                                                                 Run.it.CNN_channels, labelMaker);
         DataSetIterator dataIter;
         MultipleEpochsIterator trainIter;
 
@@ -159,7 +161,7 @@ public class DeepLearningCNN {
         recordReader.initialize(trainData, null);
         recordReader.setListeners(new LogRecordListener());
         System.out.println(recordReader.getCurrentFile());
-        dataIter = new RecordReaderDataSetIterator(recordReader, batchSize, 1, numLabels);
+        dataIter = new RecordReaderDataSetIterator(recordReader, Run.it.CNN_batch_num, 1, Run.it.CNN_num_labels);
 
 
 /** Image iterations
@@ -174,7 +176,7 @@ public class DeepLearningCNN {
 
         scaler.fit(dataIter);
         dataIter.setPreProcessor(scaler);
-        trainIter = new MultipleEpochsIterator(epochs, dataIter, nCores);
+        trainIter = new MultipleEpochsIterator(Run.it.CNN_epoch_num, dataIter, Run.it.CNN_nCores);
         if(trainIter.hasNext()){
             System.out.println("trainIter is not empty");
         }
@@ -187,10 +189,10 @@ public class DeepLearningCNN {
         for (ImageTransform transform : transforms) {
             System.out.print("\nTraining on transformation: " + transform.getClass().toString() + "\n\n");
             recordReader.initialize(trainData, transform);
-            dataIter = new RecordReaderDataSetIterator(recordReader, batchSize, 1, numLabels);
+            dataIter = new RecordReaderDataSetIterator(recordReader, Run.it.CNN_batch_num, 1, Run.it.CNN_num_labels);
             scaler.fit(dataIter);
             dataIter.setPreProcessor(scaler);
-            trainIter = new MultipleEpochsIterator(epochs, dataIter, nCores);
+            trainIter = new MultipleEpochsIterator(epochs, dataIter, Run.it.CNN_nCores);
             network.fit(trainIter);
             buildProgress += progressIncrementor;
 
@@ -199,7 +201,7 @@ public class DeepLearningCNN {
 
         log.info("Evaluate model....");
         recordReader.initialize(testData);
-        dataIter = new RecordReaderDataSetIterator(recordReader, batchSize, 1, numLabels);
+        dataIter = new RecordReaderDataSetIterator(recordReader, Run.it.CNN_batch_num, 1, Run.it.CNN_num_labels);
         scaler.fit(dataIter);
         dataIter.setPreProcessor(scaler);
         Evaluation eval = network.evaluate(dataIter);
@@ -274,7 +276,7 @@ public class DeepLearningCNN {
          **/
         MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder()
                 .seed(seed)
-                .iterations(iterations)
+                .iterations(Run.it.CNN_iter_num)
                 .regularization(false).l2(0.005) // tried 0.0001, 0.0005
                 .activation(Activation.RELU)
                 .learningRate(0.0001) // tried 0.00001, 0.00005, 0.000001
@@ -282,17 +284,18 @@ public class DeepLearningCNN {
                 .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
                 .updater(Updater.RMSPROP).momentum(0.9)
                 .list()
-                .layer(0, convInit("cnn1", channels, 50 ,  new int[]{5, 5}, new int[]{1, 1}, new int[]{0, 0}, 0))
+                .layer(0, convInit("cnn1", Run.it.CNN_channels, 50 ,  new int[]{5, 5}, new int[]{1, 1}, new int[]{0, 0}, 0))
                 .layer(1, maxPool("maxpool1", new int[]{2,2}))
                 .layer(2, conv5x5("cnn2", 100, new int[]{5, 5}, new int[]{1, 1}, 0))
                 .layer(3, maxPool("maxool2", new int[]{2,2}))
                 .layer(4, new DenseLayer.Builder().nOut(500).build())
                 .layer(5, new OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
-                        .nOut(numLabels)
+                        .nOut(Run.it.CNN_num_labels)
                         .activation(Activation.SOFTMAX)
                         .build())
                 .backprop(true).pretrain(false)
-                .setInputType(InputType.convolutional(height, width, channels))
+                .setInputType(InputType.convolutional((Run.it.getMaxPhenotypeRadiusPlusMore(1.0)*2)+1,
+                                                    (Run.it.getMaxPhenotypeRadiusPlusMore(1.0)*2)+1, Run.it.CNN_channels))
                 .build();
 
         return new MultiLayerNetwork(conf);
@@ -315,7 +318,7 @@ public class DeepLearningCNN {
                 .dist(new NormalDistribution(0.0, 0.01))
                 .activation(Activation.RELU)
                 .updater(Updater.NESTEROVS)
-                .iterations(iterations)
+                .iterations(Run.it.CNN_iter_num)
                 .gradientNormalization(GradientNormalization.RenormalizeL2PerLayer) // normalize to prevent vanishing or exploding gradients
                 .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
                 .learningRate(1e-2)
@@ -328,7 +331,7 @@ public class DeepLearningCNN {
                 .momentum(0.9)
                 .miniBatch(false)
                 .list()
-                .layer(0, convInit("cnn1", channels, 96, new int[]{11, 11}, new int[]{4, 4}, new int[]{3, 3}, 0))
+                .layer(0, convInit("cnn1", Run.it.CNN_channels, 96, new int[]{11, 11}, new int[]{4, 4}, new int[]{3, 3}, 0))
                 .layer(1, new LocalResponseNormalization.Builder().name("lrn1").build())
                 .layer(2, maxPool("maxpool1", new int[]{3,3}))
                 .layer(3, conv5x5("cnn2", 256, new int[] {1,1}, new int[] {2,2}, nonZeroBias))
@@ -342,12 +345,13 @@ public class DeepLearningCNN {
                 .layer(11, fullyConnected("ffn2", 4096, nonZeroBias, dropOut, new GaussianDistribution(0, 0.005)))
                 .layer(12, new OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
                         .name("output")
-                        .nOut(numLabels)
+                        .nOut(Run.it.CNN_num_labels)
                         .activation(Activation.SOFTMAX)
                         .build())
                 .backprop(true)
                 .pretrain(false)
-                .setInputType(InputType.convolutional(height, width, channels))
+                .setInputType(InputType.convolutional((Run.it.getMaxPhenotypeRadiusPlusMore(1.0)*2)+1,
+                                                      (Run.it.getMaxPhenotypeRadiusPlusMore(1.0)*2)+1, Run.it.CNN_channels))
                 .build();
 
         return new MultiLayerNetwork(conf);

@@ -178,20 +178,35 @@ public class Run implements Serializable{
 
 	/**DL4J Specific classifiers */
 
-	/** Image Width        */
-	public int imageWid;
-	/** Image Height       */
-	public int imageHei;
+	/**NO LONGER NEED HEIGHT/WIDTH USING RMAX
+
+	public int CNN_imageWid;
+
+	public int CNN_imageHei;
+	*/
+
+
 	/** Number of channels */
-	public int channels;
+	public int CNN_channels;
+	/** Number of examples */
+	public int CNN_num_examples;
+	/** Number of labels */
+	public int CNN_num_labels;
 	/** Batch Size         */
-	public int batch_num;
-	/** Number of Cores    */
-	public int nCores;
-	/** Epoch Number       */
-	public int epoch_num;
+	public int CNN_batch_num;
 	/** Iteration Number   */
-	public int iter_num;
+	public int CNN_iter_num;
+	/** Epoch Number       */
+	public int CNN_epoch_num;
+	/**Split train %       */
+	public double CNN_split;
+	/** Number of Cores    */
+	public int CNN_nCores;
+
+
+
+
+
 
 	/** the number of classification trees to use during classification*/
 	public int num_trees;

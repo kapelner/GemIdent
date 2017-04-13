@@ -170,8 +170,8 @@ public class KClassifyPanel extends KPanel{
 	private JRadioButton DL4J;
 	private JRadioButton RF;
 
-	private JLabel imageHeiLabel;
-	private JLabel imageWidLabel;
+	//private JLabel imageHeiLabel;
+	//private JLabel imageWidLabel;
 	private JLabel channelsLabel;
 	private JLabel numExamplesLabel;
 	private JLabel numLabelsLabel;
@@ -181,8 +181,8 @@ public class KClassifyPanel extends KPanel{
 	private JLabel splitTrainTestLabel;
 	private JLabel nCoresLabel;
 
-	private JSpinner imageHeight;
-	private JSpinner imageWidth;
+	//private JSpinner imageHeight;
+	//private JSpinner imageWidth;
 	private JSpinner channels;
 	private JSpinner numExamples;
 	private JSpinner numLabels;
@@ -366,7 +366,7 @@ public class KClassifyPanel extends KPanel{
 		);
 
 
-
+		/**
 		Box imageWidBox=Box.createHorizontalBox();
 		imageWidLabel=new JLabel("Image Width");
 		imageWidLabel.setFont(FontForLabels);
@@ -390,12 +390,13 @@ public class KClassifyPanel extends KPanel{
 		imageHeiBox.add(imageHeight);
 		optionBox.add(imageHeiBox);
 		imageHeiBox.setVisible(false);
+		*/
 
 		Box channelsBox=Box.createHorizontalBox();
 		channelsLabel=new JLabel("NumChannels");
 		channelsLabel.setFont(FontForLabels);
 		channelsBox.add(channelsLabel);
-		channels=new JSpinner(new SpinnerNumberModel(Run.DEFAULT_PIXEL_SKIP-1,0,50,1));
+		channels=new JSpinner(new SpinnerNumberModel(Run.DEFAULT_PIXEL_SKIP-1,0,3,1));
 		textfield=((JSpinner.DefaultEditor)channels.getEditor()).getTextField();
 		textfield.setEditable(false);
 		textfield.setFocusable(false);
@@ -407,7 +408,7 @@ public class KClassifyPanel extends KPanel{
 		numExamplesLabel=new JLabel("Number Examples");
 		numExamplesLabel.setFont(FontForLabels);
 		numExamplesBox.add(numExamplesLabel);
-		numExamples=new JSpinner(new SpinnerNumberModel(Run.DEFAULT_PIXEL_SKIP-1,0,50,1));
+		numExamples=new JSpinner(new SpinnerNumberModel(Run.DEFAULT_PIXEL_SKIP-1,0,1000,10));
 		textfield=((JSpinner.DefaultEditor)numExamples.getEditor()).getTextField();
 		textfield.setEditable(false);
 		textfield.setFocusable(false);
@@ -428,10 +429,10 @@ public class KClassifyPanel extends KPanel{
 		numLabelsBox.setVisible(false);
 
 		Box batchSizeBox=Box.createHorizontalBox();
-		batchSizeLabel=new JLabel("Number Examples");
+		batchSizeLabel=new JLabel("Number Batches");
 		batchSizeLabel.setFont(FontForLabels);
 		batchSizeBox.add(batchSizeLabel);
-		batchSize=new JSpinner(new SpinnerNumberModel(Run.DEFAULT_PIXEL_SKIP-1,0,50,1));
+		batchSize=new JSpinner(new SpinnerNumberModel(Run.DEFAULT_PIXEL_SKIP-1,0,100,1));
 		textfield=((JSpinner.DefaultEditor)batchSize.getEditor()).getTextField();
 		textfield.setEditable(false);
 		textfield.setFocusable(false);
@@ -443,7 +444,7 @@ public class KClassifyPanel extends KPanel{
 		iterationsLabel=new JLabel("Iterations ");
 		iterationsLabel.setFont(FontForLabels);
 		iterationsBox.add(iterationsLabel);
-		iterations=new JSpinner(new SpinnerNumberModel(Run.DEFAULT_PIXEL_SKIP-1,0,50,1));
+		iterations=new JSpinner(new SpinnerNumberModel(Run.DEFAULT_PIXEL_SKIP-1,0,100,1));
 		textfield=((JSpinner.DefaultEditor)iterations.getEditor()).getTextField();
 		textfield.setEditable(false);
 		textfield.setFocusable(false);
@@ -455,7 +456,7 @@ public class KClassifyPanel extends KPanel{
 		epochsLabel=new JLabel("Epochs ");
 		epochsLabel.setFont(FontForLabels);
 		epochsBox.add(epochsLabel);
-		epochs=new JSpinner(new SpinnerNumberModel(Run.DEFAULT_PIXEL_SKIP-1,0,50,1));
+		epochs=new JSpinner(new SpinnerNumberModel(Run.DEFAULT_PIXEL_SKIP-1,0,100,1));
 		textfield=((JSpinner.DefaultEditor)epochs.getEditor()).getTextField();
 		textfield.setEditable(false);
 		textfield.setFocusable(false);
@@ -464,10 +465,10 @@ public class KClassifyPanel extends KPanel{
 		epochsBox.setVisible(false);
 
 		Box splitTrainTestBox=Box.createHorizontalBox();
-		splitTrainTestLabel=new JLabel("Split Train Test ");
+		splitTrainTestLabel=new JLabel("Split Train Test Percentage ");
 		splitTrainTestLabel.setFont(FontForLabels);
 		splitTrainTestBox.add(splitTrainTestLabel);
-		splitTrainTest=new JSpinner(new SpinnerNumberModel(Run.DEFAULT_PIXEL_SKIP-1,0,50,1));
+		splitTrainTest=new JSpinner(new SpinnerNumberModel(Run.DEFAULT_PIXEL_SKIP-1,0,100,1));
 		textfield=((JSpinner.DefaultEditor)splitTrainTest.getEditor()).getTextField();
 		textfield.setEditable(false);
 		textfield.setFocusable(false);
@@ -481,7 +482,7 @@ public class KClassifyPanel extends KPanel{
 		nCoresLabel=new JLabel("Number Cores ");
 		nCoresLabel.setFont(FontForLabels);
 		nCoresBox.add(nCoresLabel);
-		nCores=new JSpinner(new SpinnerNumberModel(Run.DEFAULT_PIXEL_SKIP-1,0,50,1));
+		nCores=new JSpinner(new SpinnerNumberModel(Run.DEFAULT_PIXEL_SKIP-1,0,4,1));
 		textfield=((JSpinner.DefaultEditor)nCores.getEditor()).getTextField();
 		textfield.setEditable(false);
 		textfield.setFocusable(false);
@@ -583,8 +584,8 @@ public class KClassifyPanel extends KPanel{
 	    classifyGroup.add(allButton);
 	    classifyGroup.add(onlyButton);
 	    classifyGroup.add(remainButton);
-	    classifyGroup.add(tenRandomButton);
-	    classifyGroup.add(twentyRandomButton);
+	    //classifyGroup.add(tenRandomButton);
+	    //classifyGroup.add(twentyRandomButton);
 	    classifyGroup.add(nRandomButton);
 //	    classifyGroup.add(rangeButton);
 	    classifyGroup.add(thoseClickedOnButton);
@@ -592,8 +593,8 @@ public class KClassifyPanel extends KPanel{
 	    picturesToClassifyBox.add(allButton);
 	    picturesToClassifyBox.add(onlyButton);
 	    picturesToClassifyBox.add(remainButton);
-	    picturesToClassifyBox.add(tenRandomButton);
-	    picturesToClassifyBox.add(twentyRandomButton);
+	   // picturesToClassifyBox.add(tenRandomButton);
+	   // picturesToClassifyBox.add(twentyRandomButton);
 	    picturesToClassifyBox.add(nRandomButton);
 	    
 	    
@@ -675,8 +676,8 @@ public class KClassifyPanel extends KPanel{
 						numPixelSkipBox.setVisible(true);
 
 
-						imageWidBox.setVisible(false);
-						imageHeiBox.setVisible(false);
+						//imageWidBox.setVisible(false);
+						//imageHeiBox.setVisible(false);
 						channelsBox.setVisible(false);
 						numExamplesBox.setVisible(false);
 						numLabelsBox.setVisible(false);
@@ -684,6 +685,7 @@ public class KClassifyPanel extends KPanel{
 						iterationsBox.setVisible(false);
 						epochsBox.setVisible(false);
 						splitTrainTestBox.setVisible(false);
+						nCoresBox.setVisible(false);
 					}
 				}
 		);
@@ -699,8 +701,8 @@ public class KClassifyPanel extends KPanel{
 						numPixelSkipBox.setVisible(false);
 
 
-						imageWidBox.setVisible(true);
-						imageHeiBox.setVisible(true);
+						//imageWidBox.setVisible(true);
+						//imageHeiBox.setVisible(true);
 						channelsBox.setVisible(true);
 						numExamplesBox.setVisible(true);
 						numLabelsBox.setVisible(true);
@@ -708,6 +710,7 @@ public class KClassifyPanel extends KPanel{
 						iterationsBox.setVisible(true);
 						epochsBox.setVisible(true);
 						splitTrainTestBox.setVisible(true);
+						nCoresBox.setVisible(true);
 
 					}
 				}
@@ -743,10 +746,11 @@ public class KClassifyPanel extends KPanel{
 			}
 		);
 
+		/**
 		imageWidth.addChangeListener(
 				new ChangeListener(){
 					public void stateChanged(ChangeEvent e){
-						Run.it.imageWid=(Integer)imageWidth.getValue();
+						Run.it.CNN_imageWid=(Integer)imageWidth.getValue();
 						Run.it.GUIsetDirty(true);
 					}
 				}
@@ -755,16 +759,35 @@ public class KClassifyPanel extends KPanel{
 		imageHeight.addChangeListener(
 				new ChangeListener(){
 					public void stateChanged(ChangeEvent e){
-						Run.it.imageHei=(Integer)imageHeight.getValue();
+						Run.it.CNN_imageHei=(Integer)imageHeight.getValue();
+						Run.it.GUIsetDirty(true);
+					}
+				}
+		);
+		*/
+
+		channels.addChangeListener(
+				new ChangeListener(){
+					public void stateChanged(ChangeEvent e){
+						Run.it.CNN_channels=(Integer)channels.getValue();
 						Run.it.GUIsetDirty(true);
 					}
 				}
 		);
 
-		channels.addChangeListener(
+		numExamples.addChangeListener(
 				new ChangeListener(){
 					public void stateChanged(ChangeEvent e){
-						Run.it.channels=(Integer)channels.getValue();
+						Run.it.CNN_num_examples=(Integer)numExamples.getValue();
+						Run.it.GUIsetDirty(true);
+					}
+				}
+		);
+
+		numLabels.addChangeListener(
+				new ChangeListener(){
+					public void stateChanged(ChangeEvent e){
+						Run.it.CNN_num_labels=(Integer)numLabels.getValue();
 						Run.it.GUIsetDirty(true);
 					}
 				}
@@ -773,7 +796,7 @@ public class KClassifyPanel extends KPanel{
 		batchSize.addChangeListener(
 				new ChangeListener(){
 					public void stateChanged(ChangeEvent e){
-						Run.it.batch_num=(Integer)batchSize.getValue();
+						Run.it.CNN_batch_num=(Integer)batchSize.getValue();
 						Run.it.GUIsetDirty(true);
 					}
 				}
@@ -782,7 +805,7 @@ public class KClassifyPanel extends KPanel{
 		iterations.addChangeListener(
 				new ChangeListener(){
 					public void stateChanged(ChangeEvent e){
-						Run.it.iter_num=(Integer)iterations.getValue();
+						Run.it.CNN_iter_num=(Integer)iterations.getValue();
 						Run.it.GUIsetDirty(true);
 					}
 				}
@@ -791,7 +814,16 @@ public class KClassifyPanel extends KPanel{
 		epochs.addChangeListener(
 				new ChangeListener(){
 					public void stateChanged(ChangeEvent e){
-						Run.it.epoch_num=(Integer)epochs.getValue();
+						Run.it.CNN_epoch_num=(Integer)epochs.getValue();
+						Run.it.GUIsetDirty(true);
+					}
+				}
+		);
+
+		splitTrainTest.addChangeListener(
+				new ChangeListener(){
+					public void stateChanged(ChangeEvent e){
+						Run.it.CNN_split=(double)((Integer)splitTrainTest.getValue()/100);
 						Run.it.GUIsetDirty(true);
 					}
 				}
@@ -800,7 +832,7 @@ public class KClassifyPanel extends KPanel{
 		nCores.addChangeListener(
 				new ChangeListener(){
 					public void stateChanged(ChangeEvent e){
-						Run.it.nCores=(Integer)nCores.getValue();
+						Run.it.CNN_nCores=(Integer)nCores.getValue();
 						Run.it.GUIsetDirty(true);
 					}
 				}
@@ -841,8 +873,6 @@ public class KClassifyPanel extends KPanel{
 //				}
 //			}
 //		);
-
-
 
 		
 		allButton.addActionListener(
@@ -1267,8 +1297,8 @@ public class KClassifyPanel extends KPanel{
 	private void EnableDL4JButtons() {
 
 
-		imageHeight.setEnabled(true);
-		imageWidth.setEnabled(true);
+		//imageHeight.setEnabled(true);
+		//imageWidth.setEnabled(true);
 		channels.setEnabled(true);
 		numExamples.setEnabled(true);
 		numLabels.setEnabled(true);
