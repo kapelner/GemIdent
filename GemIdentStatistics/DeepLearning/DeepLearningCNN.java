@@ -62,6 +62,8 @@ public class DeepLearningCNN {
     protected static int numLabels = Run.it.CNN_num_labels;     //2
     protected static int batchSize = Run.it.CNN_batch_num; //20
 
+
+
     protected static long seed = 123;
     protected static Random rng = new Random(seed);
     protected static int listenerFreq = 1;
@@ -78,6 +80,9 @@ public class DeepLearningCNN {
 
 
     public void run(String[] args) throws Exception {
+
+
+
 
         log.info("Load data....");
         /**cd

@@ -32,6 +32,7 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Insets;
 
+
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -63,6 +64,8 @@ import GemIdentTools.Matrices.BoolMatrix;
 import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -85,7 +88,9 @@ import java.awt.event.KeyListener;
  */
 @SuppressWarnings("serial")
 public class KClassifyPanel extends KPanel{
-	
+
+	private boolean goodEntry;
+
 	/** the panel that holds all the parameter options and functional buttons in the Western region */
 	private JPanel options;
 
@@ -141,6 +146,7 @@ public class KClassifyPanel extends KPanel{
 	private JTextField ClassifierName;
 	/** clear the loaded classifier */
 	private JButton ClearClassifierButton;
+
 	
 	/** user chooses a classifier */
 	private JButton SetExclusionsButton;	
@@ -166,6 +172,9 @@ public class KClassifyPanel extends KPanel{
 	private JLabel numPixelSkipLabel;
 	private JLabel picturesToClassifyLabel;
 
+	//Entry values for components
+	private JButton enterValues;
+
 	//labels for DL4J parameters or RF
 	private JRadioButton DL4J;
 	private JRadioButton RF;
@@ -181,16 +190,18 @@ public class KClassifyPanel extends KPanel{
 	private JLabel splitTrainTestLabel;
 	private JLabel nCoresLabel;
 
+	private JTextField channels2;
+
 	//private JSpinner imageHeight;
 	//private JSpinner imageWidth;
 	private JSpinner channels;
-	private JSpinner numExamples;
-	private JSpinner numLabels;
-	private JSpinner batchSize;
-	private JSpinner iterations;
-	private JSpinner epochs;
-	private JSpinner splitTrainTest;
-	private JSpinner nCores;
+	private JTextField numExamples;
+	private JTextField numLabels;
+	private JTextField batchSize;
+	private JTextField iterations;
+	private JTextField epochs;
+	private JTextField splitTrainTest;
+	private JTextField nCores;
 
 	private JRadioButton remainButton;
 
@@ -396,11 +407,13 @@ public class KClassifyPanel extends KPanel{
 		channelsLabel=new JLabel("NumChannels");
 		channelsLabel.setFont(FontForLabels);
 		channelsBox.add(channelsLabel);
-		channels=new JSpinner(new SpinnerNumberModel(Run.DEFAULT_PIXEL_SKIP-1,0,3,1));
-		textfield=((JSpinner.DefaultEditor)channels.getEditor()).getTextField();
-		textfield.setEditable(false);
-		textfield.setFocusable(false);
-		channelsBox.add(channels);
+		//channels=new JSpinner(new SpinnerNumberModel(Run.DEFAULT_PIXEL_SKIP-1,0,3,1));
+		//textfield=((JSpinner.DefaultEditor)channels.getEditor()).getTextField();
+		//textfield.setEditable(false);
+		//textfield.setFocusable(false);
+		channels2 = new JTextField("", 10);
+
+		channelsBox.add(channels2);
 		optionBox.add(channelsBox);
 		channelsBox.setVisible(false);
 
@@ -408,10 +421,12 @@ public class KClassifyPanel extends KPanel{
 		numExamplesLabel=new JLabel("Number Examples");
 		numExamplesLabel.setFont(FontForLabels);
 		numExamplesBox.add(numExamplesLabel);
-		numExamples=new JSpinner(new SpinnerNumberModel(Run.DEFAULT_PIXEL_SKIP-1,0,1000,10));
-		textfield=((JSpinner.DefaultEditor)numExamples.getEditor()).getTextField();
-		textfield.setEditable(false);
-		textfield.setFocusable(false);
+		//numExamples=new JSpinner(new SpinnerNumberModel(Run.DEFAULT_PIXEL_SKIP-1,0,1000,10));
+		//textfield=((JSpinner.DefaultEditor)numExamples.getEditor()).getTextField();
+		//textfield.setEditable(false);
+		//textfield.setFocusable(false);
+		numExamples = new JTextField("", 10);
+
 		numExamplesBox.add(numExamples);
 		optionBox.add(numExamplesBox);
 		numExamplesBox.setVisible(false);
@@ -420,10 +435,11 @@ public class KClassifyPanel extends KPanel{
 		numLabelsLabel=new JLabel("Number Labels");
 		numLabelsLabel.setFont(FontForLabels);
 		numLabelsBox.add(numLabelsLabel);
-		numLabels=new JSpinner(new SpinnerNumberModel(Run.DEFAULT_PIXEL_SKIP-1,0,50,1));
-		textfield=((JSpinner.DefaultEditor)numLabels.getEditor()).getTextField();
-		textfield.setEditable(false);
-		textfield.setFocusable(false);
+		//numLabels=new JSpinner(new SpinnerNumberModel(Run.DEFAULT_PIXEL_SKIP-1,0,50,1));
+		//textfield=((JSpinner.DefaultEditor)numLabels.getEditor()).getTextField();
+		//textfield.setEditable(false);
+		//textfield.setFocusable(false);
+		numLabels = new JTextField("",10);
 		numLabelsBox.add(numLabels);
 		optionBox.add(numLabelsBox);
 		numLabelsBox.setVisible(false);
@@ -432,10 +448,12 @@ public class KClassifyPanel extends KPanel{
 		batchSizeLabel=new JLabel("Number Batches");
 		batchSizeLabel.setFont(FontForLabels);
 		batchSizeBox.add(batchSizeLabel);
-		batchSize=new JSpinner(new SpinnerNumberModel(Run.DEFAULT_PIXEL_SKIP-1,0,100,1));
-		textfield=((JSpinner.DefaultEditor)batchSize.getEditor()).getTextField();
-		textfield.setEditable(false);
-		textfield.setFocusable(false);
+		//batchSize=new JSpinner(new SpinnerNumberModel(Run.DEFAULT_PIXEL_SKIP-1,0,100,1));
+		//textfield=((JSpinner.DefaultEditor)batchSize.getEditor()).getTextField();
+		//textfield.setEditable(false);
+		//textfield.setFocusable(false);
+		batchSize = new JTextField("",10);
+
 		batchSizeBox.add(batchSize);
 		optionBox.add(batchSizeBox);
 		batchSizeBox.setVisible(false);
@@ -444,10 +462,12 @@ public class KClassifyPanel extends KPanel{
 		iterationsLabel=new JLabel("Iterations ");
 		iterationsLabel.setFont(FontForLabels);
 		iterationsBox.add(iterationsLabel);
-		iterations=new JSpinner(new SpinnerNumberModel(Run.DEFAULT_PIXEL_SKIP-1,0,100,1));
-		textfield=((JSpinner.DefaultEditor)iterations.getEditor()).getTextField();
-		textfield.setEditable(false);
-		textfield.setFocusable(false);
+		//iterations=new JSpinner(new SpinnerNumberModel(Run.DEFAULT_PIXEL_SKIP-1,0,100,1));
+		//textfield=((JSpinner.DefaultEditor)iterations.getEditor()).getTextField();
+		//textfield.setEditable(false);
+		//textfield.setFocusable(false);
+		iterations = new JTextField("",10);
+
 		iterationsBox.add(iterations);
 		optionBox.add(iterationsBox);
 		iterationsBox.setVisible(false);
@@ -456,10 +476,12 @@ public class KClassifyPanel extends KPanel{
 		epochsLabel=new JLabel("Epochs ");
 		epochsLabel.setFont(FontForLabels);
 		epochsBox.add(epochsLabel);
-		epochs=new JSpinner(new SpinnerNumberModel(Run.DEFAULT_PIXEL_SKIP-1,0,100,1));
-		textfield=((JSpinner.DefaultEditor)epochs.getEditor()).getTextField();
-		textfield.setEditable(false);
-		textfield.setFocusable(false);
+		//epochs=new JSpinner(new SpinnerNumberModel(Run.DEFAULT_PIXEL_SKIP-1,0,100,1));
+		//textfield=((JSpinner.DefaultEditor)epochs.getEditor()).getTextField();
+		//textfield.setEditable(false);
+		//textfield.setFocusable(false);
+		epochs = new JTextField("",10);
+
 		epochsBox.add(epochs);
 		optionBox.add(epochsBox);
 		epochsBox.setVisible(false);
@@ -468,10 +490,12 @@ public class KClassifyPanel extends KPanel{
 		splitTrainTestLabel=new JLabel("Split Train Test Percentage ");
 		splitTrainTestLabel.setFont(FontForLabels);
 		splitTrainTestBox.add(splitTrainTestLabel);
-		splitTrainTest=new JSpinner(new SpinnerNumberModel(Run.DEFAULT_PIXEL_SKIP-1,0,100,1));
-		textfield=((JSpinner.DefaultEditor)splitTrainTest.getEditor()).getTextField();
-		textfield.setEditable(false);
-		textfield.setFocusable(false);
+		//splitTrainTest=new JSpinner(new SpinnerNumberModel(Run.DEFAULT_PIXEL_SKIP-1,0,100,1));
+		//textfield=((JSpinner.DefaultEditor)splitTrainTest.getEditor()).getTextField();
+		//textfield.setEditable(false);
+		//textfield.setFocusable(false);
+		splitTrainTest = new JTextField("",10);
+
 		splitTrainTestBox.add(splitTrainTest);
 		optionBox.add(splitTrainTestBox);
 		splitTrainTestBox.setVisible(false);
@@ -482,13 +506,24 @@ public class KClassifyPanel extends KPanel{
 		nCoresLabel=new JLabel("Number Cores ");
 		nCoresLabel.setFont(FontForLabels);
 		nCoresBox.add(nCoresLabel);
-		nCores=new JSpinner(new SpinnerNumberModel(Run.DEFAULT_PIXEL_SKIP-1,0,4,1));
-		textfield=((JSpinner.DefaultEditor)nCores.getEditor()).getTextField();
-		textfield.setEditable(false);
-		textfield.setFocusable(false);
+		//nCores=new JSpinner(new SpinnerNumberModel(Run.DEFAULT_PIXEL_SKIP-1,0,4,1));
+		//textfield=((JSpinner.DefaultEditor)nCores.getEditor()).getTextField();
+		//textfield.setEditable(false);
+		//textfield.setFocusable(false);
+		nCores = new JTextField("",10);
+
 		nCoresBox.add(nCores);
 		optionBox.add(nCoresBox);
 		nCoresBox.setVisible(false);
+
+
+		String entryVal = "Enter Values";
+		enterValues=new JButton(entryVal);
+
+		optionBox.add(enterValues);
+
+
+
 
 		useEdgesBox.add(useEdgesCheckBox);		
 		optionBox.add(useEdgesBox);
@@ -720,7 +755,156 @@ public class KClassifyPanel extends KPanel{
 
 	}
 	/** sets up appropriate listeners for all the options and buttons in the Western region */
-	private void SetUpListeners(){		
+	private void SetUpListeners(){
+
+		enterValues.addActionListener(
+				new ActionListener(){
+					public void actionPerformed(ActionEvent e){
+
+						//Only update values if all are okay
+						goodEntry = true;
+
+						//Channels
+						try{
+							Integer.parseInt(channels2.getText());
+						}
+
+						catch(NumberFormatException ne){
+							JOptionPane.showMessageDialog(null,
+									"Error: Please enter an integer (1 or 3) for Channels...", "Error Massage",
+									JOptionPane.ERROR_MESSAGE);
+							goodEntry = false;
+
+						}
+
+						//NumberExamples
+						try{
+							Integer.parseInt(numExamples.getText());
+						}
+
+						catch(NumberFormatException ne){
+							JOptionPane.showMessageDialog(null,
+									"Error: Please enter an integer for Number Examples...", "Error Massage",
+									JOptionPane.ERROR_MESSAGE);
+							goodEntry = false;
+
+						}
+
+						//Number Labels
+						try{
+							Integer.parseInt(numLabels.getText());
+						}
+
+						catch(NumberFormatException ne){
+							JOptionPane.showMessageDialog(null,
+									"Error: Please enter an integer for Number of labels...", "Error Massage",
+									JOptionPane.ERROR_MESSAGE);
+							goodEntry = false;
+
+						}
+
+						//Batches
+						try{
+							Integer.parseInt(batchSize.getText());
+						}
+
+						catch(NumberFormatException ne){
+							JOptionPane.showMessageDialog(null,
+									"Error: Please enter an integer for Batches...", "Error Massage",
+									JOptionPane.ERROR_MESSAGE);
+							goodEntry = false;
+
+						}
+
+						//Iterations
+						try{
+							Integer.parseInt(iterations.getText());
+						}
+
+						catch(NumberFormatException ne){
+							JOptionPane.showMessageDialog(null,
+									"Error: Please enter an integer for Iterations...", "Error Massage",
+									JOptionPane.ERROR_MESSAGE);
+							goodEntry = false;
+
+						}
+
+						//Epochs
+						try{
+							Integer.parseInt(epochs.getText());
+						}
+
+						catch(NumberFormatException ne){
+							JOptionPane.showMessageDialog(null,
+									"Error: Please enter an integer for Epochs...", "Error Massage",
+									JOptionPane.ERROR_MESSAGE);
+							goodEntry = false;
+
+						}
+
+						//Split Train
+						try{
+							Integer.parseInt(splitTrainTest.getText());
+						}
+
+						catch(NumberFormatException ne){
+							JOptionPane.showMessageDialog(null,
+									"Error: Please enter an integer between 0 & 100 for Split Train...", "Error Massage",
+									JOptionPane.ERROR_MESSAGE);
+							goodEntry = false;
+
+						}
+
+						//Number Cores
+						try{
+							Integer.parseInt(nCores.getText());
+						}
+
+						catch(NumberFormatException ne){
+							JOptionPane.showMessageDialog(null,
+									"Error: Please enter an integer for number of cores...", "Error Massage",
+									JOptionPane.ERROR_MESSAGE);
+							goodEntry = false;
+
+						}
+
+						if(Integer.parseInt(channels2.getText())!=1 && Integer.parseInt(channels2.getText())!=3 ){
+							JOptionPane.showMessageDialog(null,
+									"Error: Channels must be 1 or 3...", "Error Massage",
+									JOptionPane.ERROR_MESSAGE);
+							goodEntry = false;
+						}
+
+						if(Integer.parseInt(splitTrainTest.getText())<=0 && Integer.parseInt(splitTrainTest.getText())>=100 ){
+							JOptionPane.showMessageDialog(null,
+									"Error: Split train must be between 0 and 100...", "Error Massage",
+									JOptionPane.ERROR_MESSAGE);
+
+							goodEntry = false;
+						}
+
+						if(goodEntry){
+
+							Run.it.CNN_channels=Integer.parseInt(channels2.getText());
+							Run.it.CNN_num_examples=Integer.parseInt(numExamples.getText());
+							Run.it.CNN_num_labels=Integer.parseInt(numLabels.getText());
+							Run.it.CNN_batch_num=Integer.parseInt(batchSize.getText());
+							Run.it.CNN_iter_num=Integer.parseInt(iterations.getText());
+							Run.it.CNN_epoch_num=Integer.parseInt(epochs.getText());
+							Run.it.CNN_split=Integer.parseInt(splitTrainTest.getText());
+							Run.it.CNN_nCores=Integer.parseInt(nCores.getText());
+
+							Run.it.GUIsetDirty(true);
+
+						}
+
+
+
+					}
+				}
+		);
+
+
 		numTreesSpinner.addChangeListener(
 			new ChangeListener(){
 				public void stateChanged(ChangeEvent e){					
@@ -746,6 +930,8 @@ public class KClassifyPanel extends KPanel{
 			}
 		);
 
+
+
 		/**
 		imageWidth.addChangeListener(
 				new ChangeListener(){
@@ -766,6 +952,7 @@ public class KClassifyPanel extends KPanel{
 		);
 		*/
 
+		/**
 		channels.addChangeListener(
 				new ChangeListener(){
 					public void stateChanged(ChangeEvent e){
@@ -774,6 +961,66 @@ public class KClassifyPanel extends KPanel{
 					}
 				}
 		);
+		 */
+
+
+
+		/** Document listener for user input for values, rather than spinners
+		channels2.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				warn();
+			}
+			public void removeUpdate(DocumentEvent e) {
+				warn();
+			}
+			public void insertUpdate(DocumentEvent e) {
+				warn();
+			}
+
+			public void warn() {
+
+				try{
+					Integer.parseInt(channels2.getText());
+				}
+
+				catch(NumberFormatException e){
+					JOptionPane.showMessageDialog(null,
+							"Error: Please enter an integer...", "Error Massage",
+							JOptionPane.ERROR_MESSAGE);
+
+				}
+
+				if (Integer.parseInt(channels2.getText())!=1 && Integer.parseInt(channels2.getText())!=3){
+					JOptionPane.showMessageDialog(null,
+							"Error: Please enter 1 or 3 channels...", "Error Massage",
+							JOptionPane.ERROR_MESSAGE);
+					}
+				else {
+					Run.it.CNN_channels = Integer.parseInt(channels2.getText());
+					Run.it.GUIsetDirty(true);
+					}
+			}
+		});
+		*/
+
+		/**
+		channels2.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+
+				if (Integer.parseInt(channels2.getText())!=3 && Integer.parseInt(channels2.getText())!=1){
+					JOptionPane.showMessageDialog(null,
+							"Error: Please enter 1 or 3 channels.", "Error Massage",
+							JOptionPane.ERROR_MESSAGE);
+				}
+				else {
+					Run.it.CNN_channels = Integer.parseInt(channels2.getText());
+					Run.it.GUIsetDirty(true);
+				}
+			}
+		});
+
 
 		numExamples.addChangeListener(
 				new ChangeListener(){
@@ -837,7 +1084,7 @@ public class KClassifyPanel extends KPanel{
 					}
 				}
 		);
-
+		*/
 
 //		numBatchSpinner.addChangeListener(
 //			new ChangeListener(){
