@@ -57,8 +57,8 @@ public class DeepLearningCNN {
     protected static int channels = Run.it.CNN_channels; // 3
 
     //protected static int numExamples = Run.it.CNN_num_examples; //200
-    protected static int numExamples = 15;
-
+    //protected static int numExamples = 15;
+    protected static int numExamples = 80;
     protected static int numLabels = Run.it.CNN_num_labels;     //2
     protected static int batchSize = Run.it.CNN_batch_num; //20
 
@@ -161,7 +161,7 @@ public class DeepLearningCNN {
 
         recordReader.initialize(trainData, null);
         recordReader.setListeners(new LogRecordListener());
-        System.out.println(recordReader.getCurrentFile());
+        //System.out.println(recordReader.getCurrentFile());
         dataIter = new RecordReaderDataSetIterator(recordReader, batchSize, 1, numLabels);
 
 
@@ -244,7 +244,10 @@ public class DeepLearningCNN {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        //System.out.println(image);
+        DataNormalization scaler = new ImagePreProcessingScaler(0, 1);
+        scaler.transform(image);
+        //System.out.println(image);
         int x[] = network.predict(image);
         return (double)x[0];
     }
