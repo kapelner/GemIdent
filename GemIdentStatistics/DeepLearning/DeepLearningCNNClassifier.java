@@ -37,7 +37,7 @@ public class DeepLearningCNNClassifier extends Classifier {
 
         cnn = new DeepLearningCNN();
 
-        ExecutorService coupled_threads = Executors.newFixedThreadPool(1);
+        ExecutorService coupled_threads = Executors.newFixedThreadPool(2);
         coupled_threads.execute(new Runnable(){
             public void run(){
                 try {
@@ -52,27 +52,24 @@ public class DeepLearningCNNClassifier extends Classifier {
                 while (!stop){
 
                     buildProgress.setValue((int)Math.round(progress += cnn.getBuildProgress()));
-                    //System.err.println(ConvNet.getBuildProgress());
                     if(progress >= 100)
                         stop = true;
                     try {
-                        Thread.sleep(1000);
+                        Thread.sleep(500);
                     }catch(InterruptedException e){
                         e.printStackTrace();
                     }
                 }
             }
-
-
         });
 
         coupled_threads.shutdown();
         /*Builds and train network*/
-        try {
-        	cnn.run(null);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+//        try {
+//        	cnn.run(null);
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }
 
         try {
         	coupled_threads.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS); //effectively infinity

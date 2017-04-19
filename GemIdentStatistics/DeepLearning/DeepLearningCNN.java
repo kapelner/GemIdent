@@ -46,6 +46,9 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 
@@ -74,12 +77,14 @@ public class DeepLearningCNN {
     protected static int nCores = Run.it.CNN_nCores; //2
     protected static boolean save = false;
     protected double buildProgress = 0; //progress for model training
+    DataNormalization scaler;
 
     protected static String modelType = "custom"; // LeNet, AlexNet or Custom but you need to fill it out
     private MultiLayerNetwork network;
 
 
     public void run(String[] args) throws Exception {
+        System.out.print(height + " " + width);
 
 
 
@@ -92,7 +97,6 @@ public class DeepLearningCNN {
          *  - pathFilter = define additional file load filter to limit size and balance batch content
          **/
         ParentPathLabelGenerator labelMaker = new ParentPathLabelGenerator();
-        //File mainPath = new File("C:/Users/chris/Desktop/Code/dl4j-examples/dl4j-examples/src/main/resources/animals/")
         //Class Labels path
         File mainPath = new File(System.getProperty("user.dir"),
                 "LabelsForAllProjects"+File.separator+"ClassLabels"+
@@ -119,14 +123,19 @@ public class DeepLearningCNN {
         ImageTransform flipTransform2 = new FlipImageTransform(new Random(123));
         ImageTransform warpTransform = new WarpImageTransform(rng, 42);
 //	        ImageTransform colorTransform = new ColorConversionTransform(new Random(seed), COLOR_BGR2YCrCb);
-        List<ImageTransform> transforms = Arrays.asList(new ImageTransform[]{flipTransform1, warpTransform, flipTransform2});
+//        List<ImageTransform> transforms = Arrays.asList(new ImageTransform[]{flipTransform1,
+//                warpTransform, flipTransform2});
+        List<ImageTransform> transforms = Arrays.asList();
 
-        double progressIncrementor = 100 / (transforms.size() + 1); //
+        //Formula to get number of times we go through model during training
+        double progressIncrementor = 100 / ((transforms.size() + 1) * epochs * batchSize * iterations);
+//        System.out.println("Epochs: " + epochs + "\n BatchSize: " + batchSize + "\n Iterations: " + iterations +
+//        "\n Transforms: " +transforms.size() + "\n incrementor: " +progressIncrementor);
         /**
          * Data Setup -> normalization
          *  - how to normalize images and generate large dataset to train on
          **/
-        DataNormalization scaler = new ImagePreProcessingScaler(0, 1);
+        scaler = new ImagePreProcessingScaler(0, 1);
 
         log.info("Build model....");
 
@@ -148,8 +157,8 @@ public class DeepLearningCNN {
                 throw new InvalidInputTypeException("Incorrect model provided.");
         }
         network.init();
-        network.setListeners(new ScoreIterationListener(listenerFreq));
-
+        OurScoreIterationListener scoreListener = new OurScoreIterationListener(listenerFreq);
+        network.setListeners(scoreListener);
         /**
          * Data Setup -> define how to load data into net:
          *  - recordReader = the reader that loads and converts image data pass in inputSplit to initialize
@@ -163,6 +172,7 @@ public class DeepLearningCNN {
 
         log.info("Train model....");
         // Train without transformations
+
 
         recordReader.initialize(trainData, null);
         recordReader.setListeners(new LogRecordListener());
@@ -187,8 +197,32 @@ public class DeepLearningCNN {
             System.out.println("trainIter is not empty");
         }
         else System.out.println("trainIter is empty");
+
+        ExecutorService coupled_threads = Executors.newFixedThreadPool(2);
+        coupled_threads.execute(new Runnable(){
+            public void run(){
+                boolean stop = false;
+                int currentIter = 0;
+                while (!stop){
+                    if(scoreListener.getIterCount() != currentIter) {
+                        double change = (int) (progressIncrementor * (scoreListener.getIterCount() - currentIter));
+                        if(change >= 1.0)
+                        buildProgress += (change);
+                        System.out.println(buildProgress);
+                    }
+                    if(buildProgress >= 100)
+                        stop = true;
+                }
+            }
+
+
+        });
+        coupled_threads.shutdown();
         network.fit(trainIter);
-        buildProgress += progressIncrementor;
+
+        try {
+            coupled_threads.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS); //effectively infinity
+        } catch (InterruptedException ignored){}
 
         // Train with transformations
         /**
@@ -220,7 +254,8 @@ public class DeepLearningCNN {
         String expectedResult = testDataSet.getLabelName(0);
         List<String> predict = network.predict(testDataSet);
         String modelResult = predict.get(0);
-        System.out.print("\nFor a single example that is labeled " + expectedResult + " the model predicted " + modelResult + "\n\n");
+        System.out.print("\nFor a single example that is labeled " + expectedResult +
+                " the model predicted " + modelResult + "\n\n");
 
         if (save) {
             log.info("Save model....");
@@ -246,11 +281,10 @@ public class DeepLearningCNN {
         try {
             image = unlabeledImage.asMatrix(imageData);
 
+
         } catch (IOException e) {
             e.printStackTrace();
         }
-        //System.out.println(image);
-        DataNormalization scaler = new ImagePreProcessingScaler(0, 1);
         scaler.transform(image);
         //System.out.println(image);
         int x[] = network.predict(image);
