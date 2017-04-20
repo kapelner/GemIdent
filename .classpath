@@ -1,31 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path=""/>
-	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="lib" path="executable/lib/commons-math-2.1.jar"/>
-	<classpathentry kind="lib" path="executable/lib/itext-1.4.8.jar"/>
-	<classpathentry kind="lib" path="executable/lib/twelvemonkeys-common-image-3.3-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="executable/lib/twelvemonkeys-common-io-3.3-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="executable/lib/twelvemonkeys-common-lang-3.3-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="executable/lib/twelvemonkeys-imageio-bmp-3.3-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="executable/lib/twelvemonkeys-imageio-clippath-3.3-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="executable/lib/twelvemonkeys-imageio-core-3.3-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="executable/lib/twelvemonkeys-imageio-hdr-3.3-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="executable/lib/twelvemonkeys-imageio-icns-3.3-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="executable/lib/twelvemonkeys-imageio-iff-3.3-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="executable/lib/twelvemonkeys-imageio-jpeg-3.3-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="executable/lib/twelvemonkeys-imageio-metadata-3.3-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="executable/lib/twelvemonkeys-imageio-pcx-3.3-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="executable/lib/twelvemonkeys-imageio-pdf-3.3-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="executable/lib/twelvemonkeys-imageio-pict-3.3-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="executable/lib/twelvemonkeys-imageio-pnm-3.3-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="executable/lib/twelvemonkeys-imageio-psd-3.3-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="executable/lib/twelvemonkeys-imageio-reference-3.3-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="executable/lib/twelvemonkeys-imageio-sgi-3.3-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="executable/lib/twelvemonkeys-imageio-tga-3.3-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="executable/lib/twelvemonkeys-imageio-thumbsdb-3.3-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="executable/lib/twelvemonkeys-imageio-tiff-3.3-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="deeplearning4j-core-0.5.0.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.8.0_102"/>
-	<classpathentry kind="output" path=""/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry excluding="**" kind="src" output="executable/classes" path="graphics">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" output="executable/classes" path="src">
+		<attributes>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="output" path="executable/classes"/>
 </classpath>

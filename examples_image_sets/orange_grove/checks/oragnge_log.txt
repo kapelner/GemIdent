@@ -1,0 +1,6 @@
+Begun Project
+18:41 2017-04-20
+
+added null to training set
+18:41 2017-04-20
+

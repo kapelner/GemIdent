@@ -53,3 +53,4 @@ Evaluation/
 Models/
 Models/*
 *.gem
+/executable/

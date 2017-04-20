@@ -1,0 +1,181 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <groupId>GemIdent</groupId>
+    <artifactId>GemIdent</artifactId>
+    <version>1.3b-SNAPSHOT</version>
+    <modelVersion>4.0.0</modelVersion>
+    <name>GemIdent</name>
+    
+    <properties>
+        <!-- Change the nd4j.backend property to nd4j-cuda-7.5-platform or nd4j-cuda-8.0-platform to use CUDA GPUs -->
+        <nd4j.backend>nd4j-native-platform</nd4j.backend>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <shadedClassifier>bin</shadedClassifier>
+        <commons-math.version>2.1</commons-math.version>
+        <twelve-monkeys.version>3.3</twelve-monkeys.version>
+        <twelve-monkeys.group>com.twelvemonkeys.imageio</twelve-monkeys.group>
+        <itext.version>1.4.8</itext.version>
+        <java.version>1.8</java.version>
+        <scala.binary.version>2.10</scala.binary.version>
+        <nd4j.version>0.7.2</nd4j.version>
+        <dl4j.version>0.7.2</dl4j.version>
+        <arbiter.version>0.7.2</arbiter.version>
+        <datavec.version>0.7.2</datavec.version>
+        <rl4j.version>0.7.2</rl4j.version>
+        <logback.version>1.1.7</logback.version>
+        <jfreechart.version>1.0.13</jfreechart.version>
+        <jcommon.version>1.0.23</jcommon.version>
+        <maven-shade-plugin.version>2.4.3</maven-shade-plugin.version>
+        <exec-maven-plugin.version>1.4.0</exec-maven-plugin.version>
+        <maven.minimum.version>3.3.1</maven.minimum.version>
+        <build.plugins.plugin.version>2.3.2</build.plugins.plugin.version>
+    </properties>
+	
+<!-- 
+    <repositories>
+        <repository>
+            <id>snapshots-repo</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>sonatype-nexus-snapshots</id>
+            <name>Sonatype Nexus snapshot repository</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>nexus-releases</id>
+            <name>Nexus Release Repository</name>
+            <url>http://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement> -->
+
+    <dependencies>
+		
+		<!-- All TwelveMonkeys Image Libraries -->
+		<dependency><artifactId>imageio-core</artifactId><groupId>${twelve-monkeys.group}</groupId><version>${twelve-monkeys.version}</version></dependency>		
+		<dependency><artifactId>imageio-jpeg</artifactId><groupId>${twelve-monkeys.group}</groupId><version>${twelve-monkeys.version}</version></dependency>		
+		<dependency><artifactId>imageio-tiff</artifactId><groupId>${twelve-monkeys.group}</groupId><version>${twelve-monkeys.version}</version></dependency>		
+		<dependency><artifactId>imageio-bmp</artifactId><groupId>${twelve-monkeys.group}</groupId><version>${twelve-monkeys.version}</version></dependency>		
+		<dependency><artifactId>imageio-psd</artifactId><groupId>${twelve-monkeys.group}</groupId><version>${twelve-monkeys.version}</version></dependency>		
+		<dependency><artifactId>imageio-metadata</artifactId><groupId>${twelve-monkeys.group}</groupId><version>${twelve-monkeys.version}</version></dependency>		
+		<dependency><artifactId>imageio-icns</artifactId><groupId>${twelve-monkeys.group}</groupId><version>${twelve-monkeys.version}</version></dependency>		
+		<dependency><artifactId>imageio-pnm</artifactId><groupId>${twelve-monkeys.group}</groupId><version>${twelve-monkeys.version}</version></dependency>		
+		<dependency><artifactId>imageio-tga</artifactId><groupId>${twelve-monkeys.group}</groupId><version>${twelve-monkeys.version}</version></dependency>		
+		<dependency><artifactId>imageio-iff</artifactId><groupId>${twelve-monkeys.group}</groupId><version>${twelve-monkeys.version}</version></dependency>		
+		<dependency><artifactId>imageio-thumbsdb</artifactId><groupId>${twelve-monkeys.group}</groupId><version>${twelve-monkeys.version}</version></dependency>		
+		<dependency><artifactId>imageio-pcx</artifactId><groupId>${twelve-monkeys.group}</groupId><version>${twelve-monkeys.version}</version></dependency>		
+		<dependency><artifactId>imageio-pdf</artifactId><groupId>${twelve-monkeys.group}</groupId><version>${twelve-monkeys.version}</version></dependency>		
+		<dependency><artifactId>imageio-pict</artifactId><groupId>${twelve-monkeys.group}</groupId><version>${twelve-monkeys.version}</version></dependency>		
+		<dependency><artifactId>imageio-sgi</artifactId><groupId>${twelve-monkeys.group}</groupId><version>${twelve-monkeys.version}</version></dependency>		
+		<dependency><artifactId>imageio-hdr</artifactId><groupId>${twelve-monkeys.group}</groupId><version>${twelve-monkeys.version}</version></dependency>		
+		<dependency><artifactId>imageio-reference</artifactId><groupId>${twelve-monkeys.group}</groupId><version>${twelve-monkeys.version}</version></dependency>		
+		
+    	<!-- Math operations -->
+		<dependency>
+		    <groupId>org.apache.commons</groupId>
+		    <artifactId>commons-math</artifactId>
+		    <version>${commons-math.version}</version>
+		</dependency>
+		
+		<!-- For building PDFs -->
+		<dependency>
+		    <groupId>com.lowagie</groupId>
+		    <artifactId>itext</artifactId>
+		    <version>${itext.version}</version>
+		</dependency>
+		
+		<!-- Core DL4J functionality -->
+        <dependency>
+            <groupId>org.nd4j</groupId>
+            <artifactId>${nd4j.backend}</artifactId>
+            <version>${nd4j.version}</version>
+        </dependency>        
+        <dependency>
+            <groupId>org.deeplearning4j</groupId>
+            <artifactId>deeplearning4j-core</artifactId>
+            <version>${dl4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.deeplearning4j</groupId>
+            <artifactId>deeplearning4j-nlp</artifactId>
+            <version>${dl4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.datavec</groupId>
+            <artifactId>datavec-spark_${scala.binary.version}</artifactId>
+            <version>${datavec.version}</version>
+        </dependency>        
+        <dependency> <!-- Used in the feedforward/classification/MLP* and feedforward/regression/RegressionMathFunctions example -->
+            <groupId>jfree</groupId>
+            <artifactId>jfreechart</artifactId>
+            <version>${jfreechart.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jfree</groupId>
+            <artifactId>jcommon</artifactId>
+            <version>${jcommon.version}</version>
+        </dependency>
+    </dependencies>
+
+
+    <!-- Maven Enforcer: Ensures user has an up to date version of Maven before building -->
+    <build>
+	    <directory>executable</directory>
+	    <outputDirectory>executable/classes</outputDirectory>
+	    <sourceDirectory>src</sourceDirectory>
+        <resources>
+            <resource>
+                <directory>graphics</directory>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
+        </resources>	    
+        <plugins>
+            <plugin>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>1.4.1</version>
+                <executions>
+                    <execution>
+                        <id>enforce-default</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireMavenVersion>
+                                    <version>[${maven.minimum.version},)</version>
+                                    <message>********** Minimum Maven Version is ${maven.minimum.version}. Please upgrade Maven before continuing (run "mvn --version" to check). **********</message>
+                                </requireMavenVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    
+    <developers>
+        <developer>
+            <id>kapelner</id>
+            <name>Adam Kapelner</name>
+            <email>kapelner@gmail.com</email>
+            <url>http://kapelner.com</url>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
+    
+</project>
