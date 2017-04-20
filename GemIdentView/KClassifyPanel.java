@@ -213,9 +213,9 @@ public class KClassifyPanel extends KPanel{
 
 	private JRadioButton erosion_method_radio_button;
 
-	private JLabel useEdgesLabel ;
+//	private JLabel useEdgesLabel ;
 
-	private JCheckBox useEdgesCheckBox;
+//	private JCheckBox useEdgesCheckBox;
 
 
 	/** initializes the image panel, sets up the option box in the west, sets listeners to the option box */
@@ -681,15 +681,7 @@ public class KClassifyPanel extends KPanel{
 		RF_selected.addActionListener(
 				new ActionListener(){
 					public void actionPerformed(ActionEvent e){
-						numTreesBox.setVisible(true);
-						
-						channelsBox.setVisible(false);
-						numExamplesBox.setVisible(false);
-						numLabelsBox.setVisible(false);
-						batchSizeBox.setVisible(false);
-						iterationsBox.setVisible(false);
-						epochsBox.setVisible(false);
-						splitTrainTestBox.setVisible(false);
+						EnableRFButtons();
 					}
 				}
 		);
@@ -697,15 +689,7 @@ public class KClassifyPanel extends KPanel{
 		CNN_selected.addActionListener(
 				new ActionListener(){
 					public void actionPerformed(ActionEvent e){
-						numTreesBox.setVisible(false);
-						
-						channelsBox.setVisible(true);
-						numExamplesBox.setVisible(true);
-						numLabelsBox.setVisible(true);
-						batchSizeBox.setVisible(true);
-						iterationsBox.setVisible(true);
-						epochsBox.setVisible(true);
-						splitTrainTestBox.setVisible(true);
+						EnableCNNButtons();
 					}
 				}
 		);
@@ -1435,8 +1419,8 @@ public class KClassifyPanel extends KPanel{
 		numTreesSpinner.setEnabled(false);
 		numThreadsSpinner.setEnabled(false);
 		numPixelSkipSpinner.setEnabled(false);
-		useEdgesLabel.setEnabled(false);
-		useEdgesCheckBox.setEnabled(false);
+//		useEdgesLabel.setEnabled(false);
+//		useEdgesCheckBox.setEnabled(false);
 		
 //		numBatchSpinner.setEnabled(false);
 //		numPiecesSpinner.setEnabled(false);
@@ -1482,12 +1466,12 @@ public class KClassifyPanel extends KPanel{
 		}
 
 		if(CNN_selected.isSelected()){
-			EnableDL4JButtons();
+			EnableCNNButtons();
 		}
 
 	}
 
-	private void EnableDL4JButtons() {
+	private void EnableCNNButtons() {
 
 
 		//imageHeight.setEnabled(true);
@@ -1540,8 +1524,8 @@ public class KClassifyPanel extends KPanel{
 		numTreesSpinner.setEnabled(true);
 		numThreadsSpinner.setEnabled(true);
 		numPixelSkipSpinner.setEnabled(true);
-		useEdgesLabel.setEnabled(true);
-		useEdgesCheckBox.setEnabled(true);		
+//		useEdgesLabel.setEnabled(true);
+//		useEdgesCheckBox.setEnabled(true);		
 //		numBatchSpinner.setEnabled(true);
 //		numPiecesSpinner.setEnabled(true);
 //		if ((Integer)numPiecesSpinner.getValue() > 0) 
@@ -1672,7 +1656,7 @@ public class KClassifyPanel extends KPanel{
 	public void SetValuesToOpenProject(){
 		numTreesSpinner.setValue((Integer)Run.it.num_trees);
 		numThreadsSpinner.setValue((Integer)Run.it.num_threads);
-		numPixelSkipSpinner.setValue((Integer)Run.it.pixel_skip-1);
+		numPixelSkipSpinner.setValue((Integer)Run.it.pixel_skip - 1);
 //		numBatchSpinner.setValue((Integer)Run.it.num_pixels_to_batch_updates);
 		switch (Run.it.pics_to_classify){
 			case CLASSIFY_ALL: 			allButton.setSelected(true); 			break;
