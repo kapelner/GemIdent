@@ -80,7 +80,7 @@ import java.awt.event.ActionListener;
 @SuppressWarnings("serial")
 public class KClassifyPanel extends KPanel{
 
-	private boolean goodEntry;
+	private boolean all_cnn_params_are_valid;
 
 	/** the panel that holds all the parameter options and functional buttons in the Western region */
 	private JPanel options;
@@ -164,11 +164,11 @@ public class KClassifyPanel extends KPanel{
 	private JLabel picturesToClassifyLabel;
 
 	//Entry values for components
-	private JButton registerValues;
+	private JButton register_values_button;
 
 	//labels for DL4J parameters or RF
-	private JRadioButton DL4J;
-	private JRadioButton RF;
+	private JRadioButton CNN_selected;
+	private JRadioButton RF_selected;
 
 	//private JLabel imageHeiLabel;
 	//private JLabel imageWidLabel;
@@ -290,16 +290,16 @@ public class KClassifyPanel extends KPanel{
 		String RFstring = "Random Forest";
 		String DL4Jstring = "Deep Learning 4 Java";
 
-		RF=new JRadioButton(RFstring);
-		DL4J=new JRadioButton(DL4Jstring);
+		RF_selected=new JRadioButton(RFstring);
+		CNN_selected=new JRadioButton(DL4Jstring);
 
 		classifyMethod=new ButtonGroup();
 
-		classifyMethod.add(RF);
-		classifyMethod.add(DL4J);
+		classifyMethod.add(RF_selected);
+		classifyMethod.add(CNN_selected);
 
-		ClassificationMethod.add(RF);
-		ClassificationMethod.add(DL4J);
+		ClassificationMethod.add(RF_selected);
+		ClassificationMethod.add(CNN_selected);
 
 
 		optionBox.add(ClassificationMethod);
@@ -331,7 +331,7 @@ public class KClassifyPanel extends KPanel{
 		textfield.setFocusable(false);
 		numPixelSkipBox.add(numPixelSkipSpinner);
 		optionBox.add(numPixelSkipBox);
-		numPixelSkipBox.setVisible(false);
+		numPixelSkipBox.setVisible(true);
 
 		
 		titleLabel=new JLabel("<html><u>Classification Parameters</u></html>");
@@ -494,8 +494,8 @@ public class KClassifyPanel extends KPanel{
 		optionBox.add(splitTrainTestBox);
 		splitTrainTestBox.setVisible(false);
 
-		registerValues = new JButton("Enter Values");
-		optionBox.add(registerValues);
+		register_values_button = new JButton("Register Values");
+		optionBox.add(register_values_button);
 
 
 
@@ -556,7 +556,7 @@ public class KClassifyPanel extends KPanel{
 		
 		optionBox.add(picturesToClassifyLabelBox);
 		
-		Box picturesToClassifyBox=Box.createVerticalBox();
+		Box picturesToClassifyBox=Box.createHorizontalBox();
 
 		String all="Classify All";
 		String only="Classify Trained";
@@ -678,7 +678,7 @@ public class KClassifyPanel extends KPanel{
 	    options.add(find_centers_method_panel, BorderLayout.CENTER);
 	    options.add(optionBox, BorderLayout.NORTH);
 
-		RF.addActionListener(
+		RF_selected.addActionListener(
 				new ActionListener(){
 					public void actionPerformed(ActionEvent e){
 						numTreesBox.setVisible(true);
@@ -694,7 +694,7 @@ public class KClassifyPanel extends KPanel{
 				}
 		);
 
-		DL4J.addActionListener(
+		CNN_selected.addActionListener(
 				new ActionListener(){
 					public void actionPerformed(ActionEvent e){
 						numTreesBox.setVisible(false);
@@ -716,12 +716,12 @@ public class KClassifyPanel extends KPanel{
 	/** sets up appropriate listeners for all the options and buttons in the Western region */
 	private void SetUpListeners(){
 
-		registerValues.addActionListener(
+		register_values_button.addActionListener(
 				new ActionListener(){
 					public void actionPerformed(ActionEvent e){
 
 						//Only update values if all are okay
-						goodEntry = true;
+						all_cnn_params_are_valid = true;
 
 						//Channels
 						try{
@@ -732,7 +732,7 @@ public class KClassifyPanel extends KPanel{
 							JOptionPane.showMessageDialog(null,
 									"Error: Please enter an integer (1 or 3) for Channels...", "Error Massage",
 									JOptionPane.ERROR_MESSAGE);
-							goodEntry = false;
+							all_cnn_params_are_valid = false;
 
 						}
 
@@ -745,7 +745,7 @@ public class KClassifyPanel extends KPanel{
 							JOptionPane.showMessageDialog(null,
 									"Error: Please enter an integer for Number Examples...", "Error Massage",
 									JOptionPane.ERROR_MESSAGE);
-							goodEntry = false;
+							all_cnn_params_are_valid = false;
 
 						}
 
@@ -758,7 +758,7 @@ public class KClassifyPanel extends KPanel{
 							JOptionPane.showMessageDialog(null,
 									"Error: Please enter an integer for Number of labels...", "Error Massage",
 									JOptionPane.ERROR_MESSAGE);
-							goodEntry = false;
+							all_cnn_params_are_valid = false;
 
 						}
 
@@ -771,7 +771,7 @@ public class KClassifyPanel extends KPanel{
 							JOptionPane.showMessageDialog(null,
 									"Error: Please enter an integer for Batches...", "Error Massage",
 									JOptionPane.ERROR_MESSAGE);
-							goodEntry = false;
+							all_cnn_params_are_valid = false;
 
 						}
 
@@ -784,7 +784,7 @@ public class KClassifyPanel extends KPanel{
 							JOptionPane.showMessageDialog(null,
 									"Error: Please enter an integer for Iterations...", "Error Massage",
 									JOptionPane.ERROR_MESSAGE);
-							goodEntry = false;
+							all_cnn_params_are_valid = false;
 
 						}
 
@@ -797,7 +797,7 @@ public class KClassifyPanel extends KPanel{
 							JOptionPane.showMessageDialog(null,
 									"Error: Please enter an integer for Epochs...", "Error Massage",
 									JOptionPane.ERROR_MESSAGE);
-							goodEntry = false;
+							all_cnn_params_are_valid = false;
 
 						}
 
@@ -810,7 +810,7 @@ public class KClassifyPanel extends KPanel{
 							JOptionPane.showMessageDialog(null,
 									"Error: Please enter an integer between 0 & 100 for Split Train...", "Error Massage",
 									JOptionPane.ERROR_MESSAGE);
-							goodEntry = false;
+							all_cnn_params_are_valid = false;
 
 						}
 
@@ -818,7 +818,7 @@ public class KClassifyPanel extends KPanel{
 							JOptionPane.showMessageDialog(null,
 									"Error: Channels must be 1 or 3...", "Error Massage",
 									JOptionPane.ERROR_MESSAGE);
-							goodEntry = false;
+							all_cnn_params_are_valid = false;
 						}
 
 						if(Integer.parseInt(splitTrainTest.getText())<=0 && Integer.parseInt(splitTrainTest.getText())>=100 ){
@@ -826,10 +826,10 @@ public class KClassifyPanel extends KPanel{
 									"Error: Split train must be between 0 and 100...", "Error Massage",
 									JOptionPane.ERROR_MESSAGE);
 
-							goodEntry = false;
+							all_cnn_params_are_valid = false;
 						}
 
-						if (goodEntry){
+						if (all_cnn_params_are_valid){
 							Run.it.CNN_channels = Integer.parseInt(channels2.getText());
 							Run.it.CNN_num_examples = Integer.parseInt(numExamples.getText());
 							Run.it.CNN_num_labels = Integer.parseInt(numLabels.getText());
@@ -838,6 +838,10 @@ public class KClassifyPanel extends KPanel{
 							Run.it.CNN_epoch_num = Integer.parseInt(epochs.getText());
 							Run.it.CNN_split = Integer.parseInt(splitTrainTest.getText());
 							Run.it.GUIsetDirty(true);
+						}
+						else {
+						    RunClassifyAndPostProcessButton.setEnabled(false);
+						    RunClassifyButton.setEnabled(false);
 						}
 
 
@@ -1403,7 +1407,7 @@ public class KClassifyPanel extends KPanel{
 		setDisplayImage(null);
 		repaintImagePanel();
 		RemoveAllBars();
-		ClassificationMethodChoice();
+		EnableButtonsByClassificationChoice();
 //		ReenableMostButtons();
 		ChooseClassifierButton.setEnabled(true);
 		RunClassifyButton.setEnabled(true);
@@ -1425,6 +1429,7 @@ public class KClassifyPanel extends KPanel{
 		RunRetrainButton.setEnabled(false);
 		DisableMostButtons();
 	}
+	
 	/** during a classification and/or post-processing the user is unable to manipulate options */
 	protected void DisableMostButtons(){		
 		numTreesSpinner.setEnabled(false);
@@ -1463,21 +1468,20 @@ public class KClassifyPanel extends KPanel{
 		ChooseClassifierButton.setEnabled(true);
 		RunClassifyButton.setEnabled(true);
 		RunClassifyAndPostProcessButton.setEnabled(true);
-		ClassificationMethodChoice();
-//		 ReenableMostButtons();
+		EnableButtonsByClassificationChoice();
 	}
 
 
 
-	private void ClassificationMethodChoice(){
-		RF.setEnabled(true);
-		DL4J.setEnabled(true);
+	private void EnableButtonsByClassificationChoice(){
+		RF_selected.setEnabled(true);
+		CNN_selected.setEnabled(true);
 
-		if (RF.isSelected()){
-			ReenableMostButtons();
+		if (RF_selected.isSelected()){
+			EnableRFButtons();
 		}
 
-		if(DL4J.isSelected()){
+		if(CNN_selected.isSelected()){
 			EnableDL4JButtons();
 		}
 
@@ -1495,7 +1499,7 @@ public class KClassifyPanel extends KPanel{
 		iterations.setEnabled(true);
 		epochs.setEnabled(true);
 		splitTrainTest.setEnabled(true);
-
+		register_values_button.setVisible(true);
 
 		allButton.setEnabled(true);
 		onlyButton.setEnabled(true);
@@ -1518,6 +1522,9 @@ public class KClassifyPanel extends KPanel{
 		picturesToClassifyLabel.setEnabled(true);
 		if (allButton.isSelected())// || rangeButton.isSelected())
 			RunClassifyAndPostProcessButton.setEnabled(true);
+		
+	    RunClassifyAndPostProcessButton.setEnabled(false);
+	    RunClassifyButton.setEnabled(false);		
 
 	}
 
@@ -1528,7 +1535,8 @@ public class KClassifyPanel extends KPanel{
 
 
 	/** option buttons are reenabled */
-	private void ReenableMostButtons(){
+	private void EnableRFButtons(){
+
 		numTreesSpinner.setEnabled(true);
 		numThreadsSpinner.setEnabled(true);
 		numPixelSkipSpinner.setEnabled(true);
@@ -1541,6 +1549,8 @@ public class KClassifyPanel extends KPanel{
 		allButton.setEnabled(true);
 		onlyButton.setEnabled(true);
 		remainButton.setEnabled(true);
+
+		register_values_button.setVisible(false);
 //		rangeButton.setEnabled(true);
 //		tenRandomButton.setEnabled(true);
 //		twentyRandomButton.setEnabled(true);
@@ -1559,6 +1569,9 @@ public class KClassifyPanel extends KPanel{
 		picturesToClassifyLabel.setEnabled(true);
 		if (allButton.isSelected())// || rangeButton.isSelected())
 			RunClassifyAndPostProcessButton.setEnabled(true);
+
+	    RunClassifyAndPostProcessButton.setEnabled(true);
+	    RunClassifyButton.setEnabled(true);
 	}
 
 	public void setIs(HashMap<String,BoolMatrix> is){
