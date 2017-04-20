@@ -200,8 +200,6 @@ public class Run implements Serializable{
 	public int CNN_epoch_num;
 	/**Split train %       */
 	public double CNN_split;
-	/** Number of Cores    */
-	public int CNN_nCores;
 
 
 

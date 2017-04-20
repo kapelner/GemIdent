@@ -74,7 +74,7 @@ public class DeepLearningCNN {
     protected static int epochs = Run.it.CNN_epoch_num;     //1
 //    protected static double splitTrainTest = Run.it.CNN_split;  //0.8
     protected static double splitTrainTest = 0.8;
-    protected static int nCores = Run.it.CNN_nCores; //2
+    protected static int nCores = Run.it.num_threads;
     protected static boolean save = false;
     protected double buildProgress = 0; //progress for model training
     DataNormalization scaler;
