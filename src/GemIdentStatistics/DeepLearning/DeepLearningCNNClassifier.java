@@ -35,7 +35,13 @@ public class DeepLearningCNNClassifier extends Classifier {
 		//build / train the CNN here
         stop = false;
 
-        cnn = new DeepLearningCNN();
+        cnn = new DeepLearningCNN.DeepLearningCNNBuilder()
+                .batchSize(Run.it.CNN_batch_num)
+                .iterations(Run.it.CNN_iter_num)
+                .splitPercentage(Run.it.CNN_split)
+                .batchSize(Run.it.CNN_batch_num)
+                .epochs(Run.it.CNN_epoch_num)
+                .build();
 
         ExecutorService coupled_threads = Executors.newFixedThreadPool(2);
         coupled_threads.execute(new Runnable(){

@@ -62,6 +62,57 @@ public class DeepLearningCNN {
     protected int iterations;  //3
     protected int epochs;     //1
     protected double splitTrainTest;
+
+    public static class DeepLearningCNNBuilder{
+        private int height;
+        private int width;
+        private int channels;
+        private int numExamples;
+        private int numLabels;     //2
+        private int batchSize; //20
+        private int iterations;  //3
+        private int epochs;     //1
+        private double splitTrainTest;
+
+        public DeepLearningCNNBuilder(){
+            height = Run.it.getMaxPhenotypeRadiusPlusMore(null) * 2;
+            width = Run.it.getMaxPhenotypeRadiusPlusMore(null) * 2;
+            numExamples = Run.it.numPhenTrainingPoints();
+            numLabels =  Run.it.numPhenotypes();
+            channels = 3;
+
+        }
+
+        public DeepLearningCNNBuilder batchSize(int batchSize){
+            if(batchSize > numExamples){
+                // Probably should let user re-enter param
+                batchSize = numExamples;
+            }
+            this.batchSize = batchSize;
+            return this;
+        }
+
+        public DeepLearningCNNBuilder iterations(int iterations){
+            this.iterations = iterations;
+            return this;
+        }
+
+        public DeepLearningCNNBuilder epochs(int epochs){
+            this.epochs = epochs;
+            return this;
+        }
+
+        public DeepLearningCNNBuilder splitPercentage(double percentage){
+            this.splitTrainTest = percentage;
+            return this;
+        }
+
+        public DeepLearningCNN build(){
+            return new DeepLearningCNN(height,width,channels,numExamples,numLabels,batchSize,iterations,epochs, splitTrainTest);
+        }
+
+
+    }
     
     protected boolean save = false;
     
@@ -72,7 +123,7 @@ public class DeepLearningCNN {
     protected static String modelType = "custom"; // LeNet, AlexNet or Custom but you need to fill it out
     private MultiLayerNetwork network;
 
-    public DeepLearningCNN(int channels, int numExamples, int numLabels, int batchSize, int iterations, int epochs, double splitTrainTest){
+    public DeepLearningCNN(int height, int width, int channels, int numExamples, int numLabels, int batchSize, int iterations, int epochs, double splitTrainTest){
     	this.channels = channels;
     	this.numExamples = numExamples;
     	this.numLabels = numLabels;
@@ -80,8 +131,8 @@ public class DeepLearningCNN {
     	this.iterations = iterations;
     	this.epochs = epochs;
     	this.splitTrainTest = splitTrainTest;
-        height = (Run.it.getMaxPhenotypeRadiusPlusMore(1.0)*2)+1; //77
-        width = (Run.it.getMaxPhenotypeRadiusPlusMore(1.0)*2)+1; //77    	
+        this.height = height; //77
+        this.width = width; //77
     }
 
     public void run() throws Exception {
@@ -338,8 +389,7 @@ public class DeepLearningCNN {
                         .activation(Activation.SOFTMAX)
                         .build())
                 .backprop(true).pretrain(false)
-                .setInputType(InputType.convolutional((Run.it.getMaxPhenotypeRadiusPlusMore(1.0)*2)+1,
-                                                    (Run.it.getMaxPhenotypeRadiusPlusMore(1.0)*2)+1, channels))
+                .setInputType(InputType.convolutional(height,width, channels))
                 .build();
 
         return new MultiLayerNetwork(conf);
