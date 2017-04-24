@@ -283,7 +283,6 @@ public class DeepLearningCNN {
         try {
             image = unlabeledImage.asMatrix(imageData);
 
-
         } catch (IOException e) {
             e.printStackTrace();
         }
