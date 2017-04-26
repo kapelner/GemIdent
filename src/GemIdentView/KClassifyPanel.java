@@ -1695,11 +1695,11 @@ public class KClassifyPanel extends KPanel{
         batchSize.setText(Integer.toString(Run.it.CNN_batch_num));
 //		numBatchSpinner.setValue((Integer)Run.it.num_pixels_to_batch_updates);
 
-        if(!Run.it.classification_choice.isEmpty()) {
+        if(!Run.it.classification_choice.isEmpty() && Run.it.classification_choice!=null) {
             switch (Run.it.classification_choice) {
                 case "RF_select":
                     RF_selected.setSelected(true);
-                    //  EnableRFButtons();
+                    // EnableRFButtons();
                     break;
 
                 case "CNN_select":

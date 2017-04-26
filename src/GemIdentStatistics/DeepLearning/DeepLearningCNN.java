@@ -72,7 +72,7 @@ public class DeepLearningCNN {
         private int batchSize; //20
         private int iterations;  //3
         private int epochs;     //1
-        private double splitTrainTest;
+        private double splitTrainTest = 100.00;
 
         public DeepLearningCNNBuilder(){
             height = Run.it.getMaxPhenotypeRadiusPlusMore(null) * 2;
