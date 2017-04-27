@@ -133,7 +133,8 @@ public class SetupClassification extends Thread {
 	 */
 	private void DoTheClassification(Collection<String> files, ClassifyProgress progress) {	
 		CreateDirectoriesAndFlushRAM();
-		
+		if(Run.it.classification_choice == "CNN_select")
+		    classifierType = DL4JCNN;
 		//if the user didn't supply a classifier, we're going to have to build one:
 		if (classifier == null){
 			if (imageset instanceof ImageSetInterfaceWithUserColors){ //this is ugly but conceptually it's the only way to go I believe
@@ -187,9 +188,8 @@ public class SetupClassification extends Thread {
 	
 	
 	/** The current classifier the user is using */	
-	//public static String classifierType = RandomForestSymbol; //default is random forests for now
-	public static String classifierType = DL4JCNN;
-	
+	public static String classifierType = RandomForestSymbol; //default is random forests for now
+    //public static String classifierType = DL4JCNN;
 	/**
 	 * This method creates the machine learning classifier for this analysis
 	 */	

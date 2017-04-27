@@ -1302,17 +1302,18 @@ public class KClassifyPanel extends KPanel{
 							JOptionPane.showMessageDialog(Run.it.getGUI(),"Not enough training points in phenotype(s): " + IOTools.StringJoin(delinquents, ", "));
 							return;
 						}
-						ImageSetInterfaceWithUserColors set = Run.it.getUserColorsImageset();
-						if (set != null){
-							if (!set.EnoughStainTrainPoints()){
-								JOptionPane.showMessageDialog(Run.it.getGUI(),"Not enough training points in one or more stains");	
-								return;
-							}
-							else if (!set.StainCubesComputed()){
-								JOptionPane.showMessageDialog(Run.it.getGUI(),"Stain information not computed");	
-								return;
-							}
-						}
+						if(Run.it.classification_choice != "CNN_select") {
+                            ImageSetInterfaceWithUserColors set = Run.it.getUserColorsImageset();
+                            if (set != null) {
+                                if (!set.EnoughStainTrainPoints()) {
+                                    JOptionPane.showMessageDialog(Run.it.getGUI(), "Not enough training points in one or more stains");
+                                    return;
+                                } else if (!set.StainCubesComputed()) {
+                                    JOptionPane.showMessageDialog(Run.it.getGUI(), "Stain information not computed");
+                                    return;
+                                }
+                            }
+                        }
 						ClassificationBegun();	
 						AddInitialProgressBars();
 					}
@@ -1338,20 +1339,21 @@ public class KClassifyPanel extends KPanel{
 							return;
 						}
 						else if ((Run.it.getPhenotyeNamesSaveNONAndFindCenters()).size() == 0)
-							JOptionPane.showMessageDialog(Run.it.getGUI(),"No phenotypes set to find centers");						
-						ImageSetInterfaceWithUserColors set = Run.it.getUserColorsImageset();
-						if (set != null){
-							if (!set.EnoughStainTrainPoints()){
-								JOptionPane.showMessageDialog(Run.it.getGUI(),"Not enough training points in one or more stains");	
-								return;
-							}
-							else if (!set.StainCubesComputed()){
-								JOptionPane.showMessageDialog(Run.it.getGUI(),"Stain information not computed");	
-								return;
-							}
-						}
-						ClassificationBegun();
-						AddInitialProgressBars();
+							JOptionPane.showMessageDialog(Run.it.getGUI(),"No phenotypes set to find centers");
+						if(Run.it.classification_choice != "CNN_select") { //With CNN there is no need for color information
+                            ImageSetInterfaceWithUserColors set = Run.it.getUserColorsImageset();
+                            if (set != null) {
+                                if (!set.EnoughStainTrainPoints()) {
+                                    JOptionPane.showMessageDialog(Run.it.getGUI(), "Not enough training points in one or more stains");
+                                    return;
+                                } else if (!set.StainCubesComputed()) {
+                                    JOptionPane.showMessageDialog(Run.it.getGUI(), "Stain information not computed");
+                                    return;
+                                }
+                            }
+                            ClassificationBegun();
+                            AddInitialProgressBars();
+                        }
 					}
 					else
 						ClassificationBegun();										

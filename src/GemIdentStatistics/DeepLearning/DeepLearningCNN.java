@@ -72,7 +72,7 @@ public class DeepLearningCNN {
         private int batchSize; //20
         private int iterations;  //3
         private int epochs;     //1
-        private double splitTrainTest = 100.00;
+        private double splitTrainTest = .8;
 
         public DeepLearningCNNBuilder(){
             height = Run.it.getMaxPhenotypeRadiusPlusMore(null) * 2;
@@ -161,7 +161,7 @@ public class DeepLearningCNN {
          * Data Setup -> train test split
          *  - inputSplit = define train and test split
          **/
-
+        splitTrainTest = .8;
         InputSplit[] inputSplit = fileSplit.sample(pathFilter, splitTrainTest, 1 - splitTrainTest);
         InputSplit trainData = inputSplit[0];
         InputSplit testData = inputSplit[1];
