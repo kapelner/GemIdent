@@ -763,30 +763,41 @@ public class KClassifyPanel extends KPanel{
 //						}
 
 						//Iterations
+                        String iterationsTextInput = iterations.getText();
 						try{
 							Integer.parseInt(iterations.getText());
+
 						}
 
 						catch(NumberFormatException ne){
 							JOptionPane.showMessageDialog(null,
-									"Error: Please enter an integer for Iterations...", "Error Massage",
+									"Error: Please enter an integer for Iterations...", "Error Message",
 									JOptionPane.ERROR_MESSAGE);
 							all_cnn_params_are_valid = false;
 
 						}
+						if(Integer.parseInt(iterationsTextInput) <= 0){
+                            JOptionPane.showMessageDialog(Run.it.getGUI(), "Input Error: Iterations must be > 0");
+                            all_cnn_params_are_valid =false;
+                        }
 
 						//Epochs
+                        String epochTextInput = epochs.getText();
 						try{
-							Integer.parseInt(epochs.getText());
+							Integer.parseInt(epochTextInput);
 						}
 
 						catch(NumberFormatException ne){
 							JOptionPane.showMessageDialog(null,
-									"Error: Please enter an integer for Epochs...", "Error Massage",
+									"Error: Please enter an integer for Epochs...", "Error Message",
 									JOptionPane.ERROR_MESSAGE);
 							all_cnn_params_are_valid = false;
 
 						}
+                        if(Integer.parseInt(epochTextInput) <= 0){
+                            JOptionPane.showMessageDialog(Run.it.getGUI(), "Input Error: Epochs must be > 0");
+                            all_cnn_params_are_valid =false;
+                        }
 
 						//Split Train
 						try{
@@ -795,7 +806,7 @@ public class KClassifyPanel extends KPanel{
 
 						catch(NumberFormatException ne){
 							JOptionPane.showMessageDialog(null,
-									"Error: Please enter an integer between 0 & 100 for Split Train...", "Error Massage",
+									"Error: Please enter an integer between 0 & 100 for Split Train...", "Error Message",
 									JOptionPane.ERROR_MESSAGE);
 							all_cnn_params_are_valid = false;
 
@@ -810,11 +821,12 @@ public class KClassifyPanel extends KPanel{
 						*/
 						if(Integer.parseInt(splitTrainTest.getText())<=0 && Integer.parseInt(splitTrainTest.getText())>=100 ){
 							JOptionPane.showMessageDialog(null,
-									"Error: Split train must be between 0 and 100...", "Error Massage",
+									"Error: Split train must be between 0 and 100...", "Error Message",
 									JOptionPane.ERROR_MESSAGE);
 
 							all_cnn_params_are_valid = false;
 						}
+
 
 						if (all_cnn_params_are_valid){
 //							Run.it.CNN_num_examples = Integer.parseInt(numExamples.getText());
