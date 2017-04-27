@@ -137,7 +137,7 @@ public class SetupClassification extends Thread {
 		    classifierType = DL4JCNN;
 		//if the user didn't supply a classifier, we're going to have to build one:
 		if (classifier == null){
-			if (imageset instanceof ImageSetInterfaceWithUserColors){ //this is ugly but conceptually it's the only way to go I believe
+			if (imageset instanceof ImageSetInterfaceWithUserColors && !classifierType.equals("DL4JCNN")){ //this is ugly but conceptually it's the only way to go I believe
 				if (!((ImageSetInterfaceWithUserColors)imageset).OpenMahalanobisCubes(openProgress)){ //there was a problem with openCubes....
 					gui.getClassifyPanel().ReenableClassifyButton();
 					gui.getClassifyPanel().RemoveAllBars();

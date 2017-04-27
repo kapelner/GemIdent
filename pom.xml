@@ -113,11 +113,11 @@
             <artifactId>deeplearning4j-nlp</artifactId>
             <version>${dl4j.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.datavec</groupId>
-            <artifactId>datavec-spark_${scala.binary.version}</artifactId>
-            <version>${datavec.version}</version>
-        </dependency>        
+		<dependency>
+	        <groupId>org.deeplearning4j</groupId>
+	        <artifactId>deeplearning4j-ui_2.10</artifactId>
+	        <version>${dl4j.version}</version>
+	    </dependency>      
         <dependency> <!-- Used in the feedforward/classification/MLP* and feedforward/regression/RegressionMathFunctions example -->
             <groupId>jfree</groupId>
             <artifactId>jfreechart</artifactId>
@@ -127,7 +127,7 @@
             <groupId>org.jfree</groupId>
             <artifactId>jcommon</artifactId>
             <version>${jcommon.version}</version>
-        </dependency>
+        </dependency>     
     </dependencies>
 
 
