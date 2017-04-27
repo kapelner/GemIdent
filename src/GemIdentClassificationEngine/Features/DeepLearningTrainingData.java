@@ -58,14 +58,15 @@ public class DeepLearningTrainingData extends TrainingData{
             }
         }
 
-    public void addImagestoProperDirectories(DatumSetupForImage datumSetupForImage, Point t, String phenoName){
+    public void addImagestoProperDirectories(DatumSetupForImage datumSetupForImage, Point t, Phenotype phenotype){
         SuperImage super_image = ImageAndScoresBank.getOrAddSuperImage(datumSetupForImage.filename());
+        String phenoName = phenotype.getName();
         //possibly have a set of buffered images, instead of allocating an image every time
         BufferedImage whole_image = super_image.getAsBufferedImage();
         //coodinates for point of interest translated to super image
         Point t_adj = super_image.AdjustPointForSuper(t);
-        int r_max = Run.it.getMaxPhenotypeRadiusPlusMore(null);
-        int distanceFromCornerToMid = (int)(Math.sqrt(2)  * r_max);
+        int r_max = phenotype.getRmax();
+        int distanceFromCornerToMid = Math.round((int)(Math.sqrt(2)  * r_max)); //round will give us extra information
         BufferedImage subImage = whole_image.getSubimage(t_adj.x - distanceFromCornerToMid,
                 t_adj.y - distanceFromCornerToMid, r_max *2, r_max*2);
         System.out.println(phenoName);
@@ -116,7 +117,7 @@ public class DeepLearningTrainingData extends TrainingData{
                             Class=Run.classMapFwd.get(name);
                         }
                         Datum d = null;
-                        addImagestoProperDirectories(datumSetupForImage, to,name);
+                        addImagestoProperDirectories(datumSetupForImage, to,phenotype);
                         //d.setClass(Class);
                         //allData.add(d);
                         //update progress bar

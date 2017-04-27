@@ -61,10 +61,10 @@ public class DeepLearningCNN {
     protected int width;
     protected int channels;
     protected int numExamples;
-    protected int numLabels;     //2
-    protected int batchSize; //20
-    protected int iterations;  //3
-    protected int epochs;     //1
+    protected int numLabels;
+    protected int batchSize;
+    protected int iterations;
+    protected int epochs;
     protected double splitTrainTest;
 
     public static class DeepLearningCNNBuilder{
@@ -72,11 +72,11 @@ public class DeepLearningCNN {
         private int width;
         private int channels;
         private int numExamples;
-        private int numLabels;     //2
-        private int batchSize; //20
-        private int iterations;  //3
-        private int epochs;     //1
-        private double splitTrainTest = .8;
+        private int numLabels;
+        private int batchSize;
+        private int iterations;
+        private int epochs;
+        private double splitTrainTest = .8;//Will break model if 1.0 or greater
 
         public DeepLearningCNNBuilder(){
             height = Run.it.getMaxPhenotypeRadiusPlusMore(null) * 2;
@@ -135,8 +135,8 @@ public class DeepLearningCNN {
     	this.iterations = iterations;
     	this.epochs = epochs;
     	this.splitTrainTest = splitTrainTest;
-        this.height = height; //77
-        this.width = width; //77
+        this.height = height;
+        this.width = width;
     }
     
     public void run() throws Exception {
