@@ -324,7 +324,7 @@ public class KClassifyPanel extends KPanel{
 		numPixelSkipBox.setVisible(true);
 		
 
-		choiceLabel=new JLabel("<html><u>Classification Choices</u></html>");
+		choiceLabel=new JLabel("<html><u>Classification Algorithm</u></html>");
 		Box choiceLabelBox=Box.createHorizontalBox();
 		choiceLabelBox.add(choiceLabel);
 		optionBox.add(choiceLabelBox);		

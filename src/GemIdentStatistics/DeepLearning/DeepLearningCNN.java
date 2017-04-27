@@ -79,7 +79,7 @@ public class DeepLearningCNN {
             width = Run.it.getMaxPhenotypeRadiusPlusMore(null) * 2;
             numExamples = Run.it.numPhenTrainingPoints();
             numLabels =  Run.it.numPhenotypes();
-            channels = 3;
+            channels = 3; //Default RGB type 
 
         }
 
@@ -326,7 +326,7 @@ public class DeepLearningCNN {
      * @param imageData bufferedImage at point of interest
      * @return classlabel
      */
-    public double feedForwardImage(BufferedImage imageData){
+    public double classify(BufferedImage imageData){
         //3 for RGB channels
         NativeImageLoader unlabeledImage = new NativeImageLoader(imageData.getWidth(),imageData.getHeight(),3);
         //need INDArray to input into network
