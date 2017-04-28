@@ -10,6 +10,7 @@ import org.datavec.api.split.InputSplit;
 import org.datavec.image.loader.NativeImageLoader;
 import org.datavec.image.recordreader.ImageRecordReader;
 import org.datavec.image.transform.ImageTransform;
+import org.deeplearning4j.api.storage.StatsStorage;
 import org.deeplearning4j.datasets.datavec.RecordReaderDataSetIterator;
 import org.deeplearning4j.datasets.iterator.MultipleEpochsIterator;
 import org.deeplearning4j.eval.Evaluation;
@@ -23,6 +24,9 @@ import org.deeplearning4j.nn.conf.inputs.InvalidInputTypeException;
 import org.deeplearning4j.nn.conf.layers.*;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.nn.weights.WeightInit;
+import org.deeplearning4j.ui.api.UIServer;
+import org.deeplearning4j.ui.stats.StatsListener;
+import org.deeplearning4j.ui.storage.InMemoryStatsStorage;
 import org.deeplearning4j.util.NetSaverLoaderUtils;
 
 import org.nd4j.linalg.activations.Activation;
@@ -57,10 +61,10 @@ public class DeepLearningCNN {
     protected int width;
     protected int channels;
     protected int numExamples;
-    protected int numLabels;     //2
-    protected int batchSize; //20
-    protected int iterations;  //3
-    protected int epochs;     //1
+    protected int numLabels;
+    protected int batchSize;
+    protected int iterations;
+    protected int epochs;
     protected double splitTrainTest;
 
     public static class DeepLearningCNNBuilder{
@@ -68,18 +72,18 @@ public class DeepLearningCNN {
         private int width;
         private int channels;
         private int numExamples;
-        private int numLabels;     //2
-        private int batchSize; //20
-        private int iterations;  //3
-        private int epochs;     //1
-        private double splitTrainTest;
+        private int numLabels;
+        private int batchSize;
+        private int iterations;
+        private int epochs;
+        private double splitTrainTest = .8;//Will break model if 1.0 or greater
 
         public DeepLearningCNNBuilder(){
             height = Run.it.getMaxPhenotypeRadiusPlusMore(null) * 2;
             width = Run.it.getMaxPhenotypeRadiusPlusMore(null) * 2;
             numExamples = Run.it.numPhenTrainingPoints();
             numLabels =  Run.it.numPhenotypes();
-            channels = 3;
+            channels = 3; //Default RGB type 
 
         }
 
@@ -131,10 +135,10 @@ public class DeepLearningCNN {
     	this.iterations = iterations;
     	this.epochs = epochs;
     	this.splitTrainTest = splitTrainTest;
-        this.height = height; //77
-        this.width = width; //77
+        this.height = height;
+        this.width = width;
     }
-
+    
     public void run() throws Exception {
         System.out.print(height + " " + width);
 
@@ -161,7 +165,7 @@ public class DeepLearningCNN {
          * Data Setup -> train test split
          *  - inputSplit = define train and test split
          **/
-
+        splitTrainTest = .8;
         InputSplit[] inputSplit = fileSplit.sample(pathFilter, splitTrainTest, 1 - splitTrainTest);
         InputSplit trainData = inputSplit[0];
         InputSplit testData = inputSplit[1];
@@ -210,6 +214,16 @@ public class DeepLearningCNN {
                 throw new InvalidInputTypeException("Incorrect model provided.");
         }
         network.init();
+        
+        //setup display ability at http://localhost:9000/train 
+    	UIServer uiServer = UIServer.getInstance();
+        //Configure where the network information (gradients, score vs. time etc) is to be stored. Here: store in memory.
+        StatsStorage statsStorage = new InMemoryStatsStorage();         //Alternative: new FileStatsStorage(File), for saving and loading later
+        //Attach the StatsStorage instance to the UI: this allows the contents of the StatsStorage to be visualized
+        uiServer.attach(statsStorage);
+        //Then add the StatsListener to collect this information from the network, as it trains
+        network.setListeners(new StatsListener(statsStorage));	
+        
         final OurScoreIterationListener scoreListener = new OurScoreIterationListener(listenerFreq);
         network.setListeners(scoreListener);
         /**
@@ -261,7 +275,7 @@ public class DeepLearningCNN {
                         double change = (int) (progressIncrementor * (scoreListener.getIterCount() - currentIter));
                         if(change >= 1.0)
                         buildProgress += (change);
-                        System.out.println(buildProgress);
+//                        System.out.println(buildProgress);
                     }
                     if(buildProgress >= 100)
                         stop = true;
@@ -326,7 +340,7 @@ public class DeepLearningCNN {
      * @param imageData bufferedImage at point of interest
      * @return classlabel
      */
-    public double feedForwardImage(BufferedImage imageData){
+    public double classify(BufferedImage imageData){
         //3 for RGB channels
         NativeImageLoader unlabeledImage = new NativeImageLoader(imageData.getWidth(),imageData.getHeight(),3);
         //need INDArray to input into network

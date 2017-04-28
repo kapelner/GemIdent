@@ -85,14 +85,14 @@ public class IOTools {
 	public static BufferedImage OpenImage(String filename) throws IOException {
 		return ImageIO.read(new File(Run.it.imageset.getFilenameWithHomePath(filename)));
 	}
-	
+
 	/**
 	 * Use the getResource to open a system image (see the {@link javax.media.jai.JAI#create(String, Object) JAI load function})
 	 * 
 	 * @param filename 		the filename (the path is the path of execution) of the image of interest
 	 * @return				the loaded image as a buffered image
 	 */
-	public static Image OpenSystemImage(String filename){	
+	public static Image OpenSystemImage(String filename){
 		return new ImageIcon((new Object()).getClass().getResource("/graphics/" + filename)).getImage();
 	}
 	/**

@@ -192,6 +192,16 @@ public class KClassifyPanel extends KPanel{
 	private JTextField epochs;
 	private JTextField splitTrainTest;
 
+	//boxes for individual textfields/spinners
+    private Box numLabelsBox;
+    private Box channelsBox;
+    private Box batchSizeBox;
+    private Box iterationsBox;
+    private Box epochsBox;
+    private Box splitTrainTestBox;
+
+    private Box numTreesBox;
+
 	private JRadioButton remainButton;
 
 	/** the dimension of the Western region that holds all options and buttons */
@@ -314,7 +324,7 @@ public class KClassifyPanel extends KPanel{
 		numPixelSkipBox.setVisible(true);
 		
 
-		choiceLabel=new JLabel("<html><u>Classification Choices</u></html>");
+		choiceLabel=new JLabel("<html><u>Classification Algorithm</u></html>");
 		Box choiceLabelBox=Box.createHorizontalBox();
 		choiceLabelBox.add(choiceLabel);
 		optionBox.add(choiceLabelBox);		
@@ -323,6 +333,8 @@ public class KClassifyPanel extends KPanel{
 		CNN_selected = new JRadioButton("CNN (Deep Learning)");
 
 		classifyMethod = new ButtonGroup();
+		RF_selected.setEnabled(true);
+		CNN_selected.setEnabled(true);
 		classifyMethod.add(RF_selected);
 		classifyMethod.add(CNN_selected);
 		Box classification_method_box=Box.createVerticalBox();
@@ -339,7 +351,7 @@ public class KClassifyPanel extends KPanel{
 
 
 
-		Box numTreesBox=Box.createHorizontalBox();		
+        numTreesBox=Box.createHorizontalBox();
 		numTreesLabel=new JLabel("Accuracy Level");
 		numTreesLabel.setFont(FontForLabels);
 		numTreesBox.add(numTreesLabel);
@@ -349,7 +361,9 @@ public class KClassifyPanel extends KPanel{
 		textfield.setFocusable(false);
 		numTreesBox.add(numTreesSpinner);
 		optionBox.add(numTreesBox);
+        numTreesBox.setEnabled(true);
 		numTreesBox.setVisible(false);
+
 
 
 //		Box useEdgesBox = Box.createHorizontalBox();		
@@ -394,7 +408,7 @@ public class KClassifyPanel extends KPanel{
 		imageHeiBox.setVisible(false);
 		*/
 
-		Box channelsBox=Box.createHorizontalBox();
+        channelsBox=Box.createHorizontalBox();
 		channelsLabel=new JLabel("NumChannels");
 		channelsLabel.setFont(FontForLabels);
 		channelsBox.add(channelsLabel);
@@ -422,7 +436,7 @@ public class KClassifyPanel extends KPanel{
 //		optionBox.add(numExamplesBox);
 //		numExamplesBox.setVisible(false);
 
-		Box numLabelsBox=Box.createHorizontalBox();
+        numLabelsBox=Box.createHorizontalBox();
 		numLabelsLabel=new JLabel("Number Labels");
 		numLabelsLabel.setFont(FontForLabels);
 		numLabelsBox.add(numLabelsLabel);
@@ -435,7 +449,7 @@ public class KClassifyPanel extends KPanel{
 		optionBox.add(numLabelsBox);
 		numLabelsBox.setVisible(false);
 
-		Box batchSizeBox=Box.createHorizontalBox();
+        batchSizeBox=Box.createHorizontalBox();
 		batchSizeLabel=new JLabel("Number Batches");
 		batchSizeLabel.setFont(FontForLabels);
 		batchSizeBox.add(batchSizeLabel);
@@ -449,7 +463,7 @@ public class KClassifyPanel extends KPanel{
 		optionBox.add(batchSizeBox);
 		batchSizeBox.setVisible(false);
 
-		Box iterationsBox=Box.createHorizontalBox();
+        iterationsBox=Box.createHorizontalBox();
 		iterationsLabel=new JLabel("Iterations ");
 		iterationsLabel.setFont(FontForLabels);
 		iterationsBox.add(iterationsLabel);
@@ -463,7 +477,7 @@ public class KClassifyPanel extends KPanel{
 		optionBox.add(iterationsBox);
 		iterationsBox.setVisible(false);
 
-		Box epochsBox=Box.createHorizontalBox();
+        epochsBox=Box.createHorizontalBox();
 		epochsLabel=new JLabel("Epochs ");
 		epochsLabel.setFont(FontForLabels);
 		epochsBox.add(epochsLabel);
@@ -477,7 +491,7 @@ public class KClassifyPanel extends KPanel{
 		optionBox.add(epochsBox);
 		epochsBox.setVisible(false);
 
-		Box splitTrainTestBox=Box.createHorizontalBox();
+		splitTrainTestBox=Box.createHorizontalBox();
 		splitTrainTestLabel=new JLabel("Split Train %");
 		splitTrainTestLabel.setFont(FontForLabels);
 		splitTrainTestBox.add(splitTrainTestLabel);
@@ -666,7 +680,9 @@ public class KClassifyPanel extends KPanel{
 		RF_selected.addActionListener(
 				new ActionListener(){
 					public void actionPerformed(ActionEvent e){
+                        Run.it.classification_choice = "RF_select";
 						EnableRFButtons();
+
 					}
 				}
 		);
@@ -674,7 +690,9 @@ public class KClassifyPanel extends KPanel{
 		CNN_selected.addActionListener(
 				new ActionListener(){
 					public void actionPerformed(ActionEvent e){
+                        Run.it.classification_choice = "CNN_select";
 						EnableCNNButtons();
+
 					}
 				}
 		);
@@ -745,30 +763,41 @@ public class KClassifyPanel extends KPanel{
 //						}
 
 						//Iterations
+                        String iterationsTextInput = iterations.getText();
 						try{
 							Integer.parseInt(iterations.getText());
+
 						}
 
 						catch(NumberFormatException ne){
 							JOptionPane.showMessageDialog(null,
-									"Error: Please enter an integer for Iterations...", "Error Massage",
+									"Error: Please enter an integer for Iterations...", "Error Message",
 									JOptionPane.ERROR_MESSAGE);
 							all_cnn_params_are_valid = false;
 
 						}
+						if(Integer.parseInt(iterationsTextInput) <= 0){
+                            JOptionPane.showMessageDialog(Run.it.getGUI(), "Input Error: Iterations must be > 0");
+                            all_cnn_params_are_valid =false;
+                        }
 
 						//Epochs
+                        String epochTextInput = epochs.getText();
 						try{
-							Integer.parseInt(epochs.getText());
+							Integer.parseInt(epochTextInput);
 						}
 
 						catch(NumberFormatException ne){
 							JOptionPane.showMessageDialog(null,
-									"Error: Please enter an integer for Epochs...", "Error Massage",
+									"Error: Please enter an integer for Epochs...", "Error Message",
 									JOptionPane.ERROR_MESSAGE);
 							all_cnn_params_are_valid = false;
 
 						}
+                        if(Integer.parseInt(epochTextInput) <= 0){
+                            JOptionPane.showMessageDialog(Run.it.getGUI(), "Input Error: Epochs must be > 0");
+                            all_cnn_params_are_valid =false;
+                        }
 
 						//Split Train
 						try{
@@ -777,26 +806,27 @@ public class KClassifyPanel extends KPanel{
 
 						catch(NumberFormatException ne){
 							JOptionPane.showMessageDialog(null,
-									"Error: Please enter an integer between 0 & 100 for Split Train...", "Error Massage",
+									"Error: Please enter an integer between 0 & 100 for Split Train...", "Error Message",
 									JOptionPane.ERROR_MESSAGE);
 							all_cnn_params_are_valid = false;
 
 						}
-
+						/**
 						if(Integer.parseInt(channels2.getText())!=1 && Integer.parseInt(channels2.getText())!=3 ){
 							JOptionPane.showMessageDialog(null,
 									"Error: Channels must be 1 or 3...", "Error Massage",
 									JOptionPane.ERROR_MESSAGE);
 							all_cnn_params_are_valid = false;
 						}
-
+						*/
 						if(Integer.parseInt(splitTrainTest.getText())<=0 && Integer.parseInt(splitTrainTest.getText())>=100 ){
 							JOptionPane.showMessageDialog(null,
-									"Error: Split train must be between 0 and 100...", "Error Massage",
+									"Error: Split train must be between 0 and 100...", "Error Message",
 									JOptionPane.ERROR_MESSAGE);
 
 							all_cnn_params_are_valid = false;
 						}
+
 
 						if (all_cnn_params_are_valid){
 //							Run.it.CNN_num_examples = Integer.parseInt(numExamples.getText());
@@ -805,6 +835,8 @@ public class KClassifyPanel extends KPanel{
 							Run.it.CNN_epoch_num = Integer.parseInt(epochs.getText());
 							Run.it.CNN_split = Integer.parseInt(splitTrainTest.getText());
 							Run.it.GUIsetDirty(true);
+                            RunClassifyAndPostProcessButton.setEnabled(true);
+                            RunClassifyButton.setEnabled(true);
 						}
 						else {
 						    RunClassifyAndPostProcessButton.setEnabled(false);
@@ -1282,17 +1314,18 @@ public class KClassifyPanel extends KPanel{
 							JOptionPane.showMessageDialog(Run.it.getGUI(),"Not enough training points in phenotype(s): " + IOTools.StringJoin(delinquents, ", "));
 							return;
 						}
-						ImageSetInterfaceWithUserColors set = Run.it.getUserColorsImageset();
-						if (set != null){
-							if (!set.EnoughStainTrainPoints()){
-								JOptionPane.showMessageDialog(Run.it.getGUI(),"Not enough training points in one or more stains");	
-								return;
-							}
-							else if (!set.StainCubesComputed()){
-								JOptionPane.showMessageDialog(Run.it.getGUI(),"Stain information not computed");	
-								return;
-							}
-						}
+						if(Run.it.classification_choice != "CNN_select") {
+                            ImageSetInterfaceWithUserColors set = Run.it.getUserColorsImageset();
+                            if (set != null) {
+                                if (!set.EnoughStainTrainPoints()) {
+                                    JOptionPane.showMessageDialog(Run.it.getGUI(), "Not enough training points in one or more stains");
+                                    return;
+                                } else if (!set.StainCubesComputed()) {
+                                    JOptionPane.showMessageDialog(Run.it.getGUI(), "Stain information not computed");
+                                    return;
+                                }
+                            }
+                        }
 						ClassificationBegun();	
 						AddInitialProgressBars();
 					}
@@ -1318,20 +1351,21 @@ public class KClassifyPanel extends KPanel{
 							return;
 						}
 						else if ((Run.it.getPhenotyeNamesSaveNONAndFindCenters()).size() == 0)
-							JOptionPane.showMessageDialog(Run.it.getGUI(),"No phenotypes set to find centers");						
-						ImageSetInterfaceWithUserColors set = Run.it.getUserColorsImageset();
-						if (set != null){
-							if (!set.EnoughStainTrainPoints()){
-								JOptionPane.showMessageDialog(Run.it.getGUI(),"Not enough training points in one or more stains");	
-								return;
-							}
-							else if (!set.StainCubesComputed()){
-								JOptionPane.showMessageDialog(Run.it.getGUI(),"Stain information not computed");	
-								return;
-							}
-						}
-						ClassificationBegun();
-						AddInitialProgressBars();
+							JOptionPane.showMessageDialog(Run.it.getGUI(),"No phenotypes set to find centers");
+						if(Run.it.classification_choice != "CNN_select") { //With CNN there is no need for color information
+                            ImageSetInterfaceWithUserColors set = Run.it.getUserColorsImageset();
+                            if (set != null) {
+                                if (!set.EnoughStainTrainPoints()) {
+                                    JOptionPane.showMessageDialog(Run.it.getGUI(), "Not enough training points in one or more stains");
+                                    return;
+                                } else if (!set.StainCubesComputed()) {
+                                    JOptionPane.showMessageDialog(Run.it.getGUI(), "Stain information not computed");
+                                    return;
+                                }
+                            }
+                            ClassificationBegun();
+                            AddInitialProgressBars();
+                        }
 					}
 					else
 						ClassificationBegun();										
@@ -1420,9 +1454,9 @@ public class KClassifyPanel extends KPanel{
 //		rangeText.setEnabled(false);
 
 		titleLabel.setEnabled(false);
-		numTreesLabel.setEnabled(false);
-		numThreadsLabel.setEnabled(false);
-		numPixelSkipLabel.setEnabled(false);
+		//numTreesBox.setVisible(false);
+		//numThreadsLabel.setEnabled(false);
+		//numPixelSkipLabel.setEnabled(false);
 //		rotationalLabel.setEnabled(false);
 //		numPiecesLabel.setEnabled(false);
 		picturesToClassifyLabel.setEnabled(false);
@@ -1445,11 +1479,15 @@ public class KClassifyPanel extends KPanel{
 		CNN_selected.setEnabled(true);
 
 		if (RF_selected.isSelected()){
+            Run.it.classification_choice = "RF_select";
 			EnableRFButtons();
+
 		}
 
 		if(CNN_selected.isSelected()){
+            Run.it.classification_choice = "CNN_select";
 			EnableCNNButtons();
+
 		}
 
 	}
@@ -1461,11 +1499,19 @@ public class KClassifyPanel extends KPanel{
 		//imageWidth.setEnabled(true);
 //		channels.setEnabled(true);
 //		numExamples.setEnabled(true);
-		numLabels.setEnabled(true);
+		//numLabels.setEnabled(true);
+		//numLabels.setVisible(true);
+
 		batchSize.setEnabled(true);
+		batchSizeBox.setVisible(true);
+
 		iterations.setEnabled(true);
+		iterationsBox.setVisible(true);
+
 		epochs.setEnabled(true);
-		splitTrainTest.setEnabled(true);
+		epochsBox.setVisible(true);
+
+		//splitTrainTest.setEnabled(true);
 		register_values_button.setVisible(true);
 
 		allButton.setEnabled(true);
@@ -1481,7 +1527,9 @@ public class KClassifyPanel extends KPanel{
 //		rangeText.setEnabled(true);
 
 		titleLabel.setEnabled(true);
-		numTreesLabel.setEnabled(true);
+		numTreesBox.setEnabled(false);
+        numTreesBox.setVisible(false);
+
 		numThreadsLabel.setEnabled(true);
 		numPixelSkipLabel.setEnabled(true);
 //		rotationalLabel.setEnabled(true);
@@ -1504,9 +1552,24 @@ public class KClassifyPanel extends KPanel{
 	/** option buttons are reenabled */
 	private void EnableRFButtons(){
 
-		numTreesSpinner.setEnabled(true);
-		numThreadsSpinner.setEnabled(true);
-		numPixelSkipSpinner.setEnabled(true);
+		numTreesBox.setEnabled(true);
+		numTreesBox.setVisible(true);
+        //numTreesSpinner.setVisible(true);
+
+        batchSize.setEnabled(true);
+        batchSizeBox.setVisible(false);
+
+        iterations.setEnabled(true);
+        iterationsBox.setVisible(false);
+
+        epochs.setEnabled(true);
+        epochsBox.setVisible(false);
+
+		//numThreadsSpinner.setEnabled(true);
+		//numThreadsSpinner.setVisible(true);
+
+		//numPixelSkipSpinner.setEnabled(true);
+		//numPixelSkipSpinner.setVisible(true);
 //		useEdgesLabel.setEnabled(true);
 //		useEdgesCheckBox.setEnabled(true);		
 //		numBatchSpinner.setEnabled(true);
@@ -1641,7 +1704,26 @@ public class KClassifyPanel extends KPanel{
 		numTreesSpinner.setValue((Integer)Run.it.num_trees);
 		numThreadsSpinner.setValue((Integer)Run.it.num_threads);
 		numPixelSkipSpinner.setValue((Integer)Run.it.pixel_skip - 1);
+        epochs.setText(Integer.toString(Run.it.CNN_epoch_num));
+        iterations.setText(Integer.toString(Run.it.CNN_iter_num));
+        batchSize.setText(Integer.toString(Run.it.CNN_batch_num));
 //		numBatchSpinner.setValue((Integer)Run.it.num_pixels_to_batch_updates);
+
+        if(!Run.it.classification_choice.isEmpty() && Run.it.classification_choice!=null) {
+            switch (Run.it.classification_choice) {
+                case "RF_select":
+                    RF_selected.setSelected(true);
+                    // EnableRFButtons();
+                    break;
+
+                case "CNN_select":
+                    CNN_selected.setSelected(true);
+                    //EnableCNNButtons();
+                    break;
+
+            }
+        }
+
 		switch (Run.it.pics_to_classify){
 			case CLASSIFY_ALL: 			allButton.setSelected(true); 			break;
 			case CLASSIFY_TRAINED: 		onlyButton.setSelected(true);   		break;

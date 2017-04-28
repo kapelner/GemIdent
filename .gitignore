@@ -54,3 +54,5 @@ Models/
 Models/*
 *.gem
 /executable/
+*.classifier
+*log.txt

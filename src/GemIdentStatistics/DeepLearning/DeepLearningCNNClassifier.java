@@ -116,18 +116,7 @@ public class DeepLearningCNNClassifier extends Classifier {
                     imageAtPoint = fullImage.getSubimage(fullImage.getWidth()/2,fullImage.getHeight()/2,r_max* 2,r_max* 2);
         }
 
-        return cnn.feedForwardImage(imageAtPoint);
-
-
-
-
-            //Step 3: write file
-
-            //Step 4: create testDataSet filelist from this one file
-
-            //Step 5: return network.predict(testDataSet).get(0);
-
-            //Running predictions
+        return cnn.classify(imageAtPoint);
 	}
 
 	@Override
