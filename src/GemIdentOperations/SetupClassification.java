@@ -133,8 +133,11 @@ public class SetupClassification extends Thread {
 	 */
 	private void DoTheClassification(Collection<String> files, ClassifyProgress progress) {	
 		CreateDirectoriesAndFlushRAM();
-		if(Run.it.classification_choice == "CNN_select")
+		if(Run.it.classification_choice.equals("CNN_select"))
 		    classifierType = DL4JCNN;
+        else{
+            classifierType = RandomForestSymbol;
+        }
 		//if the user didn't supply a classifier, we're going to have to build one:
 		if (classifier == null){
 			if (imageset instanceof ImageSetInterfaceWithUserColors && !classifierType.equals("DL4JCNN")){ //this is ugly but conceptually it's the only way to go I believe
@@ -167,10 +170,12 @@ public class SetupClassification extends Thread {
 		//No need for features, CNN with find features for us
 		//what features are we using? Declare a new datum setup for this run
 		DatumSetupForEntireRun datumSetupForEntireRun = new DatumSetupForEntireRun(Run.it.imageset);
-		datumSetupForEntireRun.addFeatureSet(FeatureSetName.RawPixelValues);
-//		datumSetupForEntireRun.addFeatureSet(FeatureSetName.ColorRingScores);
+		if(Run.it.classification_choice.equals("RF_select")) {
+            //datumSetupForEntireRun.addFeatureSet(FeatureSetName.RawPixelValues);
+            datumSetupForEntireRun.addFeatureSet(FeatureSetName.ColorRingScores);
 //		datumSetupForEntireRun.addFeatureSet(FeatureSetName.MaxLineScores);
 //		datumSetupForEntireRun.addFeatureSet(FeatureSetName.EdgeRingScores);
+        }
 		datumSetupForEntireRun.initialize();	
 		return datumSetupForEntireRun;
 	}
@@ -196,6 +201,14 @@ public class SetupClassification extends Thread {
 	private void CreateClassifier() {
 		//this is where you can switch the machine learning engine if desired:
 		classifier = null;
+		String model_selected = Run.it.classification_choice;
+		if(model_selected.equals("RF_select")){
+		    classifierType = RandomForestSymbol;
+        }
+        else{
+		    classifierType = DL4JCNN;
+        }
+
 		if (classifierType.equals(RandomForestSymbol)){
 			classifier = new RandomForest(initDatumSetupForEntireRun(), buildProgress, it.num_trees);
 		}

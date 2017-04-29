@@ -185,7 +185,7 @@ public abstract class ImageSetInterfaceWithUserColors extends ImageSetInterface 
 	 */
 	public boolean OpenMahalanobisCubes(JProgressBarAndLabel openProgress){
 		int increment=(int)Math.round(100/((double)stains.size()));
-		if(Run.it.classification_choice ==   "CNN_select")
+		if(Run.it.classification_choice.equals("CNN_select"))
 		        return true;
 		openColorCubePool=Executors.newFixedThreadPool(N_THREADS_OPEN_OR_CREATE_CUBES);
 		for (Stain stain:getStainObjects()){

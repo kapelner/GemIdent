@@ -100,6 +100,7 @@ public class DeepLearningCNNClassifier extends Classifier {
 	
 	@Override
 	public double Evaluate(String filename, int i, int j){
+	    System.out.println("DeepLearning Eval");
         //Step 1: load image
         //Use superImage to get reflection at edges
         SuperImage superImage = ImageAndScoresBank.getOrAddSuperImage(filename);

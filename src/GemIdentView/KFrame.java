@@ -155,7 +155,7 @@ public class KFrame extends JFrame{
 		phenotypeTrainPanel.EnableErrorFinderFeature();
 		phenotypeTrainPanel.ClickFirstThumbnailIfExistsAndIsNecessary();
 		tabs.remove(phenotypeTrainPanel);
-		tabs.insertTab(phenoTrainTabName,null,phenotypeTrainPanel,null,2);	
+		tabs.insertTab(phenoTrainTabName,null,phenotypeTrainPanel,null,2);
 		tabs.setSelectedComponent(phenotypeTrainPanel);
 		repaint();
 	}

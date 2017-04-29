@@ -1314,7 +1314,7 @@ public class KClassifyPanel extends KPanel{
 							JOptionPane.showMessageDialog(Run.it.getGUI(),"Not enough training points in phenotype(s): " + IOTools.StringJoin(delinquents, ", "));
 							return;
 						}
-						if(Run.it.classification_choice != "CNN_select") {
+						if(!Run.it.classification_choice.equals("CNN_select")) {
                             ImageSetInterfaceWithUserColors set = Run.it.getUserColorsImageset();
                             if (set != null) {
                                 if (!set.EnoughStainTrainPoints()) {
@@ -1352,7 +1352,7 @@ public class KClassifyPanel extends KPanel{
 						}
 						else if ((Run.it.getPhenotyeNamesSaveNONAndFindCenters()).size() == 0)
 							JOptionPane.showMessageDialog(Run.it.getGUI(),"No phenotypes set to find centers");
-						if(Run.it.classification_choice != "CNN_select") { //With CNN there is no need for color information
+						if(!Run.it.classification_choice.equals("CNN_select")) { //With CNN there is no need for color information
                             ImageSetInterfaceWithUserColors set = Run.it.getUserColorsImageset();
                             if (set != null) {
                                 if (!set.EnoughStainTrainPoints()) {

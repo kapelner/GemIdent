@@ -38,7 +38,7 @@ public class OurScoreIterationListener implements IterationListener {
 	private int printIterations = 10;
     private static final Logger log = LoggerFactory.getLogger(OurScoreIterationListener.class);
     private boolean invoked = false;
-
+    //Added variable for GUI training bar
     private volatile long iterCount = 0;
 
     /**
@@ -71,7 +71,6 @@ public class OurScoreIterationListener implements IterationListener {
             log.info("Score at iteration " + iterCount + " is " + result);
         }
         iterCount++;
-        System.out.println(iterCount);
     }
 
     public long getIterCount() {
