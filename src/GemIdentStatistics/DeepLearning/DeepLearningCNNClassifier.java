@@ -36,53 +36,19 @@ public class DeepLearningCNNClassifier extends Classifier {
         stop = false;
 
         cnn = new DeepLearningCNN.DeepLearningCNNBuilder()
+        		.setProgressBar(buildProgress)
                 .batchSize(Run.it.CNN_batch_num)
                 .iterations(Run.it.CNN_iter_num)
                 .splitPercentage(Run.it.CNN_split)
                 .batchSize(Run.it.CNN_batch_num)
                 .epochs(Run.it.CNN_epoch_num)
                 .build();
-
-        ExecutorService coupled_threads = Executors.newFixedThreadPool(2);
-        coupled_threads.execute(new Runnable(){
-            public void run(){
-                try {
-                    cnn.run();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        coupled_threads.execute(new Runnable(){
-            public void run(){
-                while (!stop){
-
-                    buildProgress.setValue((int)Math.round(progress += cnn.getBuildProgress()));
-                    if(progress >= 100)
-                        stop = true;
-                    try {
-                        Thread.sleep(500);
-                    }catch(InterruptedException e){
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
-
-        coupled_threads.shutdown();
-        /*Builds and train network*/
-//        try {
-//        	cnn.run(null);
-//        }catch (Exception e){
-//            e.printStackTrace();
-//        }
-
         try {
-        	coupled_threads.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS); //effectively infinity
-        } catch (InterruptedException ignored){}
-
-
-
+			cnn.run();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}    
     }
 
 	@Override
@@ -100,7 +66,6 @@ public class DeepLearningCNNClassifier extends Classifier {
 	
 	@Override
 	public double Evaluate(String filename, int i, int j){
-	    System.out.println("DeepLearning Eval");
         //Step 1: load image
         //Use superImage to get reflection at edges
         SuperImage superImage = ImageAndScoresBank.getOrAddSuperImage(filename);

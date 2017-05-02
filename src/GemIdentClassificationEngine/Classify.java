@@ -89,7 +89,7 @@ public class Classify {
 	}
 	
 	public static enum MODEL_TYPE {CLASSIC_MACHINE_LEARNING, DEEP_LEARNING}
-	public static MODEL_TYPE MODEL;
+//	public static MODEL_TYPE MODEL;
 
 	/**
 	 * Begins the classification. Starts the timer, initializes the thread pool, 
@@ -98,20 +98,16 @@ public class Classify {
 	private void BeginClassification() {
 		progress.StartTimer();
 		Run.it.imageset.LOG_AddToHistory("begun classification of " + filenames.size() + " images");
-        String modelChoice = Run.it.classification_choice;
-		if(modelChoice.equals("RF_select"))
-            MODEL = MODEL_TYPE.CLASSIC_MACHINE_LEARNING;
-		else
-		    MODEL =MODEL_TYPE.DEEP_LEARNING;
 
-		classifyPool=Executors.newFixedThreadPool(Run.it.num_threads);
+		classifyPool = Executors.newFixedThreadPool(Run.it.num_threads);
 
 		for (String filename:filenames){
-			switch(MODEL){
-				case CLASSIC_MACHINE_LEARNING: 
-					classifyPool.execute(new SingleImageClassicClassifier(filename, progress, classifyPanel, classifier, stop)); break;
-				case DEEP_LEARNING:
+			switch (Run.it.classification_method){
+				case Run.CLASSIFIER_CNN:
 					classifyPool.execute(new SingleImageDeepLearningClassifier(filename, progress, classifyPanel, classifier, stop)); break;
+				case Run.CLASSIFIER_RF:
+				default:
+					classifyPool.execute(new SingleImageClassicClassifier(filename, progress, classifyPanel, classifier, stop)); break;
 			}
 		}	
 		classifyPool.shutdown();

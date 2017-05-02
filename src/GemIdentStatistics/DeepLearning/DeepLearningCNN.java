@@ -1,6 +1,8 @@
 package GemIdentStatistics.DeepLearning;
 
 import GemIdentOperations.Run;
+import GemIdentView.JProgressBarAndLabel;
+
 import org.apache.commons.io.FilenameUtils;
 import org.datavec.api.io.filters.BalancedPathFilter;
 import org.datavec.api.io.labels.ParentPathLabelGenerator;
@@ -27,7 +29,7 @@ import org.deeplearning4j.nn.weights.WeightInit;
 import org.deeplearning4j.ui.api.UIServer;
 import org.deeplearning4j.ui.stats.StatsListener;
 import org.deeplearning4j.ui.storage.InMemoryStatsStorage;
-import org.deeplearning4j.util.NetSaverLoaderUtils;
+import org.deeplearning4j.util.ModelSerializer;
 
 import org.nd4j.linalg.activations.Activation;
 import org.nd4j.linalg.api.ndarray.INDArray;
@@ -45,13 +47,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 
-
-@SuppressWarnings("deprecation")
 public class DeepLearningCNN {
     protected static final Logger log = LoggerFactory.getLogger(DeepLearningCNN.class);
     protected static long seed = 123;
@@ -77,6 +74,7 @@ public class DeepLearningCNN {
         private int iterations;
         private int epochs;
         private double splitTrainTest = .8;//Will break model if 1.0 or greater
+		private JProgressBarAndLabel buildProgressBar;
 
         public DeepLearningCNNBuilder(){
             height = Run.it.getMaxPhenotypeRadiusPlusMore(null) * 2;
@@ -112,8 +110,13 @@ public class DeepLearningCNN {
         }
 
         public DeepLearningCNN build(){
-            return new DeepLearningCNN(height,width,channels,numExamples,numLabels,batchSize,iterations,epochs, splitTrainTest);
+            return new DeepLearningCNN(height,width,channels,numExamples,numLabels,batchSize,iterations,epochs, splitTrainTest, buildProgressBar);
         }
+
+		public DeepLearningCNNBuilder setProgressBar(JProgressBarAndLabel buildProgressBar) {
+            this.buildProgressBar = buildProgressBar;
+            return this;
+		}
 
 
     }
@@ -126,8 +129,9 @@ public class DeepLearningCNN {
 
     protected static String modelType = "custom"; // LeNet, AlexNet or Custom but you need to fill it out
     private MultiLayerNetwork network;
+	private JProgressBarAndLabel buildProgressBar;
 
-    public DeepLearningCNN(int height, int width, int channels, int numExamples, int numLabels, int batchSize, int iterations, int epochs, double splitTrainTest){
+    public DeepLearningCNN(int height, int width, int channels, int numExamples, int numLabels, int batchSize, int iterations, int epochs, double splitTrainTest, JProgressBarAndLabel buildProgressBar){
     	this.channels = channels;
     	this.numExamples = numExamples;
     	this.numLabels = numLabels;
@@ -137,6 +141,7 @@ public class DeepLearningCNN {
     	this.splitTrainTest = splitTrainTest;
         this.height = height;
         this.width = width;
+        this.buildProgressBar = buildProgressBar;
     }
     
     public void run() throws Exception {
@@ -185,7 +190,6 @@ public class DeepLearningCNN {
         List<ImageTransform> transforms = Arrays.asList();
 
         //Formula to get number of times we go through model during training
-        final double progressIncrementor = 100 / ((transforms.size() + 1) * epochs * batchSize * iterations);
 //        System.out.println("Epochs: " + epochs + "\n BatchSize: " + batchSize + "\n Iterations: " + iterations +
 //        "\n Transforms: " +transforms.size() + "\n incrementor: " +progressIncrementor);
         /**
@@ -222,10 +226,9 @@ public class DeepLearningCNN {
         //Attach the StatsStorage instance to the UI: this allows the contents of the StatsStorage to be visualized
         uiServer.attach(statsStorage);
         //Then add the StatsListener to collect this information from the network, as it trains
-        network.setListeners(new StatsListener(statsStorage));	
-        
-        final OurScoreIterationListener scoreListener = new OurScoreIterationListener(listenerFreq);
-        network.setListeners(scoreListener);
+        network.setListeners(new StatsListener(statsStorage));
+        double increment = 100.0 / ((transforms.size() == 0 ? 1 : transforms.size()) * epochs * batchSize * iterations) * 2; //FUDGE *2!
+        network.setListeners(new CNNProgressListener(increment, buildProgressBar));
         /**
          * Data Setup -> define how to load data into net:
          *  - recordReader = the reader that loads and converts image data pass in inputSplit to initialize
@@ -265,31 +268,7 @@ public class DeepLearningCNN {
         }
         else System.out.println("trainIter is empty");
 
-        ExecutorService coupled_threads = Executors.newFixedThreadPool(2);
-        coupled_threads.execute(new Runnable(){
-            public void run(){
-                boolean stop = false;
-                int currentIter = 0;
-                while (!stop){
-                    if(scoreListener.getIterCount() != currentIter) {
-                        double change = (int) (progressIncrementor * (scoreListener.getIterCount() - currentIter));
-                        if(change >= 1.0)
-                        buildProgress += (change);
-//                        System.out.println(buildProgress);
-                    }
-                    if(buildProgress >= 100)
-                        stop = true;
-                }
-            }
-
-
-        });
-        coupled_threads.shutdown();
         network.fit(trainIter);
-
-        try {
-            coupled_threads.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS); //effectively infinity
-        } catch (InterruptedException ignored){}
 
         // Train with transformations
         /**
@@ -327,8 +306,7 @@ public class DeepLearningCNN {
         if (save) {
             log.info("Save model....");
             String basePath = FilenameUtils.concat(System.getProperty("user.dir"), "src/main/resources/");
-            NetSaverLoaderUtils.saveNetworkAndParameters(network, basePath);
-            NetSaverLoaderUtils.saveUpdators(network, basePath);
+            ModelSerializer.writeModel(network, basePath, true);
         }
         log.info("****************Example finished********************");
 

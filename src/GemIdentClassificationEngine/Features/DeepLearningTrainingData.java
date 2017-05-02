@@ -9,6 +9,7 @@ import GemIdentModel.Phenotype;
 import GemIdentOperations.Run;
 import GemIdentOperations.SetupClassification;
 import GemIdentTools.IOTools;
+import GemIdentTools.Geometry.Solids;
 import GemIdentView.JProgressBarAndLabel;
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -58,7 +59,7 @@ public class DeepLearningTrainingData extends TrainingData{
             }
         }
 
-    public void addImagestoProperDirectories(DatumSetupForImage datumSetupForImage, Point t, Phenotype phenotype){
+    private void addImagestoProperDirectories(DatumSetupForImage datumSetupForImage, Point t, Phenotype phenotype){
         SuperImage super_image = ImageAndScoresBank.getOrAddSuperImage(datumSetupForImage.filename());
         String phenoName = phenotype.getName();
         //possibly have a set of buffered images, instead of allocating an image every time
@@ -69,12 +70,12 @@ public class DeepLearningTrainingData extends TrainingData{
         int distanceFromCornerToMid = Math.round((int)(Math.sqrt(2)  * r_max)); //round will give us extra information
         BufferedImage subImage = whole_image.getSubimage(t_adj.x - distanceFromCornerToMid,
                 t_adj.y - distanceFromCornerToMid, r_max *2, r_max*2);
-        System.out.println(phenoName);
+//        System.out.println(phenoName);
         File outputimage = new File(projectClassLabelDir+phenoName+File.separator+
-                IOTools.GetFilenameWithoutExtension(datumSetupForImage.filename())+"_"+t.x+"_"+t.y+".jpg");
+                IOTools.GetFilenameWithoutExtension(datumSetupForImage.filename())+"_"+t.x+"_"+t.y+".bmp");
         /** Insert file into Directory*/
         try {
-            ImageIO.write(subImage, "JPEG", outputimage);
+            ImageIO.write(subImage, "BMP", outputimage);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -106,22 +107,23 @@ public class DeepLearningTrainingData extends TrainingData{
          * @see <a href="http://www.gemident.com/publication.html">the 2007 IEEE paper</a>
          */
         public void run(){
+        	//calculate increment first
+        	for (Phenotype phenotype: Run.it.getPhenotypeObjects()){
+        		increment += phenotype.getTotalPoints() * Solids.getSolid(phenotype.getRmin()).size();
+        	}
+        	increment = 100.0 / increment;
+        	
             for (Phenotype phenotype: Run.it.getPhenotypeObjects()){
                 if (phenotype.hasImage(filename)){
-                    for (Point to:phenotype.getPointsInImage(filename)){
+                    for (Point to : phenotype.getPointsInImage(filename)){
                         if (stop)
                             return;
-                        String name=phenotype.getName();
-                        int Class = 0;
-                        if (phenotype.isFindPixels()){
-                            Class=Run.classMapFwd.get(name);
+                        for (Point t : Solids.GetPointsInSolidUsingCenter(phenotype.getRmin(), to)){
+                            addImagestoProperDirectories(datumSetupForImage, t, phenotype);
+                            //update the bar
+                            totalvalue += increment;
+                            trainingProgress.setValue((int)Math.round(totalvalue));                        
                         }
-                        Datum d = null;
-                        addImagestoProperDirectories(datumSetupForImage, to,phenotype);
-                        //d.setClass(Class);
-                        //allData.add(d);
-                        //update progress bar
-                        trainingProgress.setValue((int)Math.round(totalvalue += increment));
                     }
                 }
             }

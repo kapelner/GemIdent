@@ -113,8 +113,6 @@ public class DatumSetupForEntireRun {
 			case EdgeRingScores:
 				feature_sets.add(new EdgeRingScores());
 				break;
-			case RawPixelValues:
-				feature_sets.add(new RawPixels());
 		}
 	}
 

@@ -680,7 +680,7 @@ public class KClassifyPanel extends KPanel{
 		RF_selected.addActionListener(
 				new ActionListener(){
 					public void actionPerformed(ActionEvent e){
-                        Run.it.classification_choice = "RF_select";
+                        Run.it.classification_method = Run.CLASSIFIER_RF;
 						EnableRFButtons();
 
 					}
@@ -690,7 +690,7 @@ public class KClassifyPanel extends KPanel{
 		CNN_selected.addActionListener(
 				new ActionListener(){
 					public void actionPerformed(ActionEvent e){
-                        Run.it.classification_choice = "CNN_select";
+                        Run.it.classification_method = Run.CLASSIFIER_CNN;
 						EnableCNNButtons();
 
 					}
@@ -1314,7 +1314,7 @@ public class KClassifyPanel extends KPanel{
 							JOptionPane.showMessageDialog(Run.it.getGUI(),"Not enough training points in phenotype(s): " + IOTools.StringJoin(delinquents, ", "));
 							return;
 						}
-						if(!Run.it.classification_choice.equals("CNN_select")) {
+						if (Run.it.classification_method != Run.CLASSIFIER_CNN) {
                             ImageSetInterfaceWithUserColors set = Run.it.getUserColorsImageset();
                             if (set != null) {
                                 if (!set.EnoughStainTrainPoints()) {
@@ -1352,7 +1352,7 @@ public class KClassifyPanel extends KPanel{
 						}
 						else if ((Run.it.getPhenotyeNamesSaveNONAndFindCenters()).size() == 0)
 							JOptionPane.showMessageDialog(Run.it.getGUI(),"No phenotypes set to find centers");
-						if(!Run.it.classification_choice.equals("CNN_select")) { //With CNN there is no need for color information
+						if (Run.it.classification_method != Run.CLASSIFIER_CNN) { //With CNN there is no need for color information
                             ImageSetInterfaceWithUserColors set = Run.it.getUserColorsImageset();
                             if (set != null) {
                                 if (!set.EnoughStainTrainPoints()) {
@@ -1479,13 +1479,13 @@ public class KClassifyPanel extends KPanel{
 		CNN_selected.setEnabled(true);
 
 		if (RF_selected.isSelected()){
-            Run.it.classification_choice = "RF_select";
+            Run.it.classification_method = Run.CLASSIFIER_RF;
 			EnableRFButtons();
 
 		}
 
 		if(CNN_selected.isSelected()){
-            Run.it.classification_choice = "CNN_select";
+            Run.it.classification_method = Run.CLASSIFIER_CNN;
 			EnableCNNButtons();
 
 		}
@@ -1656,14 +1656,14 @@ public class KClassifyPanel extends KPanel{
 //		JLabel trainingLabel=new JLabel("creating phenotype data . . .");
 		trainingProgress=new JProgressBarAndLabel(0,100,"creating phenotype data . . .");
 //		trainingProgress.setStringPainted(true); 
-//		JLabel buildLabel=new JLabel("building classifiers . . .");
-		buildProgress=new JProgressBarAndLabel(0,100,"building classifiers . . .");
+//		JLabel buildLabel=new JLabel("building classifier . . .");
+		buildProgress=new JProgressBarAndLabel(0,100,"building classifier . . .");
 //		buildProgress.setStringPainted(true); 
 		
 //		final Box openBox=Box.createVerticalBox();
 //		openBox.add(openLabel);
 //		openBox.add(openProgress);
-		if (!(Run.it.imageset instanceof NuanceImageListInterface))
+		if (!(Run.it.imageset instanceof NuanceImageListInterface) && Run.it.classification_method != Run.CLASSIFIER_CNN)
 			preProcessingBarsBox.add(openProgress.getBox());		
 //		final Box trainBox=Box.createVerticalBox();
 //		trainBox.add(trainingLabel);
@@ -1709,19 +1709,19 @@ public class KClassifyPanel extends KPanel{
         batchSize.setText(Integer.toString(Run.it.CNN_batch_num));
 //		numBatchSpinner.setValue((Integer)Run.it.num_pixels_to_batch_updates);
 
-        if(!Run.it.classification_choice.isEmpty() && Run.it.classification_choice!=null) {
-            switch (Run.it.classification_choice) {
-                case "RF_select":
-                    RF_selected.setSelected(true);
-                    // EnableRFButtons();
-                    break;
+        switch (Run.it.classification_method) {
 
-                case "CNN_select":
-                    CNN_selected.setSelected(true);
-                    //EnableCNNButtons();
-                    break;
 
-            }
+            case Run.CLASSIFIER_CNN:
+                CNN_selected.setSelected(true);
+                //EnableCNNButtons();
+                break;
+            case Run.CLASSIFIER_RF:
+            default:
+                RF_selected.setSelected(true);
+                // EnableRFButtons();
+                break;
+
         }
 
 		switch (Run.it.pics_to_classify){

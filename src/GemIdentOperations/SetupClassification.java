@@ -133,14 +133,10 @@ public class SetupClassification extends Thread {
 	 */
 	private void DoTheClassification(Collection<String> files, ClassifyProgress progress) {	
 		CreateDirectoriesAndFlushRAM();
-		if(Run.it.classification_choice.equals("CNN_select"))
-		    classifierType = DL4JCNN;
-        else{
-            classifierType = RandomForestSymbol;
-        }
+
 		//if the user didn't supply a classifier, we're going to have to build one:
 		if (classifier == null){
-			if (imageset instanceof ImageSetInterfaceWithUserColors && !classifierType.equals("DL4JCNN")){ //this is ugly but conceptually it's the only way to go I believe
+			if (imageset instanceof ImageSetInterfaceWithUserColors && Run.it.classification_method != Run.CLASSIFIER_CNN){ //this is ugly but conceptually it's the only way to go I believe
 				if (!((ImageSetInterfaceWithUserColors)imageset).OpenMahalanobisCubes(openProgress)){ //there was a problem with openCubes....
 					gui.getClassifyPanel().ReenableClassifyButton();
 					gui.getClassifyPanel().RemoveAllBars();
@@ -148,7 +144,7 @@ public class SetupClassification extends Thread {
 				}
 			}
 			//now we're good to go:
-            if(classifierType.equals("DL4JCNN")){
+            if (Run.it.classification_method == Run.CLASSIFIER_CNN){
                 trainingData = new DeepLearningTrainingData(it.num_threads, trainingProgress);
             }
             else
@@ -170,7 +166,7 @@ public class SetupClassification extends Thread {
 		//No need for features, CNN with find features for us
 		//what features are we using? Declare a new datum setup for this run
 		DatumSetupForEntireRun datumSetupForEntireRun = new DatumSetupForEntireRun(Run.it.imageset);
-		if(Run.it.classification_choice.equals("RF_select")) {
+		if (Run.it.classification_method == Run.CLASSIFIER_RF) {
             //datumSetupForEntireRun.addFeatureSet(FeatureSetName.RawPixelValues);
             datumSetupForEntireRun.addFeatureSet(FeatureSetName.ColorRingScores);
 //		datumSetupForEntireRun.addFeatureSet(FeatureSetName.MaxLineScores);
@@ -179,21 +175,9 @@ public class SetupClassification extends Thread {
 		datumSetupForEntireRun.initialize();	
 		return datumSetupForEntireRun;
 	}
-	
-	/** The name of the "Random Forest" machine learning classifier */
-	public static final String RandomForestSymbol = "Random Forest";
-	/** The name of the "Decision Tree" machine learning classifier */
-	public static final String CARTSymbol = "Decision Tree";
-	/** The name of the "CGM98" BayesianCART machine learning classifier */
-	public static final String BayesianCARTSymbol = "BayesianCART";	
-	/** The name of the "Bayesian Additive Regression Trees" machine learning classifier */
-	public static final String BARTSymbol = "BART";
-	/** deep learning CNN via DL4J */
-	public static final String DL4JCNN = "DL4JCNN";
-	
-	
+		
 	/** The current classifier the user is using */	
-	public static String classifierType = RandomForestSymbol; //default is random forests for now
+//	public static String classifierType = RandomForestSymbol; //default is random forests for now
     //public static String classifierType = DL4JCNN;
 	/**
 	 * This method creates the machine learning classifier for this analysis
@@ -201,30 +185,22 @@ public class SetupClassification extends Thread {
 	private void CreateClassifier() {
 		//this is where you can switch the machine learning engine if desired:
 		classifier = null;
-		String model_selected = Run.it.classification_choice;
-		if(model_selected.equals("RF_select")){
-		    classifierType = RandomForestSymbol;
-        }
-        else{
-		    classifierType = DL4JCNN;
-        }
-
-		if (classifierType.equals(RandomForestSymbol)){
+		
+		if (Run.it.classification_method == Run.CLASSIFIER_RF){
 			classifier = new RandomForest(initDatumSetupForEntireRun(), buildProgress, it.num_trees);
-		}
-		else if (classifierType.equals(CARTSymbol)){
-			classifier = new DTree(initDatumSetupForEntireRun(), buildProgress);
-		}
-		//COMING SOON
-		else if (classifierType.equals(DL4JCNN)){
-			classifier = new DeepLearningCNNClassifier(initDatumSetupForEntireRun(), buildProgress, Run.it.numPhenotypes());
-		}		
+        }
+        else if (Run.it.classification_method == Run.CLASSIFIER_CNN){
+        	classifier = new DeepLearningCNNClassifier(initDatumSetupForEntireRun(), buildProgress, Run.it.numPhenotypes());
+        }	
+		
 		classifier.setData(trainingData.getData());
 		classifier.Build();	
 //		classifier.dumpDataToFile(); //debugging
 		System.out.println("all training data dumped");
 		//now save the forest to the hd (on another thread to not slow us down):
-		SaveClassifierToHardDrive();
+		if (Run.it.classification_method != Run.CLASSIFIER_CNN){
+			SaveClassifierToHardDrive();
+		}		
 	}
 	
 	/** Creates necessary directories for classification and centroid-finding, and flushes the caches to release memory */

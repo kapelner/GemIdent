@@ -220,8 +220,11 @@ public class Run implements Serializable{
 //	public String RANGE_TEXT;
 	/** the text the user wrote in the {@link KClassifyPanel#nRandomText classify N random} field */
 	public Integer N_RANDOM;
-	/** the setting for whether Random Forest or CNN is selected */
-	public String classification_choice;
+	/** the setting for which classification method */
+	public int classification_method;
+	/** the types of classification methods */
+	public static final int CLASSIFIER_RF = 1;
+	public static final int CLASSIFIER_CNN = 2;
 
 	//results
 	/** a mapping from the phenotype (where centroids are sought) to its total count in the last classification */
@@ -291,7 +294,7 @@ public class Run implements Serializable{
 		pixel_skip=Run.DEFAULT_PIXEL_SKIP;
 		num_pixels_to_batch_updates=Run.DEFAULT_R_BATCH_SIZE;
 		pics_to_classify=KClassifyPanel.CLASSIFY_TRAINED;
-		classification_choice = "RF_select";
+		classification_method = CLASSIFIER_RF;
 //		RANGE_TEXT="";
 		
 		gui.DefaultPopulateWindows(imageset);			
