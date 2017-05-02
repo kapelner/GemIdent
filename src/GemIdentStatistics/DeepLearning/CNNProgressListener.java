@@ -64,7 +64,7 @@ public class CNNProgressListener implements TrainingListener {
     public void iterationDone(Model model, int iteration) {
 		currentProgress += progressIncrementor;
 		buildProgressBar.setValue((int)Math.round(currentProgress));
-//		System.out.println("iterationDone currentProgress = " + currentProgress + " progressIncrementor = " + progressIncrementor + " buildProgressBar: "+ buildProgressBar.getValue());
+		System.out.println("iterationDone currentProgress = " + currentProgress + " progressIncrementor = " + progressIncrementor + " buildProgressBar: "+ buildProgressBar.getValue());
     }
 
 	@Override

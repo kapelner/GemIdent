@@ -39,7 +39,6 @@ import GemIdentImageSets.ImageAndScoresBank;
 import GemIdentImageSets.ImageSetInterface;
 import GemIdentImageSets.ImageSetInterfaceWithUserColors;
 import GemIdentStatistics.Classifier;
-import GemIdentStatistics.CART.DTree;
 import GemIdentStatistics.DeepLearning.DeepLearningCNNClassifier;
 import GemIdentStatistics.RandomForest.RandomForest;
 import GemIdentTools.IOTools;
@@ -272,8 +271,6 @@ public class SetupClassification extends Thread {
 		try {
 			if (trainingData != null)
 				trainingData.Stop();
-			if (classifier != null)
-				classifier.StopBuilding();
 			if (classify != null)
 				classify.Stop();
 			if (postProcess != null)

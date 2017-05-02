@@ -192,14 +192,12 @@ public class Run implements Serializable{
 	public int CNN_num_examples;
 	/** Number of labels */
 	public int CNN_num_labels;
-	/** Batch Size         */
-	public int CNN_batch_num;
 	/** Iteration Number   */
 	public int CNN_iter_num;
 	/** Epoch Number       */
 	public int CNN_epoch_num;
 	/**Split train %       */
-	public double CNN_split;
+	public double CNN_split = 0.7;
 
 
 
@@ -487,7 +485,7 @@ public class Run implements Serializable{
 	public int numPhenTrainingPoints(){
 		int N=0;
 		for (Phenotype phenotype:phenotypes.values())
-			N+=phenotype.getTotalPoints();
+			N += phenotype.getTotalPointsPlusAllAround();
 		return N;
 	}
 	public int numPhenTrainingImages(){

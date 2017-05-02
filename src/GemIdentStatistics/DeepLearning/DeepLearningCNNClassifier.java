@@ -14,12 +14,10 @@ import java.awt.image.RasterFormatException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class DeepLearningCNNClassifier extends Classifier {
 	private static final long serialVersionUID = 5794871567404918608L;
-    /** For progress bar display for the creation of this DL4J Learner, this records the total progress */
-    private transient double progress;
-    private transient boolean stop;
     /** the deep learning model */
 	private DeepLearningCNN cnn;
 
@@ -31,16 +29,11 @@ public class DeepLearningCNNClassifier extends Classifier {
 
 	@Override
 	public void Build(){
-		// play with Xy to get it into a Dl4j model
-		//build / train the CNN here
-        stop = false;
 
         cnn = new DeepLearningCNN.DeepLearningCNNBuilder()
         		.setProgressBar(buildProgress)
-                .batchSize(Run.it.CNN_batch_num)
                 .iterations(Run.it.CNN_iter_num)
-                .splitPercentage(Run.it.CNN_split)
-                .batchSize(Run.it.CNN_batch_num)
+                .splitPercentage(Run.it.CNN_split) //should come from user
                 .epochs(Run.it.CNN_epoch_num)
                 .build();
         try {
@@ -83,11 +76,6 @@ public class DeepLearningCNNClassifier extends Classifier {
         }
 
         return cnn.classify(imageAtPoint);
-	}
-
-	@Override
-	public void StopBuilding() {
-		stop = true;
 	}
 
 }

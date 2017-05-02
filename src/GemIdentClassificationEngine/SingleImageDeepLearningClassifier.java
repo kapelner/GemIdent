@@ -34,7 +34,7 @@ public class SingleImageDeepLearningClassifier extends SingleImageClassicClassif
 	 */
 	protected void ClassifyPixels(){
 		new File((System.getProperty("user.dir")+"/Evaluation/")).mkdirs();
-		int counter=0;
+		int counter = 0;
 		classify_all_pixels : {
 			for (int j=0;j<height;j++){
 				for (int i=0;i<width;i++){
@@ -44,15 +44,16 @@ public class SingleImageDeepLearningClassifier extends SingleImageClassicClassif
 						counter++;
 						//Where CNN gives its classification
 						int resultClass = (int)classifier.Evaluate(filename, i, j);
-						System.out.println("pixel " + filename + "(" +  i + " " + j + ") classified to be a " + resultClass);
+
 						if (resultClass != 0)
 							(is.get(Run.classMapBck.get(resultClass))).set(i,j,true);
-						if (counter == Run.it.num_pixels_to_batch_updates && counter != 0){
-							counter=0;
+						if (counter % Run.it.num_pixels_to_batch_updates == 0){
+							System.out.println("pixel " + filename + "(" +  i + " " + j + ") classified to be a " + resultClass);
 							new Thread(){ //thread this off to make classification faster
 								public void run(){
-//									UpdateImagePanel();
-									UpdateProgressBar();									
+									
+									UpdateProgressBar();
+									UpdateImagePanel();									
 								}
 							}.start();							
 						}

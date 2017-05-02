@@ -36,7 +36,6 @@ import java.awt.Insets;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
@@ -173,7 +172,6 @@ public class KClassifyPanel extends KPanel{
 	//private JLabel imageHeiLabel;
 	//private JLabel imageWidLabel;
 	private JLabel channelsLabel;
-	private JLabel numExamplesLabel;
 	private JLabel numLabelsLabel;
 	private JLabel batchSizeLabel;
 	private JLabel iterationsLabel;
@@ -830,7 +828,6 @@ public class KClassifyPanel extends KPanel{
 
 						if (all_cnn_params_are_valid){
 //							Run.it.CNN_num_examples = Integer.parseInt(numExamples.getText());
-							Run.it.CNN_batch_num = Integer.parseInt(batchSize.getText());
 							Run.it.CNN_iter_num = Integer.parseInt(iterations.getText());
 							Run.it.CNN_epoch_num = Integer.parseInt(epochs.getText());
 							Run.it.CNN_split = Integer.parseInt(splitTrainTest.getText());
@@ -1706,7 +1703,6 @@ public class KClassifyPanel extends KPanel{
 		numPixelSkipSpinner.setValue((Integer)Run.it.pixel_skip - 1);
         epochs.setText(Integer.toString(Run.it.CNN_epoch_num));
         iterations.setText(Integer.toString(Run.it.CNN_iter_num));
-        batchSize.setText(Integer.toString(Run.it.CNN_batch_num));
 //		numBatchSpinner.setValue((Integer)Run.it.num_pixels_to_batch_updates);
 
         switch (Run.it.classification_method) {

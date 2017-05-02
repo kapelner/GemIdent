@@ -5,8 +5,10 @@ import GemIdentView.JProgressBarAndLabel;
 
 import org.apache.commons.io.FilenameUtils;
 import org.datavec.api.io.filters.BalancedPathFilter;
+import org.datavec.api.io.filters.PathFilter;
 import org.datavec.api.io.labels.ParentPathLabelGenerator;
 import org.datavec.api.records.listener.impl.LogRecordListener;
+import org.datavec.api.split.CollectionInputSplit;
 import org.datavec.api.split.FileSplit;
 import org.datavec.api.split.InputSplit;
 import org.datavec.image.loader.NativeImageLoader;
@@ -44,6 +46,8 @@ import org.slf4j.LoggerFactory;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -62,7 +66,7 @@ public class DeepLearningCNN {
     protected int batchSize;
     protected int iterations;
     protected int epochs;
-    protected double splitTrainTest;
+    protected double splitTrainTest = 0.7;
 
     public static class DeepLearningCNNBuilder{
         private int height;
@@ -70,10 +74,9 @@ public class DeepLearningCNN {
         private int channels;
         private int numExamples;
         private int numLabels;
-        private int batchSize;
         private int iterations;
         private int epochs;
-        private double splitTrainTest = .8;//Will break model if 1.0 or greater
+        private double splitTrainTest;
 		private JProgressBarAndLabel buildProgressBar;
 
         public DeepLearningCNNBuilder(){
@@ -84,16 +87,7 @@ public class DeepLearningCNN {
             channels = 3; //Default RGB type 
 
         }
-
-        public DeepLearningCNNBuilder batchSize(int batchSize){
-            if(batchSize > numExamples){
-                // Probably should let user re-enter param
-                batchSize = numExamples;
-            }
-            this.batchSize = batchSize;
-            return this;
-        }
-
+        
         public DeepLearningCNNBuilder iterations(int iterations){
             this.iterations = iterations;
             return this;
@@ -104,13 +98,13 @@ public class DeepLearningCNN {
             return this;
         }
 
-        public DeepLearningCNNBuilder splitPercentage(double percentage){
-            this.splitTrainTest = percentage;
+        public DeepLearningCNNBuilder splitPercentage(double splitTrainTest){
+            this.splitTrainTest = splitTrainTest;
             return this;
         }
 
         public DeepLearningCNN build(){
-            return new DeepLearningCNN(height,width,channels,numExamples,numLabels,batchSize,iterations,epochs, splitTrainTest, buildProgressBar);
+            return new DeepLearningCNN(height,width,channels,numExamples,numLabels,iterations,epochs, splitTrainTest, buildProgressBar);
         }
 
 		public DeepLearningCNNBuilder setProgressBar(JProgressBarAndLabel buildProgressBar) {
@@ -131,17 +125,57 @@ public class DeepLearningCNN {
     private MultiLayerNetwork network;
 	private JProgressBarAndLabel buildProgressBar;
 
-    public DeepLearningCNN(int height, int width, int channels, int numExamples, int numLabels, int batchSize, int iterations, int epochs, double splitTrainTest, JProgressBarAndLabel buildProgressBar){
+    public DeepLearningCNN(int height, int width, int channels, int numExamples, int numLabels, int iterations, int epochs, double splitTrainTest, JProgressBarAndLabel buildProgressBar){
     	this.channels = channels;
     	this.numExamples = numExamples;
     	this.numLabels = numLabels;
-    	this.batchSize = batchSize;
     	this.iterations = iterations;
     	this.epochs = epochs;
-    	this.splitTrainTest = splitTrainTest;
+//    	this.splitTrainTest = splitTrainTest;
         this.height = height;
         this.width = width;
         this.buildProgressBar = buildProgressBar;
+    }
+    
+    public InputSplit[] sample(FileSplit fileSplit, PathFilter pathFilter, double... weights) {
+        URI[] paths = pathFilter != null ? pathFilter.filter(fileSplit.locations()) : fileSplit.locations();
+    	System.out.println("PATHs: " + paths.length);
+
+        if (weights != null && weights.length > 0 && weights[0] != 1.0) {
+            InputSplit[] splits = new InputSplit[weights.length];
+            double totalWeight = 0;
+            for (int i = 0; i < weights.length; i++) {
+                totalWeight += weights[i];
+            }
+
+            double cumulWeight = 0;
+            int[] partitions = new int[weights.length + 1];
+            for (int i = 0; i < weights.length; i++) {
+                partitions[i] = (int)Math.round(cumulWeight * paths.length / totalWeight);
+                cumulWeight += weights[i];
+            }
+            partitions[weights.length] = paths.length;
+            
+            for (int i = 0; i < weights.length; i++) {
+            	System.out.println("weights[" + i  + "] = " + weights[i]);
+            }
+            
+            for (int i = 0; i < partitions.length; i++) {
+            	System.out.println("partition[" + i  + "] = " + partitions[i]);
+            }
+
+            for (int i = 0; i < weights.length; i++) {
+                List<URI> uris = new ArrayList<>();
+                for (int j = partitions[i]; j < partitions[i + 1]; j++) {
+                	System.out.println("j0 = " + partitions[i] + " j = " + j + " jf = " + partitions[i + 1]);
+                    uris.add(paths[j]);
+                }
+                splits[i] = new CollectionInputSplit(uris);
+            }
+            return splits;
+        } else {
+            return new InputSplit[] { new CollectionInputSplit(Arrays.asList(paths)) };
+        }
     }
     
     public void run() throws Exception {
@@ -164,18 +198,21 @@ public class DeepLearningCNN {
                 "LabelsForAllProjects"+File.separator+"ClassLabels"+
                 Run.it.getProjectName());
         FileSplit fileSplit = new FileSplit(mainPath, NativeImageLoader.ALLOWED_FORMATS, rng);
+        
+        batchSize = numExamples;//Run.it.numPhenTrainingPoints();
+    	System.out.println("BATCH SIZE:" + batchSize);
         BalancedPathFilter pathFilter = new BalancedPathFilter(rng, labelMaker, numExamples, numLabels, batchSize);
-
+        
+    	System.out.println("fileSplit:" + fileSplit.length());
         /**
          * Data Setup -> train test split
          *  - inputSplit = define train and test split
          **/
-        splitTrainTest = .8;
-        InputSplit[] inputSplit = fileSplit.sample(pathFilter, splitTrainTest, 1 - splitTrainTest);
+        InputSplit[] inputSplit = sample(fileSplit, pathFilter, splitTrainTest, 1 - splitTrainTest);
         InputSplit trainData = inputSplit[0];
         InputSplit testData = inputSplit[1];
 
-
+        
 
         /**
          * Data Setup -> transformation
@@ -227,7 +264,8 @@ public class DeepLearningCNN {
         uiServer.attach(statsStorage);
         //Then add the StatsListener to collect this information from the network, as it trains
         network.setListeners(new StatsListener(statsStorage));
-        double increment = 100.0 / ((transforms.size() == 0 ? 1 : transforms.size()) * epochs * batchSize * iterations) * 2; //FUDGE *2!
+//        double increment = 100.0 / ((transforms.size() == 0 ? 1 : transforms.size()) * epochs * trainData.length() * iterations); //FUDGE *2!
+        double increment = 100.0 / (epochs * iterations);
         network.setListeners(new CNNProgressListener(increment, buildProgressBar));
         /**
          * Data Setup -> define how to load data into net:
