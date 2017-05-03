@@ -24,27 +24,10 @@
 
 package GemIdentView;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.Insets;
+import java.awt.*;
 
 
-import javax.swing.Box;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JFormattedTextField;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JSpinner;
-import javax.swing.JTextField;
-import javax.swing.SpinnerNumberModel;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
@@ -61,6 +44,7 @@ import GemIdentTools.IOTools;
 import GemIdentTools.Matrices.BoolMatrix;
 
 import java.io.File;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.awt.event.ActionEvent;
@@ -169,6 +153,9 @@ public class KClassifyPanel extends KPanel{
 	private JRadioButton CNN_selected;
 	private JRadioButton RF_selected;
 
+	/**Button loads overview page for DL4J Training, enabled upon classification */
+	private JButton showOverview;
+
 	//private JLabel imageHeiLabel;
 	//private JLabel imageWidLabel;
 	private JLabel channelsLabel;
@@ -203,7 +190,7 @@ public class KClassifyPanel extends KPanel{
 	private JRadioButton remainButton;
 
 	/** the dimension of the Western region that holds all options and buttons */
-	private static final Dimension optionsDim=new Dimension(150,500);
+	private static final Dimension optionsDim=new Dimension(230,500);
 	
 	//classification parameters
 	public static final int CLASSIFY_ALL=1;
@@ -288,8 +275,8 @@ public class KClassifyPanel extends KPanel{
 		optionBox.add(Box.createVerticalStrut(10)); //give it some margin
 		optionBox.add(Box.createVerticalStrut(10));
 
+		optionBox.setAlignmentX(options.LEFT_ALIGNMENT);
 
-		
 
 
 		JFormattedTextField textfield;
@@ -330,17 +317,41 @@ public class KClassifyPanel extends KPanel{
 		RF_selected = new JRadioButton("Random Forest");
 		CNN_selected = new JRadioButton("CNN (Deep Learning)");
 
+
+
 		classifyMethod = new ButtonGroup();
+
 		RF_selected.setEnabled(true);
 		CNN_selected.setEnabled(true);
 		classifyMethod.add(RF_selected);
 		classifyMethod.add(CNN_selected);
+
+
 		Box classification_method_box=Box.createVerticalBox();
-		classification_method_box.setAlignmentX(LEFT_ALIGNMENT);
+
+
+		/**
+		RF_selected.setHorizontalAlignment(SwingConstants.LEFT);
+		RF_selected.setVerticalTextPosition(JRadioButton.BOTTOM);
+		RF_selected.setHorizontalTextPosition(JRadioButton.CENTER);
+
+		CNN_selected.setHorizontalAlignment(SwingConstants.LEFT);
+		CNN_selected.setVerticalTextPosition(JRadioButton.BOTTOM);
+		CNN_selected.setHorizontalTextPosition(JRadioButton.CENTER);
+		*/
+
+		RF_selected.setAlignmentX(Component.LEFT_ALIGNMENT);
+		CNN_selected.setAlignmentX(Component.LEFT_ALIGNMENT);
+
 		classification_method_box.add(RF_selected);
+		classification_method_box.add(Box.createVerticalStrut(10));
+		classification_method_box.add(Box.createHorizontalGlue());
 		classification_method_box.add(CNN_selected);
+		classification_method_box.add(Box.createVerticalStrut(10));
+		classification_method_box.add(Box.createHorizontalGlue());
+		classification_method_box.setAlignmentX(Component.LEFT_ALIGNMENT);
+
 		optionBox.add(classification_method_box);
-		
 
 		titleLabel=new JLabel("<html><u>Classification Parameters</u></html>");
 		Box titleLabelBox=Box.createHorizontalBox();
@@ -633,6 +644,10 @@ public class KClassifyPanel extends KPanel{
 	    ClassifierName.setColumns(15);
 	    RunClassifyAndPostProcessButton=new JButton("<html>Classify, Centers,<br>& Sanity Check</html>");
 	    RunClassifyButton=new JButton("Classify");
+
+	    showOverview = new JButton("Training Overview");
+	    showOverview.setEnabled(false);
+
 	    RunFindCenters=new JButton("Find Centers");
 	    StopButton=new JButton("Stop");
 	    StopButton.setEnabled(false);
@@ -650,10 +665,15 @@ public class KClassifyPanel extends KPanel{
 	    optionBox.add(horiz);
 	    optionBox.add(ClassifierName);
 
+		RunClassifyAndPostProcessButton.setEnabled(false);
+		RunClassifyButton.setEnabled(false);
+
 	    buttonBox.add(RunClassifyAndPostProcessButton);
 	    buttonBox.add(Box.createVerticalStrut(10));
 	    buttonBox.add(RunClassifyButton);
 	    buttonBox.add(Box.createVerticalStrut(10));
+	    buttonBox.add(showOverview);
+		buttonBox.add(Box.createVerticalStrut(10));
 //	    buttonBox.add(find_centers_method_panel);	    
 	    buttonBox.add(RunFindCenters);
 	    buttonBox.add(Box.createVerticalStrut(10));
@@ -825,7 +845,8 @@ public class KClassifyPanel extends KPanel{
 							all_cnn_params_are_valid = false;
 						}
 
-
+						RunClassifyAndPostProcessButton.setEnabled(false);
+						RunClassifyButton.setEnabled(false);
 						if (all_cnn_params_are_valid){
 //							Run.it.CNN_num_examples = Integer.parseInt(numExamples.getText());
 							Run.it.CNN_iter_num = Integer.parseInt(iterations.getText());
@@ -1365,12 +1386,33 @@ public class KClassifyPanel extends KPanel{
                         }
 					}
 					else
-						ClassificationBegun();										
+						ClassificationBegun();
 					Run.it.DoBothOnSepThread(openProgress, trainingProgress, buildProgress, classifier);
 					repaint();						
 				}
 			}
-		);		
+		);
+
+		showOverview.addActionListener(
+				new ActionListener() {
+
+					public void actionPerformed(ActionEvent e) {
+						try {
+							URL url = new URL("http://localhost:9000/train/");
+							Overview.openWebpage(url);
+						}
+						catch (Exception ex){
+							System.err.println("URL Error");
+
+						}
+
+
+					}
+				}
+
+
+		);
+
 		RunFindCenters.addActionListener(
 			new ActionListener(){
 				public void actionPerformed(ActionEvent e){
@@ -1410,6 +1452,7 @@ public class KClassifyPanel extends KPanel{
 		ChooseClassifierButton.setEnabled(true);
 		RunClassifyButton.setEnabled(true);
 		RunClassifyAndPostProcessButton.setEnabled(true);
+		showOverview.setEnabled(false);
 		StopButton.setEnabled(false);
 		RunFindCenters.setEnabled(true);
 		RunRetrainButton.setEnabled(true);	
@@ -1423,6 +1466,7 @@ public class KClassifyPanel extends KPanel{
 		RunClassifyButton.setEnabled(false);
 		RunClassifyAndPostProcessButton.setEnabled(false);
 		RunFindCenters.setEnabled(false);
+		showOverview.setEnabled(true);
 		StopButton.setEnabled(true); //to be enabled later after Mahalanobis cubes opened (see MasterClassify in Run)
 		RunRetrainButton.setEnabled(false);
 		DisableMostButtons();
@@ -1548,6 +1592,9 @@ public class KClassifyPanel extends KPanel{
 
 	/** option buttons are reenabled */
 	private void EnableRFButtons(){
+
+		RunClassifyAndPostProcessButton.setEnabled(true);
+		RunClassifyButton.setEnabled(true);
 
 		numTreesBox.setEnabled(true);
 		numTreesBox.setVisible(true);
