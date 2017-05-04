@@ -33,7 +33,7 @@ import GemIdentClassificationEngine.Classify;
 import GemIdentClassificationEngine.Datum;
 import GemIdentClassificationEngine.Features.DatumFeatureSet.FeatureSetName;
 import GemIdentClassificationEngine.DatumSetupForEntireRun;
-import GemIdentClassificationEngine.Features.DeepLearningTrainingData;
+import GemIdentClassificationEngine.DeepLearning.DeepLearningTrainingData;
 import GemIdentClassificationEngine.TrainingData;
 import GemIdentImageSets.ImageAndScoresBank;
 import GemIdentImageSets.ImageSetInterface;

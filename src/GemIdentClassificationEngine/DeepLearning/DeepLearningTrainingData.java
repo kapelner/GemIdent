@@ -1,4 +1,4 @@
-package GemIdentClassificationEngine.Features;
+package GemIdentClassificationEngine.DeepLearning;
 
 import GemIdentClassificationEngine.Datum;
 import GemIdentClassificationEngine.DatumSetupForImage;
@@ -59,28 +59,29 @@ public class DeepLearningTrainingData extends TrainingData{
             }
         }
 
-    private void addImagestoProperDirectories(DatumSetupForImage datumSetupForImage, Point t, Phenotype phenotype){
-        SuperImage super_image = ImageAndScoresBank.getOrAddSuperImage(datumSetupForImage.filename());
-        String phenoName = phenotype.getName();
-        //possibly have a set of buffered images, instead of allocating an image every time
-        BufferedImage whole_image = super_image.getAsBufferedImage();
-        //coodinates for point of interest translated to super image
-        Point t_adj = super_image.AdjustPointForSuper(t);
-        int r_max = phenotype.getRmax();
-        int distanceFromCornerToMid = Math.round((int)(Math.sqrt(2)  * r_max)); //round will give us extra information
-        BufferedImage subImage = whole_image.getSubimage(t_adj.x - distanceFromCornerToMid,
-                t_adj.y - distanceFromCornerToMid, r_max *2, r_max*2);
-//        System.out.println(phenoName);
-        File outputimage = new File(projectClassLabelDir+phenoName+File.separator+
+    private void addImagetoProperDirectories(DatumSetupForImage datumSetupForImage, Point t, Phenotype phenotype){
+        BufferedImage superImageCore = coreOutSuperImage(
+        		ImageAndScoresBank.getOrAddSuperImage(datumSetupForImage.filename()), 
+        		Run.it.getMaxPhenotypeRadiusPlusMore(null), 
+        		t
+        );
+        File outputimagefile = new File(projectClassLabelDir+phenotype.getName()+File.separator+
                 IOTools.GetFilenameWithoutExtension(datumSetupForImage.filename())+"_"+t.x+"_"+t.y+".bmp");
         /** Insert file into Directory*/
         try {
-            ImageIO.write(subImage, "BMP", outputimage);
+            ImageIO.write(superImageCore, "BMP", outputimagefile);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    /** Framework for building training data in one image and can be threaded in a thread pool */
+    
+    public static BufferedImage coreOutSuperImage(SuperImage super_image, int r_max, Point t) {
+    	Point t_adj = super_image.AdjustPointForSuper(t);
+    	int d = Math.round((int)(Math.sqrt(2)  * r_max)); //round will give us extra information
+		return super_image.getAsBufferedImage().getSubimage(t_adj.x - d, t_adj.y - d, d * 2 + 1, d * 2 + 1);
+	}
+
+	/** Framework for building training data in one image and can be threaded in a thread pool */
     private class TrainingDataMaker implements Runnable{
 
         /** the filename of the image whose training data is being created */
@@ -119,7 +120,7 @@ public class DeepLearningTrainingData extends TrainingData{
                         if (stop)
                             return;
                         for (Point t : Solids.GetPointsInSolidUsingCenter(phenotype.getRmin(), to)){
-                            addImagestoProperDirectories(datumSetupForImage, t, phenotype);
+                            addImagetoProperDirectories(datumSetupForImage, t, phenotype);
                             //update the bar
                             totalvalue += increment;
                             trainingProgress.setValue((int)Math.round(totalvalue));                        

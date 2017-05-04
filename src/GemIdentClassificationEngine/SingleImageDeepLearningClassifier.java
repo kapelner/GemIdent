@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import GemIdentOperations.Run;
 import GemIdentStatistics.Classifier;
+import GemIdentTools.IOTools;
 import GemIdentView.ClassifyProgress;
 import GemIdentView.KClassifyPanel;
 
@@ -50,12 +51,15 @@ public class SingleImageDeepLearningClassifier extends SingleImageClassicClassif
 						if (counter % Run.it.num_pixels_to_batch_updates == 0){
 							System.out.println("pixel " + filename + "(" +  i + " " + j + ") classified to be a " + resultClass);
 							new Thread(){ //thread this off to make classification faster
-								public void run(){
-									
+								public void run(){									
 									UpdateProgressBar();
 									UpdateImagePanel();									
 								}
-							}.start();							
+							}.start();		
+							for (String phenotype : Run.it.getPhenotyeNamesSaveNONAndFindPixels()){
+								//System.out.println("about to write ismatrix for file " + filename + " and phenotype " + phenotype + " and is matrix " + is.get(phenotype).toString());
+								IOTools.WriteIsMatrix(Classify.GetIsName(filename, phenotype),is.get(phenotype));
+							}							
 						}
 					}
 				}

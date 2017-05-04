@@ -167,7 +167,7 @@ public class DeepLearningCNN {
             for (int i = 0; i < weights.length; i++) {
                 List<URI> uris = new ArrayList<>();
                 for (int j = partitions[i]; j < partitions[i + 1]; j++) {
-                	System.out.println("j0 = " + partitions[i] + " j = " + j + " jf = " + partitions[i + 1]);
+//                	System.out.println("j0 = " + partitions[i] + " j = " + j + " jf = " + partitions[i + 1]);
                     uris.add(paths[j]);
                 }
                 splits[i] = new CollectionInputSplit(uris);
@@ -353,26 +353,34 @@ public class DeepLearningCNN {
 
     /**
      *Feeds Buffered Image to model
-     * @param imageData bufferedImage at point of interest
+     * @param image bufferedImage at point of interest
      * @return classlabel
      */
-    public double classify(BufferedImage imageData){
-        //3 for RGB channels
-        NativeImageLoader unlabeledImage = new NativeImageLoader(imageData.getWidth(),imageData.getHeight(),3);
+    public double classify(BufferedImage image){
         //need INDArray to input into network
-        INDArray image = null;
+        INDArray d = null;
         try {
-            image = unlabeledImage.asMatrix(imageData);
-
-
+            d = new NativeImageLoader(image.getHeight(), image.getWidth(), 3).asMatrix(image);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        scaler.transform(image);
+        scaler.transform(d);
         //System.out.println(image);
-        int x[] = network.predict(image);
-        return (double)x[0];
+        int prediction_vector[] = network.predict(d);
+        
+//        for (int i = 0; i < prediction_vector.length; i++) {
+//        	System.out.println("prediction_vector[" + i  + "] = " + prediction_vector[i]);
+//        }
+//        
+//        INDArray d_f = network.output(d);
+//        
+//        System.out.println("d_f = " + d_f);
+//        //Another quick question: I'm doing a ton of network.predict each for a buffered image. How much speedup would I get if I batched them all together with many examples and used the output function? It appears to be using Nd4j.vstack. I imagine if I do an image one at a time there's a ton of fixed costs that I'm incurring each time I call it.
+//        
+        return (double)prediction_vector[0];
     }
+    
+
 
 
     private ConvolutionLayer convInit(String name, int in, int out, int[] kernel, int[] stride, int[] pad, double bias) {

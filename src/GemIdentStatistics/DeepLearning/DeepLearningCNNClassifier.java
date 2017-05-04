@@ -1,6 +1,7 @@
 package GemIdentStatistics.DeepLearning;
 
 import GemIdentClassificationEngine.DatumSetupForEntireRun;
+import GemIdentClassificationEngine.DeepLearning.DeepLearningTrainingData;
 import GemIdentImageSets.ImageAndScoresBank;
 import GemIdentImageSets.SuperImage;
 import GemIdentOperations.Run;
@@ -59,23 +60,13 @@ public class DeepLearningCNNClassifier extends Classifier {
 	
 	@Override
 	public double Evaluate(String filename, int i, int j){
-        //Step 1: load image
-        //Use superImage to get reflection at edges
-        SuperImage superImage = ImageAndScoresBank.getOrAddSuperImage(filename);
-        Point adjustedPoint = superImage.AdjustPointForSuper(new Point(i,j));
-        BufferedImage fullImage = superImage.getAsBufferedImage();
-        BufferedImage imageAtPoint = null;
-        //not a true fix just want to see how classifications behave. if out of bounds just take center of image.
-        int r_max = Run.it.getMaxPhenotypeRadiusPlusMore(null);
-        try {
-            imageAtPoint = fullImage.getSubimage(adjustedPoint.x - (r_max / 2), adjustedPoint.y - (r_max / 2), r_max* 2, r_max *2);
-        } catch(RasterFormatException e){
-            System.out.println("Out of bounds raster, Filename is:" + filename + '\n'+
-                            "Point IS x:" + adjustedPoint.x + "y" + adjustedPoint.y);
-                    imageAtPoint = fullImage.getSubimage(fullImage.getWidth()/2,fullImage.getHeight()/2,r_max* 2,r_max* 2);
-        }
-
-        return cnn.classify(imageAtPoint);
+       return cnn.classify(
+    		   DeepLearningTrainingData.coreOutSuperImage(
+    				   ImageAndScoresBank.getOrAddSuperImage(filename), 
+    				   Run.it.getMaxPhenotypeRadiusPlusMore(null), 
+    				   new Point(i,j)
+    		   )
+    	   );
 	}
 
 }

@@ -173,7 +173,7 @@ public class SingleImageClassicClassifier implements Runnable {
 	void UpdateImagePanel(){
 		classifyPanel.setDisplayImage(superImage.getCenterImage()); //LEAK!!!!!
 		classifyPanel.setIs(is);
-//			classifyPanel.repaintImagePanel();			
+		classifyPanel.repaintImagePanel();			
 	}
 	/** paint the results over a copy of the original image */
 	private void MarkIntermediatePixels(){
