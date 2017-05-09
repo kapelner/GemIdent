@@ -488,6 +488,13 @@ public class Run implements Serializable{
 			N += phenotype.getTotalPointsPlusAllAround();
 		return N;
 	}
+
+	public int numPhenTrainingPointsNoAllAround(){
+        int N=0;
+        for (Phenotype phenotype:phenotypes.values())
+            N += phenotype.getTotalPoints();
+        return N;
+    }
 	public int numPhenTrainingImages(){
 		return getPhenotypeTrainingImages().size();
 	}

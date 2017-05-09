@@ -55,7 +55,7 @@ import java.util.Random;
 
 public class DeepLearningCNN {
     protected static final Logger log = LoggerFactory.getLogger(DeepLearningCNN.class);
-    protected static long seed = 123;
+    protected static long seed = 124;
     protected static Random rng = new Random(seed);
     
     protected int height;
@@ -82,7 +82,7 @@ public class DeepLearningCNN {
         public DeepLearningCNNBuilder(){
             height = Run.it.getMaxPhenotypeRadiusPlusMore(null) * 2;
             width = Run.it.getMaxPhenotypeRadiusPlusMore(null) * 2;
-            numExamples = Run.it.numPhenTrainingPoints();
+            numExamples = Run.it.numPhenTrainingPointsNoAllAround();
             numLabels =  Run.it.numPhenotypes();
             channels = 3; //Default RGB type 
 
@@ -138,6 +138,7 @@ public class DeepLearningCNN {
     }
     
     public InputSplit[] sample(FileSplit fileSplit, PathFilter pathFilter, double... weights) {
+
         URI[] paths = pathFilter != null ? pathFilter.filter(fileSplit.locations()) : fileSplit.locations();
     	System.out.println("PATHs: " + paths.length);
 
@@ -148,7 +149,7 @@ public class DeepLearningCNN {
                 totalWeight += weights[i];
             }
 
-            double cumulWeight = 0;
+            double cumulWeight = 0.0D;
             int[] partitions = new int[weights.length + 1];
             for (int i = 0; i < weights.length; i++) {
                 partitions[i] = (int)Math.round(cumulWeight * paths.length / totalWeight);
@@ -208,7 +209,8 @@ public class DeepLearningCNN {
          * Data Setup -> train test split
          *  - inputSplit = define train and test split
          **/
-        InputSplit[] inputSplit = sample(fileSplit, pathFilter, splitTrainTest, 1 - splitTrainTest);
+        //null pathFilter because we want to use all training examples users provided for training
+        InputSplit[] inputSplit = sample(fileSplit, null, splitTrainTest, 1 - splitTrainTest);
         InputSplit trainData = inputSplit[0];
         InputSplit testData = inputSplit[1];
 
