@@ -114,12 +114,12 @@ public class DeepLearningTrainingData extends TrainingData{
                     for (Point to : phenotype.getPointsInImage(filename)){
                         if (stop)
                             return;
-                       // for (Point t : Solids.GetPointsInSolidUsingCenter(phenotype.getRmin(), to)){
-                            addImagetoProperDirectories(datumSetupForImage, to, phenotype);
-                            //update the bar
-                            totalvalue += increment;
-                            trainingProgress.setValue((int)Math.round(totalvalue));                        
-                       // }
+	                        for (Point t : Solids.GetPointsInSolidUsingCenter(phenotype.getRmin(), to)){
+	                            addImagetoProperDirectories(datumSetupForImage, t, phenotype);
+	                            //update the bar
+	                            totalvalue += increment;
+	                            trainingProgress.setValue((int)Math.round(totalvalue));                        
+	                        }
                     }
                 }
             }
