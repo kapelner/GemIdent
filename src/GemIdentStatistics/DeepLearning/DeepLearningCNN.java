@@ -82,7 +82,7 @@ public class DeepLearningCNN {
         public DeepLearningCNNBuilder(){
             height = Run.it.getMaxPhenotypeRadiusPlusMore(null) * 2;
             width = Run.it.getMaxPhenotypeRadiusPlusMore(null) * 2;
-            numExamples = Run.it.numPhenTrainingPointsNoAllAround();
+            numExamples = Run.it.numPhenTrainingPoints();
             numLabels =  Run.it.numPhenotypes();
             channels = 3; //Default RGB type 
 
@@ -208,7 +208,7 @@ public class DeepLearningCNN {
          *  - inputSplit = define train and test split
          **/
         //null pathFilter because we want to use all training examples users provided for training
-        InputSplit[] inputSplit = sample(fileSplit, null, splitTrainTest, 1 - splitTrainTest);
+        InputSplit[] inputSplit = sample(fileSplit, pathFilter, splitTrainTest, 1 - splitTrainTest);
         InputSplit trainData = inputSplit[0];
         InputSplit testData = inputSplit[1];
 
@@ -326,10 +326,12 @@ public class DeepLearningCNN {
         log.info("Evaluate model....");
         recordReader.initialize(testData);
         dataIter = new RecordReaderDataSetIterator(recordReader, batchSize, 1, numLabels);
-        scaler.fit(dataIter);
+        scaler.fit(dataIter);        
+        
         dataIter.setPreProcessor(scaler);
         Evaluation eval = network.evaluate(dataIter);
         System.out.println(eval.stats(true));
+
 
 
         // Example on how to get predict results with trained model

@@ -1,9 +1,11 @@
 package GemIdentClassificationEngine;
 
+import java.awt.Point;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-
+import GemIdentModel.Phenotype;
 import GemIdentOperations.Run;
 import GemIdentStatistics.Classifier;
 import GemIdentTools.IOTools;
@@ -36,9 +38,18 @@ public class SingleImageDeepLearningClassifier extends SingleImageClassicClassif
 	protected void ClassifyPixels(){
 		new File((System.getProperty("user.dir")+"/Evaluation/")).mkdirs();
 		int counter = 0;
+		
+		Phenotype phen = Run.it.getPhenotype((String) Run.it.getPhenotyeNamesSaveNON().toArray()[0]);
+		ArrayList<Point> points = phen.getPointsInImage(filename);
+		
+		
 		classify_all_pixels : {
 			for (int j=0;j<height;j++){
 				for (int i=0;i<width;i++){
+					if (!points.contains(new Point(i, j))){
+						continue;
+					}
+					
 					if (((i+j) % Run.it.pixel_skip) == 0){
 						if (stop.get())
 							break classify_all_pixels;
