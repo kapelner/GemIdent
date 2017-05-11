@@ -974,6 +974,7 @@ public class KClassifyPanel extends KPanel{
 						RunClassifyButton.setEnabled(false);
 						if (all_cnn_params_are_valid){
 //							Run.it.CNN_num_examples = Integer.parseInt(numExamples.getText());
+							Run.it.CNN_batch_size = (Integer)batchSize.getValue();
 							Run.it.CNN_iter_num = Integer.parseInt(iterations.getText());
 							Run.it.CNN_epoch_num = Integer.parseInt(epochs.getText());
 							Run.it.CNN_split = Integer.parseInt(splitTrainTest.getText());
