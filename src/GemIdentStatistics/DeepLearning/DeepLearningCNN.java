@@ -195,9 +195,7 @@ public class DeepLearningCNN {
          **/
         ParentPathLabelGenerator labelMaker = new ParentPathLabelGenerator();
         //Class Labels path
-        File mainPath = new File(System.getProperty("user.dir"),
-                "LabelsForAllProjects"+File.separator+"ClassLabels"+
-                Run.it.getProjectName());
+        File mainPath = new File(Run.it.imageset.getFilenameWithHomePath("ClassLabels" +"_" + Run.it.getProjectName()));
         FileSplit fileSplit = new FileSplit(mainPath, NativeImageLoader.ALLOWED_FORMATS, rng);
         
         batchSize = numExamples;//Run.it.numPhenTrainingPoints();

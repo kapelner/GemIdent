@@ -45,17 +45,12 @@ public class DeepLearningTrainingData extends TrainingData{
 
     //possibly move this functionality to IOTools
         public void createPhenotypeDirectories() {
-            //if parent label diretory doesn't exist
-            if(!IOTools.DoesDirectoryExist(System.getProperty("user.dir")+"LabelsForAllProjects"))
-                new File(System.getProperty("user.dir"),"LabelsForAllProjects").mkdir();
-            projectClassLabelDir = System.getProperty("user.dir")+File.separator+"LabelsForAllProjects"+File.separator+
-                    "ClassLabels"+ Run.it.getProjectName()+File.separator;
-            new File(System.getProperty("user.dir"),"LabelsForAllProjects"+File.separator+"ClassLabels"+
-                    Run.it.getProjectName()).mkdir();
+            //Create ClassLabel for project
+            projectClassLabelDir = Run.it.imageset.getFilenameWithHomePath("ClassLabels" +"_" + Run.it.getProjectName());
+            new File(projectClassLabelDir).mkdir();
 
-            //create File Directories for every PhenoType
             for (String phenotypeName : Run.it.getPhenotyeNames()) {
-                (new File(projectClassLabelDir,phenotypeName)).mkdir();
+                new File(projectClassLabelDir,phenotypeName).mkdir();
             }
         }
 
@@ -65,7 +60,7 @@ public class DeepLearningTrainingData extends TrainingData{
         		Run.it.getMaxPhenotypeRadiusPlusMore(null), 
         		t
         );
-        File outputimagefile = new File(projectClassLabelDir+phenotype.getName()+File.separator+
+        File outputimagefile = new File(projectClassLabelDir+File.separator+phenotype.getName()+File.separator+
                 IOTools.GetFilenameWithoutExtension(datumSetupForImage.filename())+"_"+t.x+"_"+t.y+".bmp");
         /** Insert file into Directory*/
         try {
