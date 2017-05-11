@@ -198,7 +198,7 @@ public class DeepLearningCNN {
         File mainPath = new File(Run.it.imageset.getFilenameWithHomePath("ClassLabels" +"_" + Run.it.getProjectName()));
         FileSplit fileSplit = new FileSplit(mainPath, NativeImageLoader.ALLOWED_FORMATS, rng);
         
-        batchSize = numExamples;//Run.it.numPhenTrainingPoints();
+        batchSize = numExamples;//Run.it.numPhenTrainingPoints(); //Run.it.CNN_
     	System.out.println("BATCH SIZE:" + batchSize);
         BalancedPathFilter pathFilter = new BalancedPathFilter(rng, labelMaker, numExamples, numLabels, batchSize);
         

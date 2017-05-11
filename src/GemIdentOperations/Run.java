@@ -196,8 +196,10 @@ public class Run implements Serializable{
 	public int CNN_iter_num;
 	/** Epoch Number       */
 	public int CNN_epoch_num;
-	/**Split train %       */
+	/** Split train %       */
 	public double CNN_split = 0.7;
+	/**  Batch Size   */
+	public int CNN_batch_size;
 
 
 
@@ -360,6 +362,7 @@ public class Run implements Serializable{
 				InitializeBasedOnImageSetType();
 				it.gui.DisableButtons();
 				it.gui.repaint();
+				it.gui.getClassifyPanel().LoadClassificationChoice();
 			} catch (Exception e){
 				e.printStackTrace();
 				initscreen.setVisible(true);

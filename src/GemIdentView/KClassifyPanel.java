@@ -49,6 +49,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import static GemIdentOperations.Run.CLASSIFIER_CNN;
+import static GemIdentOperations.Run.CLASSIFIER_RF;
+
 /**
  * Controls and houses the classification & post-processing panel. For discussion on
  * the execution of a classification via the classify button, see section 4.1 of the manual.
@@ -170,9 +174,10 @@ public class KClassifyPanel extends KPanel{
 	//private JSpinner imageHeight;
 	//private JSpinner imageWidth;
 //	private JSpinner channels;
+    private JSpinner batchSize;
 //	private JTextField numExamples;
 	private JTextField numLabels;
-	private JTextField batchSize;
+//	private JTextField batchSize;
 	private JTextField iterations;
 	private JTextField epochs;
 	private JTextField splitTrainTest;
@@ -190,7 +195,7 @@ public class KClassifyPanel extends KPanel{
 	private JRadioButton remainButton;
 
 	/** the dimension of the Western region that holds all options and buttons */
-	private static final Dimension optionsDim=new Dimension(230,500);
+	private static final Dimension optionsDim=new Dimension(170,550);
 	
 	//classification parameters
 	public static final int CLASSIFY_ALL=1;
@@ -267,16 +272,57 @@ public class KClassifyPanel extends KPanel{
 	/** populate the Western region after instantiating all the options components */
 	private void SetUpOptions() {
 
+
+
+
 		options=new JPanel();
 		options.setPreferredSize(optionsDim);
-		options.setLayout(new BorderLayout());
+		options.setLayout(new GridBagLayout());
+
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.gridy = GridBagConstraints.RELATIVE;
+		gbc.weightx = 1;
+		gbc.weighty = 1;
+		gbc.anchor = GridBagConstraints.NORTHWEST;
+
+
 		
 		Box optionBox=Box.createVerticalBox();
 		optionBox.add(Box.createVerticalStrut(10)); //give it some margin
 		optionBox.add(Box.createVerticalStrut(10));
 
-		optionBox.setAlignmentX(options.LEFT_ALIGNMENT);
+		//optionBox.setAlignmentX(options.LEFT_ALIGNMENT);
 
+
+
+		Box optionsBox=Box.createVerticalBox();
+		optionsBox.add(Box.createVerticalStrut(10)); //give it some margin
+		//optionsBox.add(Box.createVerticalStrut(10));
+
+		Box optionsBox2=Box.createVerticalBox();
+		optionsBox2.add(Box.createVerticalStrut(5)); //give it some margin
+		//optionsBox2.add(Box.createVerticalStrut(10));
+
+		Box optionsBox3=Box.createVerticalBox();
+		optionsBox3.add(Box.createVerticalStrut(5)); //give it some margin
+		//optionsBox3.add(Box.createVerticalStrut(10));
+
+		Box optionsBox4=Box.createVerticalBox();
+		optionsBox4.add(Box.createVerticalStrut(5)); //give it some margin
+		//optionsBox4.add(Box.createVerticalStrut(10));
+
+		Box optionsBox5=Box.createVerticalBox();
+		optionsBox5.add(Box.createVerticalStrut(5)); //give it some margin
+
+		Box optionsBox6=Box.createVerticalBox();
+		optionsBox6.add(Box.createVerticalStrut(5)); //give it some margin
+
+		Box optionsBox7=Box.createVerticalBox();
+		optionsBox7.add(Box.createVerticalStrut(5)); //give it some margin
+
+		Box optionsBox8=Box.createVerticalBox();
+		optionsBox8.add(Box.createVerticalStrut(5)); //give it some margin
 
 
 		JFormattedTextField textfield;
@@ -291,8 +337,12 @@ public class KClassifyPanel extends KPanel{
 		textfield.setEditable(false);
 		textfield.setFocusable(false);
 		numThreadsBox.add(numThreadsSpinner);
-		optionBox.add(numThreadsBox);
-		numThreadsBox.setVisible(true);		
+		//optionBox.add(numThreadsBox);
+		numThreadsBox.setVisible(true);
+
+		optionsBox.add(numThreadsBox);
+
+
 
 
 
@@ -305,14 +355,18 @@ public class KClassifyPanel extends KPanel{
 		textfield.setEditable(false);
 		textfield.setFocusable(false);
 		numPixelSkipBox.add(numPixelSkipSpinner);
-		optionBox.add(numPixelSkipBox);
+		//optionBox.add(numPixelSkipBox);
 		numPixelSkipBox.setVisible(true);
+
+		optionsBox.add(numPixelSkipBox);
 		
 
 		choiceLabel=new JLabel("<html><u>Classification Algorithm</u></html>");
-		Box choiceLabelBox=Box.createHorizontalBox();
+		Box choiceLabelBox=Box.createVerticalBox();
 		choiceLabelBox.add(choiceLabel);
-		optionBox.add(choiceLabelBox);		
+		optionBox.add(choiceLabelBox);
+
+		//optionsBox2.add(choiceLabelBox);
 
 		RF_selected = new JRadioButton("Random Forest");
 		CNN_selected = new JRadioButton("CNN (Deep Learning)");
@@ -340,9 +394,10 @@ public class KClassifyPanel extends KPanel{
 		CNN_selected.setHorizontalTextPosition(JRadioButton.CENTER);
 		*/
 
-		RF_selected.setAlignmentX(Component.LEFT_ALIGNMENT);
-		CNN_selected.setAlignmentX(Component.LEFT_ALIGNMENT);
+		RF_selected.setAlignmentX(LEFT_ALIGNMENT);
+		CNN_selected.setAlignmentX(LEFT_ALIGNMENT);
 
+		/**
 		classification_method_box.add(RF_selected);
 		classification_method_box.add(Box.createVerticalStrut(10));
 		classification_method_box.add(Box.createHorizontalGlue());
@@ -350,13 +405,19 @@ public class KClassifyPanel extends KPanel{
 		classification_method_box.add(Box.createVerticalStrut(10));
 		classification_method_box.add(Box.createHorizontalGlue());
 		classification_method_box.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-		optionBox.add(classification_method_box);
+		*/
+		choiceLabelBox.add(RF_selected);
+		choiceLabelBox.add(CNN_selected);
+		//optionsBox2.add(RF_selected);
+		//optionsBox2.add(CNN_selected);
+		optionsBox2.add(choiceLabelBox);
+		optionsBox2.setAlignmentX(LEFT_ALIGNMENT);
 
 		titleLabel=new JLabel("<html><u>Classification Parameters</u></html>");
 		Box titleLabelBox=Box.createHorizontalBox();
 		titleLabelBox.add(titleLabel);
-		optionBox.add(titleLabelBox);	 
+		optionBox.add(titleLabelBox);
+		optionsBox3.add(titleLabelBox);
 
 
 
@@ -372,6 +433,7 @@ public class KClassifyPanel extends KPanel{
 		optionBox.add(numTreesBox);
         numTreesBox.setEnabled(true);
 		numTreesBox.setVisible(false);
+		optionsBox3.add(numTreesBox);
 
 
 
@@ -430,6 +492,7 @@ public class KClassifyPanel extends KPanel{
 		channelsBox.add(channels2);
 		optionBox.add(channelsBox);
 		channelsBox.setVisible(false);
+		//optionsBox3.add(channelsBox);
 
 //		Box numExamplesBox=Box.createHorizontalBox();
 //		numExamplesLabel=new JLabel("Number Examples");
@@ -459,18 +522,19 @@ public class KClassifyPanel extends KPanel{
 		numLabelsBox.setVisible(false);
 
         batchSizeBox=Box.createHorizontalBox();
-		batchSizeLabel=new JLabel("Number Batches");
+		batchSizeLabel=new JLabel("Batch Size %");
 		batchSizeLabel.setFont(FontForLabels);
 		batchSizeBox.add(batchSizeLabel);
-		//batchSize=new JSpinner(new SpinnerNumberModel(Run.DEFAULT_PIXEL_SKIP-1,0,100,1));
-		//textfield=((JSpinner.DefaultEditor)batchSize.getEditor()).getTextField();
-		//textfield.setEditable(false);
-		//textfield.setFocusable(false);
-		batchSize = new JTextField("",10);
+		batchSize=new JSpinner(new SpinnerNumberModel(100,0,100,5));
+		textfield=((JSpinner.DefaultEditor)batchSize.getEditor()).getTextField();
+		textfield.setEditable(false);
+		textfield.setFocusable(false);
 
 		batchSizeBox.add(batchSize);
 		optionBox.add(batchSizeBox);
 		batchSizeBox.setVisible(false);
+
+		optionsBox3.add(batchSizeBox);
 
         iterationsBox=Box.createHorizontalBox();
 		iterationsLabel=new JLabel("Iterations ");
@@ -485,6 +549,8 @@ public class KClassifyPanel extends KPanel{
 		iterationsBox.add(iterations);
 		optionBox.add(iterationsBox);
 		iterationsBox.setVisible(false);
+		optionsBox3.add(iterationsBox);
+
 
         epochsBox=Box.createHorizontalBox();
 		epochsLabel=new JLabel("Epochs ");
@@ -499,6 +565,7 @@ public class KClassifyPanel extends KPanel{
 		epochsBox.add(epochs);
 		optionBox.add(epochsBox);
 		epochsBox.setVisible(false);
+		optionsBox3.add(epochsBox);
 
 		splitTrainTestBox=Box.createHorizontalBox();
 		splitTrainTestLabel=new JLabel("Split Train %");
@@ -516,6 +583,7 @@ public class KClassifyPanel extends KPanel{
 
 		register_values_button = new JButton("Register Values");
 		optionBox.add(register_values_button);
+		optionsBox8.add(register_values_button);
 
 
 
@@ -533,7 +601,7 @@ public class KClassifyPanel extends KPanel{
 //		numBatchBox.add(numBatchSpinner);
 //		optionBox.add(numBatchBox);
 		
-		optionBox.add(Box.createVerticalStrut(10));
+		//optionsBox3.add(Box.createVerticalStrut(10));
 		
 //		rotationalLabel=new JLabel("<html><u>Rotaional Invariance Parameters</u></html>");
 //		optionBox.add(rotationalLabel);		
@@ -574,7 +642,7 @@ public class KClassifyPanel extends KPanel{
 		Box picturesToClassifyLabelBox=Box.createHorizontalBox();
 		picturesToClassifyLabelBox.add(picturesToClassifyLabel);
 		
-		optionBox.add(picturesToClassifyLabelBox);
+		optionsBox4.add(picturesToClassifyLabel);
 
 		
 		allButton=new JRadioButton("Classify All");	    
@@ -611,6 +679,9 @@ public class KClassifyPanel extends KPanel{
 	    picturesToClassifyBox.add(allButton);
 	    picturesToClassifyBox.add(onlyButton);
 	    picturesToClassifyBox.add(remainButton);
+	    //optionBox.add(allButton);
+	    //optionBox.add(onlyButton);
+	    //optionBox.add(remainButton);
 	   // picturesToClassifyBox.add(tenRandomButton);
 	   // picturesToClassifyBox.add(twentyRandomButton);
 //	    picturesToClassifyBox.add(nRandomButton);
@@ -628,9 +699,9 @@ public class KClassifyPanel extends KPanel{
 //	    picturesToClassifyBox.add(rangeText);
 //	    picturesToClassifyBox.add(thoseClickedOnButton);
 	    
-	    optionBox.add(picturesToClassifyBox);
+	    optionsBox4.add(picturesToClassifyBox);
 	    
-	    optionBox.add(Box.createVerticalStrut(10));
+	    optionsBox4.add(Box.createVerticalStrut(5));
 	    
 	    Box buttonBox = Box.createVerticalBox();
 	    
@@ -656,6 +727,8 @@ public class KClassifyPanel extends KPanel{
 	    
 	    SetExclusionsButton = new JButton("<html>Exclusion<br>Rules...</html>");
 	    optionBox.add(SetExclusionsButton);
+
+	    optionsBox5.add(SetExclusionsButton);
 	    
 	    //hide this option for now
 	    Box horiz=Box.createHorizontalBox();
@@ -665,21 +738,29 @@ public class KClassifyPanel extends KPanel{
 	    optionBox.add(horiz);
 	    optionBox.add(ClassifierName);
 
+	    optionsBox5.add(Box.createVerticalStrut(10));
+	    optionsBox5.add(horiz);
+	    optionsBox5.add(ClassifierName);
+
 		RunClassifyAndPostProcessButton.setEnabled(false);
 		RunClassifyButton.setEnabled(false);
 
 	    buttonBox.add(RunClassifyAndPostProcessButton);
-	    buttonBox.add(Box.createVerticalStrut(10));
+	    buttonBox.add(Box.createVerticalStrut(5));
 	    buttonBox.add(RunClassifyButton);
-	    buttonBox.add(Box.createVerticalStrut(10));
+	    buttonBox.add(Box.createVerticalStrut(5));
 	    buttonBox.add(showOverview);
-		buttonBox.add(Box.createVerticalStrut(10));
+		buttonBox.add(Box.createVerticalStrut(5));
 //	    buttonBox.add(find_centers_method_panel);	    
 	    buttonBox.add(RunFindCenters);
-	    buttonBox.add(Box.createVerticalStrut(10));
+	    buttonBox.add(Box.createVerticalStrut(5));
 	    buttonBox.add(StopButton);
-	    buttonBox.add(Box.createVerticalStrut(10));
+	    buttonBox.add(Box.createVerticalStrut(5));
 	    buttonBox.add(RunRetrainButton);
+
+	    buttonBox.setAlignmentX(LEFT_ALIGNMENT);
+
+	    optionsBox7.add(buttonBox);
 	    
 	    GUIFrame find_centers_method_panel = new GUIFrame("Find Centers Method");
 	    Container find_centers_method_panel_box = new Container();
@@ -690,15 +771,32 @@ public class KClassifyPanel extends KPanel{
 	    ButtonGroup findCentersMethodsGroup = new ButtonGroup();
 	    findCentersMethodsGroup.add(erosion_method_radio_button);
 	    find_centers_method_panel.add(find_centers_method_panel_box);
-	    
-	    options.add(buttonBox, BorderLayout.SOUTH);
-	    options.add(find_centers_method_panel, BorderLayout.CENTER);
-	    options.add(optionBox, BorderLayout.NORTH);
+
+	    optionsBox6.add(find_centers_method_panel);
+
+		optionBox.setAlignmentX(LEFT_ALIGNMENT);
+	    //options.add(optionBox);
+	    //options.add(find_centers_method_panel);
+	    //options.add(buttonBox);
+
+		options.add(optionsBox,gbc);
+		options.add(optionsBox2,gbc);
+		options.add(optionsBox3,gbc);
+		options.add(optionsBox8,gbc);
+		options.add(optionsBox4,gbc);
+		options.add(optionsBox6,gbc);
+		options.add(optionsBox5,gbc);
+		options.add(optionsBox7,gbc);
+		//options.add(optionBox, BorderLayout.NORTH);
+		//options.add(find_centers_method_panel, BorderLayout.CENTER);
+	    //options.add(buttonBox, BorderLayout.SOUTH);
+	   // options.add(find_centers_method_panel, BorderLayout.CENTER);
+	   // options.add(optionBox, BorderLayout.NORTH);
 
 		RF_selected.addActionListener(
 				new ActionListener(){
 					public void actionPerformed(ActionEvent e){
-                        Run.it.classification_method = Run.CLASSIFIER_RF;
+                        Run.it.classification_method = CLASSIFIER_RF;
 						EnableRFButtons();
 
 					}
@@ -714,6 +812,7 @@ public class KClassifyPanel extends KPanel{
 					}
 				}
 		);
+
 
 
 
@@ -768,22 +867,49 @@ public class KClassifyPanel extends KPanel{
 //						}
 
 						//Batches
-//						try{
-//							Integer.parseInt(batchSize.getText());
-//						}
-//
-//						catch(NumberFormatException ne){
-//							JOptionPane.showMessageDialog(null,
-//									"Error: Please enter an integer for Batches...", "Error Massage",
-//									JOptionPane.ERROR_MESSAGE);
-//							all_cnn_params_are_valid = false;
+                        /** Since numPhenTrainingPoints hasn't been determined yet we will use a percentage of the eventual
+                         *  amount of numPhenTrainingPoints
+                         * */
 
-//						}
+						batchSize.addChangeListener(
+								new ChangeListener(){
+									public void stateChanged(ChangeEvent e) {
+										Run.it.CNN_batch_size=(Integer)batchSize.getValue();
+										Run.it.GUIsetDirty(true);
+									}
+								}
+						);
+
+                        /**
+                        try{
+							Integer.parseInt(batchSize.getText());
+							if(Integer.parseInt(batchSize.getText())>Run.it.numPhenTrainingPoints()){
+								JOptionPane.showMessageDialog(null,
+										"Error: Batch Size must be less than "+Run.it.numPhenTrainingPoints()+" ...", "Error Massage",
+										JOptionPane.ERROR_MESSAGE);
+								all_cnn_params_are_valid = false;
+							}
+						}
+
+						catch(NumberFormatException ne){
+							JOptionPane.showMessageDialog(null,
+									"Error: Please enter an integer for Batches...", "Error Massage",
+									JOptionPane.ERROR_MESSAGE);
+							all_cnn_params_are_valid = false;
+
+						}
+						*/
+
 
 						//Iterations
                         String iterationsTextInput = iterations.getText();
 						try{
 							Integer.parseInt(iterations.getText());
+
+							if(Integer.parseInt(iterationsTextInput) <= 0){
+								JOptionPane.showMessageDialog(Run.it.getGUI(), "Input Error: Iterations must be > 0");
+								all_cnn_params_are_valid =false;
+							}
 
 						}
 
@@ -794,15 +920,17 @@ public class KClassifyPanel extends KPanel{
 							all_cnn_params_are_valid = false;
 
 						}
-						if(Integer.parseInt(iterationsTextInput) <= 0){
-                            JOptionPane.showMessageDialog(Run.it.getGUI(), "Input Error: Iterations must be > 0");
-                            all_cnn_params_are_valid =false;
-                        }
+
 
 						//Epochs
                         String epochTextInput = epochs.getText();
 						try{
 							Integer.parseInt(epochTextInput);
+
+							if(Integer.parseInt(epochTextInput) <= 0){
+								JOptionPane.showMessageDialog(Run.it.getGUI(), "Input Error: Epochs must be > 0");
+								all_cnn_params_are_valid =false;
+							}
 						}
 
 						catch(NumberFormatException ne){
@@ -812,10 +940,7 @@ public class KClassifyPanel extends KPanel{
 							all_cnn_params_are_valid = false;
 
 						}
-                        if(Integer.parseInt(epochTextInput) <= 0){
-                            JOptionPane.showMessageDialog(Run.it.getGUI(), "Input Error: Epochs must be > 0");
-                            all_cnn_params_are_valid =false;
-                        }
+
 
 						//Split Train
 						try{
@@ -1513,6 +1638,20 @@ public class KClassifyPanel extends KPanel{
 		EnableButtonsByClassificationChoice();
 	}
 
+	public void LoadClassificationChoice(){
+
+		if(Run.it.classification_method == CLASSIFIER_RF){
+			EnableRFButtons();
+		}
+
+		else if(Run.it.classification_method == CLASSIFIER_CNN){
+			 EnableCNNButtons();
+			}
+
+			else EnableRFButtons();
+
+	}
+
 
 
 	private void EnableButtonsByClassificationChoice(){
@@ -1520,7 +1659,7 @@ public class KClassifyPanel extends KPanel{
 		CNN_selected.setEnabled(true);
 
 		if (RF_selected.isSelected()){
-            Run.it.classification_method = Run.CLASSIFIER_RF;
+            Run.it.classification_method = CLASSIFIER_RF;
 			EnableRFButtons();
 
 		}
@@ -1535,6 +1674,7 @@ public class KClassifyPanel extends KPanel{
 
 	private void EnableCNNButtons() {
 
+		CNN_selected.setSelected(true);
 
 		//imageHeight.setEnabled(true);
 		//imageWidth.setEnabled(true);
@@ -1592,6 +1732,8 @@ public class KClassifyPanel extends KPanel{
 
 	/** option buttons are reenabled */
 	private void EnableRFButtons(){
+
+		RF_selected.setSelected(true);
 
 		RunClassifyAndPostProcessButton.setEnabled(true);
 		RunClassifyButton.setEnabled(true);
@@ -1748,22 +1890,16 @@ public class KClassifyPanel extends KPanel{
 		numTreesSpinner.setValue((Integer)Run.it.num_trees);
 		numThreadsSpinner.setValue((Integer)Run.it.num_threads);
 		numPixelSkipSpinner.setValue((Integer)Run.it.pixel_skip - 1);
+		batchSize.setValue((Integer)(Run.it.CNN_batch_size));
         epochs.setText(Integer.toString(Run.it.CNN_epoch_num));
         iterations.setText(Integer.toString(Run.it.CNN_iter_num));
 //		numBatchSpinner.setValue((Integer)Run.it.num_pixels_to_batch_updates);
 
         switch (Run.it.classification_method) {
 
-
-            case Run.CLASSIFIER_CNN:
-                CNN_selected.setSelected(true);
-                //EnableCNNButtons();
-                break;
-            case Run.CLASSIFIER_RF:
-            default:
-                RF_selected.setSelected(true);
-                // EnableRFButtons();
-                break;
+            case Run.CLASSIFIER_CNN: RF_selected.setSelected(true); break;
+            case CLASSIFIER_RF: CNN_selected.setSelected(true); break;
+            default: RF_selected.setSelected(true); break;
 
         }
 

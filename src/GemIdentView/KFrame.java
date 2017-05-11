@@ -335,6 +335,7 @@ public class KFrame extends JFrame{
 		phenotypeTrainPanel.PopulateFromOpen();
 		classifyPanel.SetValuesToOpenProject();
 		setVisible(true);
+
 	}
 	/** en/disables the add/remove image buttons after an image load */
 	public void DisableButtons(){
