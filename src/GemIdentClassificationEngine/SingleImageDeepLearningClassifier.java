@@ -46,9 +46,9 @@ public class SingleImageDeepLearningClassifier extends SingleImageClassicClassif
 		classify_all_pixels : {
 			for (int j=0;j<height;j++){
 				for (int i=0;i<width;i++){
-					if (!points.contains(new Point(i, j))){
-						continue;
-					}
+//					if (!points.contains(new Point(i, j))){
+//						continue;
+//					}
 					
 					if (((i+j) % Run.it.pixel_skip) == 0){
 						if (stop.get())

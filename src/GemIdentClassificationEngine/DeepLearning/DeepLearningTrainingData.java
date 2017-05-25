@@ -57,7 +57,7 @@ public class DeepLearningTrainingData extends TrainingData{
     private void addImagetoProperDirectories(DatumSetupForImage datumSetupForImage, Point t, Phenotype phenotype){
         BufferedImage superImageCore = coreOutSuperImage(
         		ImageAndScoresBank.getOrAddSuperImage(datumSetupForImage.filename()), 
-        		Run.it.getMaxPhenotypeRadiusPlusMore(null), 
+        		Run.it.getPhenotypeCoreImageSemiWidth(), 
         		t
         );
         File outputimagefile = new File(projectClassLabelDir+File.separator+phenotype.getName()+File.separator+
@@ -70,10 +70,9 @@ public class DeepLearningTrainingData extends TrainingData{
         }
     }
     
-    public static BufferedImage coreOutSuperImage(SuperImage super_image, int r_max, Point t) {
+    public static BufferedImage coreOutSuperImage(SuperImage super_image, int semiwidth, Point t) {
     	Point t_adj = super_image.AdjustPointForSuper(t);
-    	int d = Math.round((int)(Math.sqrt(2)  * r_max)); //round will give us extra information
-		return super_image.getAsBufferedImage().getSubimage(t_adj.x - d, t_adj.y - d, d * 2 + 1, d * 2 + 1);
+		return super_image.getAsBufferedImage().getSubimage(t_adj.x - semiwidth, t_adj.y - semiwidth, semiwidth * 2 + 1, semiwidth * 2 + 1);
 	}
 
 	/** Framework for building training data in one image and can be threaded in a thread pool */

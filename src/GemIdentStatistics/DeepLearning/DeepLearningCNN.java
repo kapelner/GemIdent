@@ -32,7 +32,6 @@ import org.deeplearning4j.ui.api.UIServer;
 import org.deeplearning4j.ui.stats.StatsListener;
 import org.deeplearning4j.ui.storage.InMemoryStatsStorage;
 import org.deeplearning4j.util.ModelSerializer;
-
 import org.nd4j.linalg.activations.Activation;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
@@ -46,9 +45,11 @@ import org.slf4j.LoggerFactory;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -80,8 +81,8 @@ public class DeepLearningCNN {
 		private JProgressBarAndLabel buildProgressBar;
 
         public DeepLearningCNNBuilder(){
-            height = Run.it.getMaxPhenotypeRadiusPlusMore(null) * 2;
-            width = Run.it.getMaxPhenotypeRadiusPlusMore(null) * 2;
+            height = Run.it.getPhenotypeCoreImageSemiWidth() * 2 + 1;
+            width = height;
             numExamples = Run.it.numPhenTrainingPoints();
             numLabels =  Run.it.numPhenotypes();
             channels = 3; //Default RGB type 
@@ -181,7 +182,6 @@ public class DeepLearningCNN {
     
     public void run() throws Exception {
         System.out.print(height + " " + width);
-
         
         //set CNN params from user here
         
@@ -326,22 +326,58 @@ public class DeepLearningCNN {
         log.info("Evaluate model....");
         recordReader.initialize(testData);
         dataIter = new RecordReaderDataSetIterator(recordReader, batchSize, 1, numLabels);
-        scaler.fit(dataIter);        
+        scaler.fit(dataIter);  
+        
+      
         
         dataIter.setPreProcessor(scaler);
         Evaluation eval = network.evaluate(dataIter);
         System.out.println(eval.stats(true));
 
+        //now look at all the test data and what happens
+        dataIter.reset();
+        int i = 0;
+        while (dataIter.hasNext()){
+        	
+            DataSet dataset = dataIter.next();
+            Iterator<DataSet> iter = dataset.asList().iterator();
+			while (iter.hasNext()){
+				i++;
+				DataSet t = iter.next();
+            
+	            System.out.println("predicting #" + i + " id: " + t.id());
+	            if (t.getExampleMetaData() != null){
+	                for (Serializable s : t.getExampleMetaData()){
+	                	System.out.println("  metadata: " + s.toString());
+	                }
+	            }
+	
+	            System.out.println("  hasMaskArrays: " + t.hasMaskArrays());
+	            System.out.println("  numExamples: " + t.numExamples());
+//	            System.out.println("  getFeatureMatrix cols: " + t.getFeatureMatrix());
+	            if (i == 1){
+		            System.out.println("  getFeatures: " + t.getFeatures());	            	
+	            }
+	            for (String lab : t.getLabelNamesList()){
+	            	System.out.println("  label name: " + lab);
+	            }
+//	            System.out.println("  toString: " + t.toString());
+	            
+	            
+	            
+//	            String expectedResult = t.getLabelName(0);
+	            int[] predict = network.predict(t.getFeatures());
+	            for (int prediction :  predict){
+	            	System.out.println("  prediction: " + prediction);
+	            }
+			}
+        }
 
 
         // Example on how to get predict results with trained model
-        dataIter.reset();
-        DataSet testDataSet = dataIter.next();
-        String expectedResult = testDataSet.getLabelName(0);
-        List<String> predict = network.predict(testDataSet);
-        String modelResult = predict.get(0);
-        System.out.print("\nFor a single example that is labeled " + expectedResult +
-                " the model predicted " + modelResult + "\n\n");
+        
+
+
 
         if (save) {
             log.info("Save model....");
@@ -356,9 +392,12 @@ public class DeepLearningCNN {
     /**
      *Feeds Buffered Image to model
      * @param image bufferedImage at point of interest
+     * @param filename 
+     * @param j 
+     * @param i 
      * @return classlabel
      */
-    public double classify(BufferedImage image){
+    public double classify(BufferedImage image, int i, int j, String filename){
         //need INDArray to input into network
         INDArray d = null;
         try {
@@ -367,18 +406,19 @@ public class DeepLearningCNN {
             e.printStackTrace();
         }
         scaler.transform(d);
-        //System.out.println(image);
-        int prediction_vector[] = network.predict(d);
         
-//        for (int i = 0; i < prediction_vector.length; i++) {
-//        	System.out.println("prediction_vector[" + i  + "] = " + prediction_vector[i]);
-//        }
-//        
-//        INDArray d_f = network.output(d);
-//        
-//        System.out.println("d_f = " + d_f);
-//        //Another quick question: I'm doing a ton of network.predict each for a buffered image. How much speedup would I get if I batched them all together with many examples and used the output function? It appears to be using Nd4j.vstack. I imagine if I do an image one at a time there's a ton of fixed costs that I'm incurring each time I call it.
-//        
+//        System.out.println("features: " + d);
+        
+        int prediction_vector[] = network.predict(d);
+        for (int prediction :  prediction_vector){
+        	if (prediction == 1){
+            	System.out.println("classify for image " + image);
+            	System.out.println("classify for image " + filename);
+            	System.out.println("classify for i,j " + i + "," + j);
+            	System.out.println("  prediction: " + prediction);
+        	}
+
+        }
         return (double)prediction_vector[0];
     }
     

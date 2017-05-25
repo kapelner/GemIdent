@@ -63,9 +63,9 @@ public class DeepLearningCNNClassifier extends Classifier {
        return cnn.classify(
     		   DeepLearningTrainingData.coreOutSuperImage(
     				   ImageAndScoresBank.getOrAddSuperImage(filename), 
-    				   Run.it.getMaxPhenotypeRadiusPlusMore(null), 
+    				   Run.it.getPhenotypeCoreImageSemiWidth(), 
     				   new Point(i,j)
-    		   )
+    		   ), i, j, filename
     	   );
 	}
 

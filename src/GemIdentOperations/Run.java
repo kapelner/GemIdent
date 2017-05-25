@@ -861,5 +861,9 @@ public class Run implements Serializable{
 		if (imageset instanceof ImageSetInterfaceWithUserColors)
 			return (ImageSetInterfaceWithUserColors)imageset;
 		return null;
+	}
+
+	public int getPhenotypeCoreImageSemiWidth() {
+		return Math.round((int)(Math.sqrt(2)  * getMaxPhenotypeRadiusPlusMore(null)));
 	}	
 }
