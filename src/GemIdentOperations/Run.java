@@ -510,6 +510,16 @@ public class Run implements Serializable{
 		return set;
 	}
 	
+	/** gets all filenames of images used for training phenotype examples */
+	public ArrayList<Point> getAllTrainingPointsImage(String filename){
+		ArrayList<Point> set=new ArrayList<Point>();
+		for (Phenotype phenotype:phenotypes.values())
+			for (TrainingImageData I:phenotype.getTrainingImages())
+				if (I.getFilename().equals(filename))
+					set.addAll(I.getPoints());
+		return set;
+	}
+	
 	/** gets the "NON" phenotype */
 	public Phenotype getNONPhenotype() {
 		for (Phenotype phenotype:phenotypes.values())

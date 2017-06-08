@@ -1,12 +1,14 @@
 package GemIdentStatistics.DeepLearning;
 
 import GemIdentOperations.Run;
+import GemIdentTools.IOTools;
 import GemIdentView.JProgressBarAndLabel;
 
 import org.apache.commons.io.FilenameUtils;
 import org.datavec.api.io.filters.BalancedPathFilter;
 import org.datavec.api.io.filters.PathFilter;
 import org.datavec.api.io.labels.ParentPathLabelGenerator;
+import org.datavec.api.records.Record;
 import org.datavec.api.records.listener.impl.LogRecordListener;
 import org.datavec.api.split.CollectionInputSplit;
 import org.datavec.api.split.FileSplit;
@@ -52,6 +54,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+
+import javax.imageio.ImageIO;
 
 
 public class DeepLearningCNN {
@@ -326,24 +330,29 @@ public class DeepLearningCNN {
         log.info("Evaluate model....");
         recordReader.initialize(testData);
         dataIter = new RecordReaderDataSetIterator(recordReader, batchSize, 1, numLabels);
-        scaler.fit(dataIter);  
-        
+        scaler.fit(dataIter);
       
         
         dataIter.setPreProcessor(scaler);
         Evaluation eval = network.evaluate(dataIter);
         System.out.println(eval.stats(true));
 
+        
         //now look at all the test data and what happens
         dataIter.reset();
+        Iterator<URI> locations = testData.locationsIterator();
         int i = 0;
         while (dataIter.hasNext()){
         	
             DataSet dataset = dataIter.next();
             Iterator<DataSet> iter = dataset.asList().iterator();
+            
 			while (iter.hasNext()){
 				i++;
 				DataSet t = iter.next();
+				URI uri = locations.next();
+				
+				System.out.println("uri: " + uri.toString());
             
 	            System.out.println("predicting #" + i + " id: " + t.id());
 	            if (t.getExampleMetaData() != null){
@@ -355,12 +364,14 @@ public class DeepLearningCNN {
 	            System.out.println("  hasMaskArrays: " + t.hasMaskArrays());
 	            System.out.println("  numExamples: " + t.numExamples());
 //	            System.out.println("  getFeatureMatrix cols: " + t.getFeatureMatrix());
-	            if (i == 1){
+//	            if (i == 1){
 		            System.out.println("  getFeatures: " + t.getFeatures());	            	
-	            }
+//	            }
 	            for (String lab : t.getLabelNamesList()){
 	            	System.out.println("  label name: " + lab);
 	            }
+	            
+	            System.out.println("  labels: " + t.getLabels());
 //	            System.out.println("  toString: " + t.toString());
 	            
 	            
@@ -398,27 +409,48 @@ public class DeepLearningCNN {
      * @return classlabel
      */
     public double classify(BufferedImage image, int i, int j, String filename){
+//        File outputimagefile = new File(
+//        		Run.it.imageset.getFilenameWithHomePath("ClassLabels" +"_" + Run.it.getProjectName()) + 
+//        		File.separator +
+//        		"TEST" + 
+//        		File.separator +
+//               "subimage_"+i+"_"+j+
+//               ".bmp");
+        File outputimagefile = new File("test.bmp");
+        try {
+			ImageIO.write(image, "BMP", outputimagefile);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+            
+            
+            
+            
+            
         //need INDArray to input into network
         INDArray d = null;
         try {
-            d = new NativeImageLoader(image.getHeight(), image.getWidth(), 3).asMatrix(image);
+            d = new NativeImageLoader(image.getHeight(), image.getWidth(), 3).asMatrix(outputimagefile); //THIS IS THE PROBLEM
         } catch (IOException e) {
             e.printStackTrace();
         }
         scaler.transform(d);
         
-//        System.out.println("features: " + d);
-        
-        int prediction_vector[] = network.predict(d);
-        for (int prediction :  prediction_vector){
-        	if (prediction == 1){
-            	System.out.println("classify for image " + image);
-            	System.out.println("classify for image " + filename);
-            	System.out.println("classify for i,j " + i + "," + j);
-            	System.out.println("  prediction: " + prediction);
-        	}
 
-        }
+        
+//    	System.out.println("classify for image " + image);
+//    	System.out.println("classify for image " + filename);
+//    	System.out.println("classify for i_j " + i + "_" + j);
+//    	System.out.println("features: " + d);
+        int prediction_vector[] = network.predict(d);
+//        for (int prediction :  prediction_vector){
+////        	if (prediction == 1){
+//
+//            	System.out.println("  prediction: " + prediction);
+////        	}
+//
+//        }
         return (double)prediction_vector[0];
     }
     

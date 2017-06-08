@@ -39,40 +39,43 @@ public class SingleImageDeepLearningClassifier extends SingleImageClassicClassif
 		new File((System.getProperty("user.dir")+"/Evaluation/")).mkdirs();
 		int counter = 0;
 		
-		Phenotype phen = Run.it.getPhenotype((String) Run.it.getPhenotyeNamesSaveNON().toArray()[0]);
-		ArrayList<Point> points = phen.getPointsInImage(filename);
+//		ArrayList<Point> all_training_points = Run.it.getAllTrainingPointsImage(filename);
+		
 		
 		
 		classify_all_pixels : {
 			for (int j=0;j<height;j++){
 				for (int i=0;i<width;i++){
-//					if (!points.contains(new Point(i, j))){
+//					if (!all_training_points.contains(new Point(i, j))){
 //						continue;
 //					}
 					
-					if (((i+j) % Run.it.pixel_skip) == 0){
-						if (stop.get())
-							break classify_all_pixels;
-						counter++;
-						//Where CNN gives its classification
-						int resultClass = (int)classifier.Evaluate(filename, i, j);
+//					if (i >= 488 && i <= 650 && j >= 351 && j <= 507){
+						if (((i+j) % Run.it.pixel_skip) == 0){
+							if (stop.get())
+								break classify_all_pixels;
+							counter++;
+							//Where CNN gives its classification
+							int resultClass = (int)classifier.Evaluate(filename, i, j);
 
-						if (resultClass != 0)
-							(is.get(Run.classMapBck.get(resultClass))).set(i,j,true);
-						if (counter % Run.it.num_pixels_to_batch_updates == 0){
-							System.out.println("pixel " + filename + "(" +  i + " " + j + ") classified to be a " + resultClass);
-							new Thread(){ //thread this off to make classification faster
-								public void run(){									
-									UpdateProgressBar();
-									UpdateImagePanel();									
-								}
-							}.start();		
-							for (String phenotype : Run.it.getPhenotyeNamesSaveNONAndFindPixels()){
-								//System.out.println("about to write ismatrix for file " + filename + " and phenotype " + phenotype + " and is matrix " + is.get(phenotype).toString());
-								IOTools.WriteIsMatrix(Classify.GetIsName(filename, phenotype),is.get(phenotype));
-							}							
+							if (resultClass != 0)
+								(is.get(Run.classMapBck.get(resultClass))).set(i,j,true);
+							if (counter % Run.it.num_pixels_to_batch_updates == 0){
+								System.out.println("pixel " + filename + "(" +  i + " " + j + ") classified to be a " + resultClass);
+								new Thread(){ //thread this off to make classification faster
+									public void run(){									
+										UpdateProgressBar();
+										UpdateImagePanel();									
+									}
+								}.start();		
+								for (String phenotype : Run.it.getPhenotyeNamesSaveNONAndFindPixels()){
+									//System.out.println("about to write ismatrix for file " + filename + " and phenotype " + phenotype + " and is matrix " + is.get(phenotype).toString());
+									IOTools.WriteIsMatrix(Classify.GetIsName(filename, phenotype),is.get(phenotype));
+								}							
+							}
 						}
-					}
+//					}
+					
 				}
 			}
 		}
