@@ -126,6 +126,10 @@ public abstract class TrainSuperclass implements Serializable{
 			N+=i.getPoints().size();
 		return N;
 	}
+	
+	public int getTotalPointsPlusAllAround(){
+		return getTotalPoints() * Solids.getSolid(getRmin()).size();
+	}
 	/** of these training points, get the associated colors */
 	public ArrayList<Color> getColors(){
 		ArrayList<Color> pixels = new ArrayList<Color>();

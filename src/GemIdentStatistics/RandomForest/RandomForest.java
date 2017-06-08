@@ -253,12 +253,6 @@ public class RandomForest extends Classifier implements Serializable {
 //			copy.add(tree.clone());
 //		return new RandomForest(copy,numTrees);
 //	}
-	/**
-	 * Attempt to abort random forest creation
-	 */
-	public void StopBuilding() {
-		stop = true;
-	}
 
 	public ArrayList<DTree> getTrees() {
 		return trees;

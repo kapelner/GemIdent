@@ -192,14 +192,14 @@ public class Run implements Serializable{
 	public int CNN_num_examples;
 	/** Number of labels */
 	public int CNN_num_labels;
-	/** Batch Size         */
-	public int CNN_batch_num;
 	/** Iteration Number   */
 	public int CNN_iter_num;
 	/** Epoch Number       */
 	public int CNN_epoch_num;
-	/**Split train %       */
-	public double CNN_split;
+	/** Split train %       */
+	public double CNN_split = 0.7;
+	/**  Batch Size   */
+	public int CNN_batch_size;
 
 
 
@@ -220,8 +220,11 @@ public class Run implements Serializable{
 //	public String RANGE_TEXT;
 	/** the text the user wrote in the {@link KClassifyPanel#nRandomText classify N random} field */
 	public Integer N_RANDOM;
-	/** the setting for whether Random Forest or CNN is selected */
-	public String classification_choice;
+	/** the setting for which classification method */
+	public int classification_method;
+	/** the types of classification methods */
+	public static final int CLASSIFIER_RF = 1;
+	public static final int CLASSIFIER_CNN = 2;
 
 	//results
 	/** a mapping from the phenotype (where centroids are sought) to its total count in the last classification */
@@ -291,7 +294,7 @@ public class Run implements Serializable{
 		pixel_skip=Run.DEFAULT_PIXEL_SKIP;
 		num_pixels_to_batch_updates=Run.DEFAULT_R_BATCH_SIZE;
 		pics_to_classify=KClassifyPanel.CLASSIFY_TRAINED;
-		classification_choice = "RF_select";
+		classification_method = CLASSIFIER_RF;
 //		RANGE_TEXT="";
 		
 		gui.DefaultPopulateWindows(imageset);			
@@ -359,6 +362,7 @@ public class Run implements Serializable{
 				InitializeBasedOnImageSetType();
 				it.gui.DisableButtons();
 				it.gui.repaint();
+				it.gui.getClassifyPanel().LoadClassificationChoice();
 			} catch (Exception e){
 				e.printStackTrace();
 				initscreen.setVisible(true);
@@ -484,9 +488,16 @@ public class Run implements Serializable{
 	public int numPhenTrainingPoints(){
 		int N=0;
 		for (Phenotype phenotype:phenotypes.values())
-			N+=phenotype.getTotalPoints();
+			N += phenotype.getTotalPointsPlusAllAround();
 		return N;
 	}
+
+	public int numPhenTrainingPointsNoAllAround(){
+        int N=0;
+        for (Phenotype phenotype:phenotypes.values())
+            N += phenotype.getTotalPoints();
+        return N;
+    }
 	public int numPhenTrainingImages(){
 		return getPhenotypeTrainingImages().size();
 	}
@@ -496,6 +507,16 @@ public class Run implements Serializable{
 		for (Phenotype phenotype:phenotypes.values())
 			for (TrainingImageData I:phenotype.getTrainingImages())
 				set.add(I.getFilename());
+		return set;
+	}
+	
+	/** gets all filenames of images used for training phenotype examples */
+	public ArrayList<Point> getAllTrainingPointsImage(String filename){
+		ArrayList<Point> set=new ArrayList<Point>();
+		for (Phenotype phenotype:phenotypes.values())
+			for (TrainingImageData I:phenotype.getTrainingImages())
+				if (I.getFilename().equals(filename))
+					set.addAll(I.getPoints());
 		return set;
 	}
 	
@@ -850,5 +871,9 @@ public class Run implements Serializable{
 		if (imageset instanceof ImageSetInterfaceWithUserColors)
 			return (ImageSetInterfaceWithUserColors)imageset;
 		return null;
+	}
+
+	public int getPhenotypeCoreImageSemiWidth() {
+		return Math.round((int)(Math.sqrt(2)  * getMaxPhenotypeRadiusPlusMore(null)));
 	}	
 }

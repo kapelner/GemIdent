@@ -31,6 +31,7 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.FileHandler;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -72,6 +73,8 @@ public abstract class Classifier implements Serializable {
 	
 	protected static PrintWriter output;
 	protected static final String DEBUG_EXT = ".csv";
+	
+	protected AtomicBoolean stop;
 
 	
 	/** Serializable happy */
@@ -81,7 +84,7 @@ public abstract class Classifier implements Serializable {
 		this.datumSetupForEntireRun = datumSetupForEntireRun;
 		p = datumSetupForEntireRun.numFeatures();
 
-		System.out.println("classifier has " + p + " total features");
+//		System.out.println("classifier has " + p + " total features");
 		this.buildProgress = buildProgress;
 	}
 	
@@ -189,9 +192,6 @@ public abstract class Classifier implements Serializable {
 		return record[p];
 	}
 
-	/** Stop the classifier in its building phase */
-	public abstract void StopBuilding();
-
 	public int getP() {
 		return p;
 	}
@@ -273,17 +273,8 @@ public abstract class Classifier implements Serializable {
 		return calculateInSampleLoss(ErrorTypes.MISCLASSIFICATION) / (double) n * 100;
 	}
 	
-	public double CalculateCrossValidationError(ErrorTypes type_of_error_rate){
-		//TODO
-		return 0;
-	}
-	
-	public double calculateLeaveOneOutLoss(ErrorTypes type_of_error_rate){
-		double loss = 0;
-		for (int i = 0; i < n; i++){
-			//TODO
-		}
-		return loss;
+	public void Stop(){
+		stop.set(true);
 	}
 	
 	public Classifier clone(){

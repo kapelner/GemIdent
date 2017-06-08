@@ -1,4 +1,4 @@
-package GemIdentClassificationEngine.Features;
+package GemIdentClassificationEngine.DeepLearning;
 
 import GemIdentClassificationEngine.Datum;
 import GemIdentClassificationEngine.DatumSetupForImage;
@@ -9,6 +9,7 @@ import GemIdentModel.Phenotype;
 import GemIdentOperations.Run;
 import GemIdentOperations.SetupClassification;
 import GemIdentTools.IOTools;
+import GemIdentTools.Geometry.Solids;
 import GemIdentView.JProgressBarAndLabel;
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -44,42 +45,37 @@ public class DeepLearningTrainingData extends TrainingData{
 
     //possibly move this functionality to IOTools
         public void createPhenotypeDirectories() {
-            //if parent label diretory doesn't exist
-            if(!IOTools.DoesDirectoryExist(System.getProperty("user.dir")+"LabelsForAllProjects"))
-                new File(System.getProperty("user.dir"),"LabelsForAllProjects").mkdir();
-            projectClassLabelDir = System.getProperty("user.dir")+File.separator+"LabelsForAllProjects"+File.separator+
-                    "ClassLabels"+ Run.it.getProjectName()+File.separator;
-            new File(System.getProperty("user.dir"),"LabelsForAllProjects"+File.separator+"ClassLabels"+
-                    Run.it.getProjectName()).mkdir();
+            //Create ClassLabel for project
+            projectClassLabelDir = Run.it.imageset.getFilenameWithHomePath("ClassLabels" +"_" + Run.it.getProjectName());
+            new File(projectClassLabelDir).mkdir();
 
-            //create File Directories for every PhenoType
             for (String phenotypeName : Run.it.getPhenotyeNames()) {
-                (new File(projectClassLabelDir,phenotypeName)).mkdir();
+                new File(projectClassLabelDir,phenotypeName).mkdir();
             }
         }
 
-    public void addImagestoProperDirectories(DatumSetupForImage datumSetupForImage, Point t, Phenotype phenotype){
-        SuperImage super_image = ImageAndScoresBank.getOrAddSuperImage(datumSetupForImage.filename());
-        String phenoName = phenotype.getName();
-        //possibly have a set of buffered images, instead of allocating an image every time
-        BufferedImage whole_image = super_image.getAsBufferedImage();
-        //coodinates for point of interest translated to super image
-        Point t_adj = super_image.AdjustPointForSuper(t);
-        int r_max = phenotype.getRmax();
-        int distanceFromCornerToMid = Math.round((int)(Math.sqrt(2)  * r_max)); //round will give us extra information
-        BufferedImage subImage = whole_image.getSubimage(t_adj.x - distanceFromCornerToMid,
-                t_adj.y - distanceFromCornerToMid, r_max *2, r_max*2);
-        System.out.println(phenoName);
-        File outputimage = new File(projectClassLabelDir+phenoName+File.separator+
-                IOTools.GetFilenameWithoutExtension(datumSetupForImage.filename())+"_"+t.x+"_"+t.y+".jpg");
+    private void addImagetoProperDirectories(DatumSetupForImage datumSetupForImage, Point t, Phenotype phenotype){
+        BufferedImage superImageCore = coreOutSuperImage(
+        		ImageAndScoresBank.getOrAddSuperImage(datumSetupForImage.filename()), 
+        		Run.it.getPhenotypeCoreImageSemiWidth(), 
+        		t
+        );
+        File outputimagefile = new File(projectClassLabelDir+File.separator+phenotype.getName()+File.separator+
+                IOTools.GetFilenameWithoutExtension(datumSetupForImage.filename())+"_"+t.x+"_"+t.y+".bmp");
         /** Insert file into Directory*/
         try {
-            ImageIO.write(subImage, "JPEG", outputimage);
+            ImageIO.write(superImageCore, "BMP", outputimagefile);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    /** Framework for building training data in one image and can be threaded in a thread pool */
+    
+    public static BufferedImage coreOutSuperImage(SuperImage super_image, int semiwidth, Point t) {
+    	Point t_adj = super_image.AdjustPointForSuper(t);
+		return super_image.getAsBufferedImage().getSubimage(t_adj.x - semiwidth, t_adj.y - semiwidth, semiwidth * 2 + 1, semiwidth * 2 + 1);
+	}
+
+	/** Framework for building training data in one image and can be threaded in a thread pool */
     private class TrainingDataMaker implements Runnable{
 
         /** the filename of the image whose training data is being created */
@@ -106,22 +102,23 @@ public class DeepLearningTrainingData extends TrainingData{
          * @see <a href="http://www.gemident.com/publication.html">the 2007 IEEE paper</a>
          */
         public void run(){
+        	//calculate increment first
+        	for (Phenotype phenotype: Run.it.getPhenotypeObjects()){
+        		increment += phenotype.getTotalPoints() * Solids.getSolid(phenotype.getRmin()).size();
+        	}
+        	increment = 100.0 / increment;
+        	
             for (Phenotype phenotype: Run.it.getPhenotypeObjects()){
                 if (phenotype.hasImage(filename)){
-                    for (Point to:phenotype.getPointsInImage(filename)){
+                    for (Point to : phenotype.getPointsInImage(filename)){
                         if (stop)
                             return;
-                        String name=phenotype.getName();
-                        int Class = 0;
-                        if (phenotype.isFindPixels()){
-                            Class=Run.classMapFwd.get(name);
-                        }
-                        Datum d = null;
-                        addImagestoProperDirectories(datumSetupForImage, to,phenotype);
-                        //d.setClass(Class);
-                        //allData.add(d);
-                        //update progress bar
-                        trainingProgress.setValue((int)Math.round(totalvalue += increment));
+	                        for (Point t : Solids.GetPointsInSolidUsingCenter(phenotype.getRmin(), to)){
+	                            addImagetoProperDirectories(datumSetupForImage, t, phenotype);
+	                            //update the bar
+	                            totalvalue += increment;
+	                            trainingProgress.setValue((int)Math.round(totalvalue));                        
+	                        }
                     }
                 }
             }

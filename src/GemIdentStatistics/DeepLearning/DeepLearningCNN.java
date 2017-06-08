@@ -1,10 +1,16 @@
 package GemIdentStatistics.DeepLearning;
 
 import GemIdentOperations.Run;
+import GemIdentTools.IOTools;
+import GemIdentView.JProgressBarAndLabel;
+
 import org.apache.commons.io.FilenameUtils;
 import org.datavec.api.io.filters.BalancedPathFilter;
+import org.datavec.api.io.filters.PathFilter;
 import org.datavec.api.io.labels.ParentPathLabelGenerator;
+import org.datavec.api.records.Record;
 import org.datavec.api.records.listener.impl.LogRecordListener;
+import org.datavec.api.split.CollectionInputSplit;
 import org.datavec.api.split.FileSplit;
 import org.datavec.api.split.InputSplit;
 import org.datavec.image.loader.NativeImageLoader;
@@ -27,8 +33,7 @@ import org.deeplearning4j.nn.weights.WeightInit;
 import org.deeplearning4j.ui.api.UIServer;
 import org.deeplearning4j.ui.stats.StatsListener;
 import org.deeplearning4j.ui.storage.InMemoryStatsStorage;
-import org.deeplearning4j.util.NetSaverLoaderUtils;
-
+import org.deeplearning4j.util.ModelSerializer;
 import org.nd4j.linalg.activations.Activation;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
@@ -42,19 +47,20 @@ import org.slf4j.LoggerFactory;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
+import java.net.URI;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+
+import javax.imageio.ImageIO;
 
 
-
-@SuppressWarnings("deprecation")
 public class DeepLearningCNN {
     protected static final Logger log = LoggerFactory.getLogger(DeepLearningCNN.class);
-    protected static long seed = 123;
+    protected static long seed = 124;
     protected static Random rng = new Random(seed);
     
     protected int height;
@@ -65,7 +71,7 @@ public class DeepLearningCNN {
     protected int batchSize;
     protected int iterations;
     protected int epochs;
-    protected double splitTrainTest;
+    protected double splitTrainTest = 0.7;
 
     public static class DeepLearningCNNBuilder{
         private int height;
@@ -73,29 +79,20 @@ public class DeepLearningCNN {
         private int channels;
         private int numExamples;
         private int numLabels;
-        private int batchSize;
         private int iterations;
         private int epochs;
-        private double splitTrainTest = .8;//Will break model if 1.0 or greater
+        private double splitTrainTest;
+		private JProgressBarAndLabel buildProgressBar;
 
         public DeepLearningCNNBuilder(){
-            height = Run.it.getMaxPhenotypeRadiusPlusMore(null) * 2;
-            width = Run.it.getMaxPhenotypeRadiusPlusMore(null) * 2;
+            height = Run.it.getPhenotypeCoreImageSemiWidth() * 2 + 1;
+            width = height;
             numExamples = Run.it.numPhenTrainingPoints();
             numLabels =  Run.it.numPhenotypes();
             channels = 3; //Default RGB type 
 
         }
-
-        public DeepLearningCNNBuilder batchSize(int batchSize){
-            if(batchSize > numExamples){
-                // Probably should let user re-enter param
-                batchSize = numExamples;
-            }
-            this.batchSize = batchSize;
-            return this;
-        }
-
+        
         public DeepLearningCNNBuilder iterations(int iterations){
             this.iterations = iterations;
             return this;
@@ -106,14 +103,19 @@ public class DeepLearningCNN {
             return this;
         }
 
-        public DeepLearningCNNBuilder splitPercentage(double percentage){
-            this.splitTrainTest = percentage;
+        public DeepLearningCNNBuilder splitPercentage(double splitTrainTest){
+            this.splitTrainTest = splitTrainTest;
             return this;
         }
 
         public DeepLearningCNN build(){
-            return new DeepLearningCNN(height,width,channels,numExamples,numLabels,batchSize,iterations,epochs, splitTrainTest);
+            return new DeepLearningCNN(height,width,channels,numExamples,numLabels,iterations,epochs, splitTrainTest, buildProgressBar);
         }
+
+		public DeepLearningCNNBuilder setProgressBar(JProgressBarAndLabel buildProgressBar) {
+            this.buildProgressBar = buildProgressBar;
+            return this;
+		}
 
 
     }
@@ -126,22 +128,64 @@ public class DeepLearningCNN {
 
     protected static String modelType = "custom"; // LeNet, AlexNet or Custom but you need to fill it out
     private MultiLayerNetwork network;
+	private JProgressBarAndLabel buildProgressBar;
 
-    public DeepLearningCNN(int height, int width, int channels, int numExamples, int numLabels, int batchSize, int iterations, int epochs, double splitTrainTest){
+    public DeepLearningCNN(int height, int width, int channels, int numExamples, int numLabels, int iterations, int epochs, double splitTrainTest, JProgressBarAndLabel buildProgressBar){
     	this.channels = channels;
     	this.numExamples = numExamples;
     	this.numLabels = numLabels;
-    	this.batchSize = batchSize;
     	this.iterations = iterations;
     	this.epochs = epochs;
-    	this.splitTrainTest = splitTrainTest;
+//    	this.splitTrainTest = splitTrainTest;
         this.height = height;
         this.width = width;
+        this.buildProgressBar = buildProgressBar;
+    }
+    
+    public InputSplit[] sample(FileSplit fileSplit, PathFilter pathFilter, double... weights) {
+
+        URI[] paths = pathFilter != null ? pathFilter.filter(fileSplit.locations()) : fileSplit.locations();
+    	System.out.println("PATHs: " + paths.length);
+
+        if (weights != null && weights.length > 0 && weights[0] != 1.0) {
+            InputSplit[] splits = new InputSplit[weights.length];
+            double totalWeight = 0;
+            for (int i = 0; i < weights.length; i++) {
+                totalWeight += weights[i];
+            }
+
+            double cumulWeight = 0.0D;
+            int[] partitions = new int[weights.length + 1];
+            for (int i = 0; i < weights.length; i++) {
+                partitions[i] = (int)Math.round(cumulWeight * paths.length / totalWeight);
+                cumulWeight += weights[i];
+            }
+            partitions[weights.length] = paths.length;
+            
+            for (int i = 0; i < weights.length; i++) {
+            	System.out.println("weights[" + i  + "] = " + weights[i]);
+            }
+            
+            for (int i = 0; i < partitions.length; i++) {
+            	System.out.println("partition[" + i  + "] = " + partitions[i]);
+            }
+
+            for (int i = 0; i < weights.length; i++) {
+                List<URI> uris = new ArrayList<>();
+                for (int j = partitions[i]; j < partitions[i + 1]; j++) {
+//                	System.out.println("j0 = " + partitions[i] + " j = " + j + " jf = " + partitions[i + 1]);
+                    uris.add(paths[j]);
+                }
+                splits[i] = new CollectionInputSplit(uris);
+            }
+            return splits;
+        } else {
+            return new InputSplit[] { new CollectionInputSplit(Arrays.asList(paths)) };
+        }
     }
     
     public void run() throws Exception {
         System.out.print(height + " " + width);
-
         
         //set CNN params from user here
         
@@ -155,22 +199,24 @@ public class DeepLearningCNN {
          **/
         ParentPathLabelGenerator labelMaker = new ParentPathLabelGenerator();
         //Class Labels path
-        File mainPath = new File(System.getProperty("user.dir"),
-                "LabelsForAllProjects"+File.separator+"ClassLabels"+
-                Run.it.getProjectName());
+        File mainPath = new File(Run.it.imageset.getFilenameWithHomePath("ClassLabels" +"_" + Run.it.getProjectName()));
         FileSplit fileSplit = new FileSplit(mainPath, NativeImageLoader.ALLOWED_FORMATS, rng);
+        
+        batchSize = numExamples;//Run.it.numPhenTrainingPoints(); //Run.it.CNN_
+    	System.out.println("BATCH SIZE:" + batchSize);
         BalancedPathFilter pathFilter = new BalancedPathFilter(rng, labelMaker, numExamples, numLabels, batchSize);
-
+        
+    	System.out.println("fileSplit:" + fileSplit.length());
         /**
          * Data Setup -> train test split
          *  - inputSplit = define train and test split
          **/
-        splitTrainTest = .8;
-        InputSplit[] inputSplit = fileSplit.sample(pathFilter, splitTrainTest, 1 - splitTrainTest);
+        //null pathFilter because we want to use all training examples users provided for training
+        InputSplit[] inputSplit = sample(fileSplit, pathFilter, splitTrainTest, 1 - splitTrainTest);
         InputSplit trainData = inputSplit[0];
         InputSplit testData = inputSplit[1];
 
-
+        
 
         /**
          * Data Setup -> transformation
@@ -185,7 +231,6 @@ public class DeepLearningCNN {
         List<ImageTransform> transforms = Arrays.asList();
 
         //Formula to get number of times we go through model during training
-        final double progressIncrementor = 100 / ((transforms.size() + 1) * epochs * batchSize * iterations);
 //        System.out.println("Epochs: " + epochs + "\n BatchSize: " + batchSize + "\n Iterations: " + iterations +
 //        "\n Transforms: " +transforms.size() + "\n incrementor: " +progressIncrementor);
         /**
@@ -222,10 +267,10 @@ public class DeepLearningCNN {
         //Attach the StatsStorage instance to the UI: this allows the contents of the StatsStorage to be visualized
         uiServer.attach(statsStorage);
         //Then add the StatsListener to collect this information from the network, as it trains
-        network.setListeners(new StatsListener(statsStorage));	
-        
-        final OurScoreIterationListener scoreListener = new OurScoreIterationListener(listenerFreq);
-        network.setListeners(scoreListener);
+        network.setListeners(new StatsListener(statsStorage));
+//        double increment = 100.0 / ((transforms.size() == 0 ? 1 : transforms.size()) * epochs * trainData.length() * iterations); //FUDGE *2!
+        double increment = 100.0 / (epochs * iterations);
+        network.setListeners(new CNNProgressListener(increment, buildProgressBar));
         /**
          * Data Setup -> define how to load data into net:
          *  - recordReader = the reader that loads and converts image data pass in inputSplit to initialize
@@ -265,31 +310,7 @@ public class DeepLearningCNN {
         }
         else System.out.println("trainIter is empty");
 
-        ExecutorService coupled_threads = Executors.newFixedThreadPool(2);
-        coupled_threads.execute(new Runnable(){
-            public void run(){
-                boolean stop = false;
-                int currentIter = 0;
-                while (!stop){
-                    if(scoreListener.getIterCount() != currentIter) {
-                        double change = (int) (progressIncrementor * (scoreListener.getIterCount() - currentIter));
-                        if(change >= 1.0)
-                        buildProgress += (change);
-//                        System.out.println(buildProgress);
-                    }
-                    if(buildProgress >= 100)
-                        stop = true;
-                }
-            }
-
-
-        });
-        coupled_threads.shutdown();
         network.fit(trainIter);
-
-        try {
-            coupled_threads.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS); //effectively infinity
-        } catch (InterruptedException ignored){}
 
         // Train with transformations
         /**
@@ -310,25 +331,69 @@ public class DeepLearningCNN {
         recordReader.initialize(testData);
         dataIter = new RecordReaderDataSetIterator(recordReader, batchSize, 1, numLabels);
         scaler.fit(dataIter);
+      
+        
         dataIter.setPreProcessor(scaler);
         Evaluation eval = network.evaluate(dataIter);
         System.out.println(eval.stats(true));
 
+        
+        //now look at all the test data and what happens
+        dataIter.reset();
+        Iterator<URI> locations = testData.locationsIterator();
+        int i = 0;
+        while (dataIter.hasNext()){
+        	
+            DataSet dataset = dataIter.next();
+            Iterator<DataSet> iter = dataset.asList().iterator();
+            
+			while (iter.hasNext()){
+				i++;
+				DataSet t = iter.next();
+				URI uri = locations.next();
+				
+				System.out.println("uri: " + uri.toString());
+            
+	            System.out.println("predicting #" + i + " id: " + t.id());
+	            if (t.getExampleMetaData() != null){
+	                for (Serializable s : t.getExampleMetaData()){
+	                	System.out.println("  metadata: " + s.toString());
+	                }
+	            }
+	
+	            System.out.println("  hasMaskArrays: " + t.hasMaskArrays());
+	            System.out.println("  numExamples: " + t.numExamples());
+//	            System.out.println("  getFeatureMatrix cols: " + t.getFeatureMatrix());
+//	            if (i == 1){
+		            System.out.println("  getFeatures: " + t.getFeatures());	            	
+//	            }
+	            for (String lab : t.getLabelNamesList()){
+	            	System.out.println("  label name: " + lab);
+	            }
+	            
+	            System.out.println("  labels: " + t.getLabels());
+//	            System.out.println("  toString: " + t.toString());
+	            
+	            
+	            
+//	            String expectedResult = t.getLabelName(0);
+	            int[] predict = network.predict(t.getFeatures());
+	            for (int prediction :  predict){
+	            	System.out.println("  prediction: " + prediction);
+	            }
+			}
+        }
+
 
         // Example on how to get predict results with trained model
-        dataIter.reset();
-        DataSet testDataSet = dataIter.next();
-        String expectedResult = testDataSet.getLabelName(0);
-        List<String> predict = network.predict(testDataSet);
-        String modelResult = predict.get(0);
-        System.out.print("\nFor a single example that is labeled " + expectedResult +
-                " the model predicted " + modelResult + "\n\n");
+        
+
+
 
         if (save) {
             log.info("Save model....");
             String basePath = FilenameUtils.concat(System.getProperty("user.dir"), "src/main/resources/");
-            NetSaverLoaderUtils.saveNetworkAndParameters(network, basePath);
-            NetSaverLoaderUtils.saveUpdators(network, basePath);
+            ModelSerializer.writeModel(network, basePath, true);
         }
         log.info("****************Example finished********************");
 
@@ -337,25 +402,64 @@ public class DeepLearningCNN {
 
     /**
      *Feeds Buffered Image to model
-     * @param imageData bufferedImage at point of interest
+     * @param image bufferedImage at point of interest
+     * @param filename 
+     * @param j 
+     * @param i 
      * @return classlabel
      */
-    public double classify(BufferedImage imageData){
-        //3 for RGB channels
-        NativeImageLoader unlabeledImage = new NativeImageLoader(imageData.getWidth(),imageData.getHeight(),3);
-        //need INDArray to input into network
-        INDArray image = null;
+    public double classify(BufferedImage image, int i, int j, String filename){
+//        File outputimagefile = new File(
+//        		Run.it.imageset.getFilenameWithHomePath("ClassLabels" +"_" + Run.it.getProjectName()) + 
+//        		File.separator +
+//        		"TEST" + 
+//        		File.separator +
+//               "subimage_"+i+"_"+j+
+//               ".bmp");
+        File outputimagefile = new File("test.bmp");
         try {
+			ImageIO.write(image, "BMP", outputimagefile);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+            
+            
+            
+            
+            
+        //need INDArray to input into network
+        INDArray d = null;
+        try {
+<<<<<<< HEAD
             image = unlabeledImage.asMatrix(imageData);
 
+=======
+            d = new NativeImageLoader(image.getHeight(), image.getWidth(), 3).asMatrix(outputimagefile); //THIS IS THE PROBLEM
+>>>>>>> 52e46c203b946ac928f84e0b35b60759b75ca889
         } catch (IOException e) {
             e.printStackTrace();
         }
-        scaler.transform(image);
-        //System.out.println(image);
-        int x[] = network.predict(image);
-        return (double)x[0];
+        scaler.transform(d);
+        
+
+        
+//    	System.out.println("classify for image " + image);
+//    	System.out.println("classify for image " + filename);
+//    	System.out.println("classify for i_j " + i + "_" + j);
+//    	System.out.println("features: " + d);
+        int prediction_vector[] = network.predict(d);
+//        for (int prediction :  prediction_vector){
+////        	if (prediction == 1){
+//
+//            	System.out.println("  prediction: " + prediction);
+////        	}
+//
+//        }
+        return (double)prediction_vector[0];
     }
+    
+
 
 
     private ConvolutionLayer convInit(String name, int in, int out, int[] kernel, int[] stride, int[] pad, double bias) {

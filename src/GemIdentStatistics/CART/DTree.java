@@ -618,10 +618,7 @@ public class DTree extends ClassificationAndRegressionTree implements Serializab
 			else
 				evalNode=evalNode.right;
 		}
-	}	
-	
-	//not going to write this function, not as useful
-	public void StopBuilding() {}
+	}
 	
 	public void FlushData(){
 		FlushNodeData(root);

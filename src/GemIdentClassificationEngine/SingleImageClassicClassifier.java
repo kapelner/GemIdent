@@ -154,8 +154,8 @@ public class SingleImageClassicClassifier implements Runnable {
 							counter=0;
 							new Thread(){ //thread this off to make classification faster
 								public void run(){
-//									UpdateImagePanel();
-									UpdateProgressBar();									
+									UpdateProgressBar();
+									UpdateImagePanel();							
 								}
 							}.start();							
 						}
@@ -169,12 +169,12 @@ public class SingleImageClassicClassifier implements Runnable {
 		progress.update(threadName);
 		progress.setTime(threadName,TimeElapsed());			
 	}
-//		/** show the current image being classified as well as the real time results */
-//		private void UpdateImagePanel(){
-//			classifyPanel.setDisplayImage(superImage.getCenterImage()); //LEAK!!!!!
-//			classifyPanel.setIs(is);
-////			classifyPanel.repaintImagePanel();			
-//		}
+		/** show the current image being classified as well as the real time results */
+	void UpdateImagePanel(){
+		classifyPanel.setDisplayImage(superImage.getCenterImage()); //LEAK!!!!!
+		classifyPanel.setIs(is);
+		classifyPanel.repaintImagePanel();			
+	}
 	/** paint the results over a copy of the original image */
 	private void MarkIntermediatePixels(){
 		for (int i=0;i<width;i++){
