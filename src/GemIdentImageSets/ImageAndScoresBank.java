@@ -185,6 +185,7 @@ public class ImageAndScoresBank {
 		}
 		if (allSuperImages.size() > SUPER_AND_SCORES_MAX_SIZE)
 			allSuperImages.flushToSize(SUPER_AND_SCORES_MAX_SIZE);
+//		System.out.println("getOrAddSuperImage: " + superImage + "  " + filename);
 		return superImage;
 	}
 	/**

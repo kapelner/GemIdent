@@ -79,6 +79,8 @@ public class Classify {
 	 * @param classifyPanel			the panel the classification is taking place in
 	 */
 	public Classify(Collection<String> filenames, Classifier classifier, ClassifyProgress progress, KClassifyPanel classifyPanel){
+
+//		System.out.println("Classify " + classifier);
 		this.classifyPanel = classifyPanel;
 		this.progress = progress;
 		this.filenames = filenames;		
@@ -96,6 +98,7 @@ public class Classify {
 	 * then populates it with a worker class for each image in the set
 	 */
 	private void BeginClassification() {
+//		System.out.println("BeginClassification ");
 		progress.StartTimer();
 		Run.it.imageset.LOG_AddToHistory("begun classification of " + filenames.size() + " images");
 
@@ -104,7 +107,7 @@ public class Classify {
 		for (String filename:filenames){
 			switch (Run.it.classification_method){
 				case Run.CLASSIFIER_CNN:
-					classifyPool.execute(new SingleImageDeepLearningClassifier(filename, progress, classifyPanel, classifier, stop)); break;
+					new SingleImageDeepLearningClassifier(classifyPool, filename, progress, classifyPanel, classifier, stop); break;
 				case Run.CLASSIFIER_RF:
 				default:
 					classifyPool.execute(new SingleImageClassicClassifier(filename, progress, classifyPanel, classifier, stop)); break;

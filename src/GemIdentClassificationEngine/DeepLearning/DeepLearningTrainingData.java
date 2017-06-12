@@ -72,6 +72,7 @@ public class DeepLearningTrainingData extends TrainingData{
     
     public static BufferedImage coreOutSuperImage(SuperImage super_image, int semiwidth, Point t) {
     	Point t_adj = super_image.AdjustPointForSuper(t);
+//    	System.out.println("tadj: " + t_adj + " semi: " + semiwidth);
 		return super_image.getAsBufferedImage().getSubimage(t_adj.x - semiwidth, t_adj.y - semiwidth, semiwidth * 2 + 1, semiwidth * 2 + 1);
 	}
 

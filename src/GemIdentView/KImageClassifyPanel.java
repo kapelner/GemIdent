@@ -70,17 +70,6 @@ public class KImageClassifyPanel extends KImagePanel{
 			return;		
 		}
 		
-		int p_width = getWidth();
-		int p_height = getHeight();
-		int i_width = displayImage.getWidth();
-		int i_height = displayImage.getHeight();
-		
-		int x_0 = (p_width-i_width)/2;
-		int y_0 = (p_height-i_height)/2;
-		
-		if ( x_0 < 0 ) x_0 = 0;
-		if ( y_0 < 0 ) y_0 = 0;
-		
 		try {	
 			if (classifyPanel.is != null){
 				for (String phenotype:classifyPanel.is.keySet()){

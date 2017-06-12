@@ -407,8 +407,11 @@ public class DeepLearningCNN {
      * @param j 
      * @param i 
      * @return classlabel
+     * @throws IOException 
      */
-    public double classify(BufferedImage image, int i, int j, String filename){
+    public double classify(BufferedImage image, int i, int j, String filename) throws IOException{
+    	int prediction_vector[] = null;
+		//    	System.out.println("classify for image " + image + " i " + i + " j " + j + " filename " + filename);
 //        File outputimagefile = new File(
 //        		Run.it.imageset.getFilenameWithHomePath("ClassLabels" +"_" + Run.it.getProjectName()) + 
 //        		File.separator +
@@ -416,39 +419,31 @@ public class DeepLearningCNN {
 //        		File.separator +
 //               "subimage_"+i+"_"+j+
 //               ".bmp");
-        File outputimagefile = new File("test.bmp");
-        try {
-			ImageIO.write(image, "BMP", outputimagefile);
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-            
-            
-            
-            
-            
-        //need INDArray to input into network
-        INDArray d = null;
-        try {
-<<<<<<< HEAD
-            image = unlabeledImage.asMatrix(imageData);
-
-=======
-            d = new NativeImageLoader(image.getHeight(), image.getWidth(), 3).asMatrix(outputimagefile); //THIS IS THE PROBLEM
->>>>>>> 52e46c203b946ac928f84e0b35b60759b75ca889
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        scaler.transform(d);
-        
-
-        
-//    	System.out.println("classify for image " + image);
-//    	System.out.println("classify for image " + filename);
-//    	System.out.println("classify for i_j " + i + "_" + j);
-//    	System.out.println("features: " + d);
-        int prediction_vector[] = network.predict(d);
+    	File outputimagefile = new File("e:/test" + Thread.currentThread().getName() + ".bmp");
+        ImageIO.write(image, "BMP", outputimagefile);
+    	synchronized (this){
+    	       INDArray d = new NativeImageLoader(image.getHeight(), image.getWidth(), 3).asMatrix(image); //THIS IS THE PROBLEM
+    	    	scaler.transform(d);
+    	    	System.out.println("features of original bufferedimage:\n" + d);
+    	    	
+     	       d = new NativeImageLoader(image.getHeight(), image.getWidth(), 3).asMatrix(outputimagefile); //THIS IS THE PROBLEM
+     	    	scaler.transform(d);
+     	    	System.out.println("features of written and loaded image:\n" + d);
+    	    	
+//    	    	BufferedImage clone = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
+//    	    	for (int i0 = 0; i0 < clone.getWidth(); i0++){
+//    	        	for (int j0 = 0; j0 < clone.getWidth(); j0++){
+//    	        		clone.setRGB(i0, j0, image.getRGB(i0, j0));
+//    	        	}
+//    	    	}
+//    	    	
+//    	        d = new NativeImageLoader(clone.getHeight(), clone.getWidth(), 3).asMatrix(clone); //THIS IS THE PROBLEM
+//    	    	scaler.transform(d);
+//    	    	System.out.println("features of cloned bufferedimage:\n" + d);
+    	    	
+    	        prediction_vector = network.predict(d);
+    	}
+ 
 //        for (int prediction :  prediction_vector){
 ////        	if (prediction == 1){
 //

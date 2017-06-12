@@ -91,7 +91,7 @@ public class Run implements Serializable{
 		System.out.println("GemIdent v1.3b --- http://gemident.com");
 		System.out.println("Interactive Image Segmentation Software via Supervised Statistical Learning");
 		System.out.println("");		
-		System.out.println("Copyright (C) 2016");
+		System.out.println("Copyright (C) 2017");
 		System.out.println("Adam Kapelner, Queens College, City University of New York and");
 		System.out.println("Professor Susan Holmes, Stanford University");
 		System.out.println("");
@@ -113,11 +113,11 @@ public class Run implements Serializable{
 	/** the default number of trees in the {@link RandomForest random forest} */
 	transient public static final int DEFAULT_NUM_TREES=50;
 	/** the default number of threads to use during most program operations - get the number of available processors from the OS */
-	transient public static final int DEFAULT_NUM_THREADS=Runtime.getRuntime().availableProcessors();
+	transient public static final int DEFAULT_NUM_THREADS = (int)Math.max(Runtime.getRuntime().availableProcessors() - 1, 1);
 	/** the default number of pixels to skip when {@link Classify classifying images} */
 	transient public static final int DEFAULT_PIXEL_SKIP= 1;
 	/** the default number of pixels to classify before {@link Classify updating the screen} */
-	transient public static final int DEFAULT_R_BATCH_SIZE = 250;
+	transient public static final int DEFAULT_R_BATCH_SIZE = 1000;
 	/** relevant only for CRI Nuance image sets, this is the default magnification that each picture will be loaded at (see {@link Thumbnails#ScaleImage Scale Image}) */
 	transient public static final float DEFAULT_MAGN=1; //so nothing bad happens
 		

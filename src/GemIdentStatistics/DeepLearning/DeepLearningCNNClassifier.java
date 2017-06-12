@@ -12,6 +12,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 import java.awt.image.RasterFormatException;
+import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -60,13 +61,19 @@ public class DeepLearningCNNClassifier extends Classifier {
 	
 	@Override
 	public double Evaluate(String filename, int i, int j){
-       return cnn.classify(
-    		   DeepLearningTrainingData.coreOutSuperImage(
-    				   ImageAndScoresBank.getOrAddSuperImage(filename), 
-    				   Run.it.getPhenotypeCoreImageSemiWidth(), 
-    				   new Point(i,j)
-    		   ), i, j, filename
-    	   );
+       try {
+		return cnn.classify(
+				   DeepLearningTrainingData.coreOutSuperImage(
+						   ImageAndScoresBank.getOrAddSuperImage(filename), 
+						   Run.it.getPhenotypeCoreImageSemiWidth(), 
+						   new Point(i,j)
+				   ), i, j, filename
+			   );
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+       return 0;
 	}
 
 }

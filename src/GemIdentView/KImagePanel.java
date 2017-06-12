@@ -63,6 +63,10 @@ public abstract class KImagePanel extends JPanel{
 	private JScrollPane scrollPane;
 	/** next time the mouse enters this component, focus is taken */
 	private boolean ifMouseEntersTakeFocus;
+	protected int x_0;
+	protected int y_0;
+	protected int i_width;
+	protected int i_height;
 
 	/** sets up the scrollPane, the magnifier, and general listeners associated with all image panels */
 	public KImagePanel(){
@@ -160,11 +164,11 @@ public abstract class KImagePanel extends JPanel{
 		g.fillRect(0,0,p_width,p_height);
 
 		if ( displayImage != null ) {
-			int i_width = displayImage.getWidth();
-			int i_height = displayImage.getHeight();
+			i_width = displayImage.getWidth();
+			i_height = displayImage.getHeight();
 			
-			int x_0 = (p_width-i_width)/4;
-			int y_0 = (p_height-i_height)/4;
+			x_0 = (p_width-i_width)/4;
+			y_0 = (p_height-i_height)/4;
 			
 			if ( x_0 < 0 ) x_0 = 0;
 			if ( y_0 < 0 ) y_0 = 0;
