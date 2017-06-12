@@ -165,12 +165,12 @@ public class SingleImageClassicClassifier implements Runnable {
 		}
 	}
 	/** update the progress bar for the user */
-	void UpdateProgressBar(){
+	protected void UpdateProgressBar(){
 		progress.update(threadName);
 		progress.setTime(threadName,TimeElapsed());			
 	}
 		/** show the current image being classified as well as the real time results */
-	void UpdateImagePanel(){
+	protected void UpdateImagePanel(){
 		classifyPanel.setDisplayImage(superImage.getCenterImage()); //LEAK!!!!!
 		classifyPanel.setIs(is);
 		classifyPanel.repaintImagePanel();			

@@ -34,6 +34,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.JOptionPane;
 
+import GemIdentClassificationEngine.DeepLearning.SingleImageDeepLearningClassifier;
 import GemIdentOperations.Run;
 import GemIdentStatistics.Classifier;
 import GemIdentTools.IOTools;

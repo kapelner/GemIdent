@@ -1,4 +1,4 @@
-package GemIdentClassificationEngine;
+package GemIdentClassificationEngine.DeepLearning;
 
 import java.awt.Point;
 import java.io.File;
@@ -7,6 +7,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import GemIdentClassificationEngine.Classify;
+import GemIdentClassificationEngine.SingleImageClassicClassifier;
 import GemIdentOperations.Run;
 import GemIdentStatistics.Classifier;
 import GemIdentTools.IOTools;
@@ -42,34 +44,35 @@ public class SingleImageDeepLearningClassifier extends SingleImageClassicClassif
 	 * @see <a href="http://www.gemident.com/publication.html">the 2007 IEEE paper</a>
 	 */
 	protected void ClassifyPixels(){
-		new File((System.getProperty("user.dir")+"/Evaluation/")).mkdirs();
+//		new File((System.getProperty("user.dir")+"/Evaluation/")).mkdirs();
 		final AtomicInteger counter = new AtomicInteger(0);
 		
-		ArrayList<Point> all_training_points = Run.it.getAllTrainingPointsImage(filename);
+//		ArrayList<Point> all_training_points = Run.it.getAllTrainingPointsImage(filename);
 		
 //		System.out.println("ClassifyPixels " + filename);
 		
 		
-		classify_all_pixels : {
-			for (int j = 0; j < height; j++){
-				for (int i = 0; i < width; i++){
-					if (!all_training_points.contains(new Point(i, j))){
-						continue;
-					}
-					if (stop.get()){
-						classifyPool.shutdownNow();
-						break classify_all_pixels;
-					}
-					if (((i+j) % Run.it.pixel_skip) == 0){
-						int i_f = i;
-						int j_f = j;
-						classifyPool.execute(
-							new Runnable(){
-								public void run(){
+		for (int c = 0; c < Run.it.num_threads; c++){
+			final int c_0 = c;
+			classifyPool.execute(
+					new Runnable(){
+						public void run(){
+							for (int j = 0; j < height; j++){
+								for (int i = 0; i < width; i++){
+									if ((i + j) % Run.it.num_threads == c_0){
+//										if (!all_training_points.contains(new Point(i, j))){
+//										continue;
+//									}
+										if (stop.get()){
+											classifyPool.shutdownNow();
+										}
+										if (((i+j) % Run.it.pixel_skip) == 0){
+											int i_f = i;
+											int j_f = j;
 										counter.incrementAndGet();
 										//Where CNN gives its classification
 										int resultClass = (int)classifier.Evaluate(filename, i_f, j_f);
-	
+				
 										if (resultClass != 0)
 											(is.get(Run.classMapBck.get(resultClass))).set(i_f, j_f, true);
 										if (counter.get() % Run.it.num_pixels_to_batch_updates == 0){
@@ -83,15 +86,17 @@ public class SingleImageDeepLearningClassifier extends SingleImageClassicClassif
 											for (String phenotype : Run.it.getPhenotyeNamesSaveNONAndFindPixels()){
 												//System.out.println("about to write ismatrix for file " + filename + " and phenotype " + phenotype + " and is matrix " + is.get(phenotype).toString());
 												IOTools.WriteIsMatrix(Classify.GetIsName(filename, phenotype),is.get(phenotype));
-											}							
+											}	
 										}
 									}
 								}
-							
-						);
+							}
+						}
 					}
 				}
-			}
-		}
+			);
+		}	
 	}	
+	
+	
 }

@@ -142,48 +142,7 @@ public class DeepLearningCNN {
         this.buildProgressBar = buildProgressBar;
     }
     
-    public InputSplit[] sample(FileSplit fileSplit, PathFilter pathFilter, double... weights) {
 
-        URI[] paths = pathFilter != null ? pathFilter.filter(fileSplit.locations()) : fileSplit.locations();
-    	System.out.println("PATHs: " + paths.length);
-
-        if (weights != null && weights.length > 0 && weights[0] != 1.0) {
-            InputSplit[] splits = new InputSplit[weights.length];
-            double totalWeight = 0;
-            for (int i = 0; i < weights.length; i++) {
-                totalWeight += weights[i];
-            }
-
-            double cumulWeight = 0.0D;
-            int[] partitions = new int[weights.length + 1];
-            for (int i = 0; i < weights.length; i++) {
-                partitions[i] = (int)Math.round(cumulWeight * paths.length / totalWeight);
-                cumulWeight += weights[i];
-            }
-            partitions[weights.length] = paths.length;
-            
-            for (int i = 0; i < weights.length; i++) {
-            	System.out.println("weights[" + i  + "] = " + weights[i]);
-            }
-            
-            for (int i = 0; i < partitions.length; i++) {
-            	System.out.println("partition[" + i  + "] = " + partitions[i]);
-            }
-
-            for (int i = 0; i < weights.length; i++) {
-                List<URI> uris = new ArrayList<>();
-                for (int j = partitions[i]; j < partitions[i + 1]; j++) {
-//                	System.out.println("j0 = " + partitions[i] + " j = " + j + " jf = " + partitions[i + 1]);
-                    uris.add(paths[j]);
-                }
-                splits[i] = new CollectionInputSplit(uris);
-            }
-            return splits;
-        } else {
-            return new InputSplit[] { new CollectionInputSplit(Arrays.asList(paths)) };
-        }
-    }
-    
     public void run() throws Exception {
         System.out.print(height + " " + width);
         
@@ -206,13 +165,13 @@ public class DeepLearningCNN {
     	System.out.println("BATCH SIZE:" + batchSize);
         BalancedPathFilter pathFilter = new BalancedPathFilter(rng, labelMaker, numExamples, numLabels, batchSize);
         
-    	System.out.println("fileSplit:" + fileSplit.length());
+//    	System.out.println("fileSplit:" + fileSplit.length());
         /**
          * Data Setup -> train test split
          *  - inputSplit = define train and test split
          **/
         //null pathFilter because we want to use all training examples users provided for training
-        InputSplit[] inputSplit = sample(fileSplit, pathFilter, splitTrainTest, 1 - splitTrainTest);
+        InputSplit[] inputSplit = fileSplit.sample(pathFilter, splitTrainTest, 1 - splitTrainTest);
         InputSplit trainData = inputSplit[0];
         InputSplit testData = inputSplit[1];
 
@@ -422,14 +381,11 @@ public class DeepLearningCNN {
     	File outputimagefile = new File("e:/test" + Thread.currentThread().getName() + ".bmp");
         ImageIO.write(image, "BMP", outputimagefile);
     	synchronized (this){
-    	       INDArray d = new NativeImageLoader(image.getHeight(), image.getWidth(), 3).asMatrix(image); //THIS IS THE PROBLEM
-    	    	scaler.transform(d);
-    	    	System.out.println("features of original bufferedimage:\n" + d);
-    	    	
-     	       d = new NativeImageLoader(image.getHeight(), image.getWidth(), 3).asMatrix(outputimagefile); //THIS IS THE PROBLEM
-     	    	scaler.transform(d);
-     	    	System.out.println("features of written and loaded image:\n" + d);
-    	    	
+//    	       INDArray d = new NativeImageLoader(image.getHeight(), image.getWidth(), 3).asMatrix(image);
+//    	    	scaler.transform(d);
+//    	    	System.out.println("features of original bufferedimage:\n" + d);
+//
+//    	    	
 //    	    	BufferedImage clone = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
 //    	    	for (int i0 = 0; i0 < clone.getWidth(); i0++){
 //    	        	for (int j0 = 0; j0 < clone.getWidth(); j0++){
@@ -437,9 +393,14 @@ public class DeepLearningCNN {
 //    	        	}
 //    	    	}
 //    	    	
-//    	        d = new NativeImageLoader(clone.getHeight(), clone.getWidth(), 3).asMatrix(clone); //THIS IS THE PROBLEM
+//    	        d = new NativeImageLoader(clone.getHeight(), clone.getWidth(), 3).asMatrix(clone);
 //    	    	scaler.transform(d);
 //    	    	System.out.println("features of cloned bufferedimage:\n" + d);
+    	    	
+    	    	
+    			INDArray d = new NativeImageLoader(image.getHeight(), image.getWidth(), 3).asMatrix(outputimagefile); 
+     	    	scaler.transform(d);
+//     	    	System.out.println("features of written and loaded image:\n" + d);
     	    	
     	        prediction_vector = network.predict(d);
     	}
