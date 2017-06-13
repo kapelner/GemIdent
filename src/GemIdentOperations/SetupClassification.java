@@ -195,7 +195,7 @@ public class SetupClassification extends Thread {
 		classifier.setData(trainingData.getData());
 		classifier.Build();	
 //		classifier.dumpDataToFile(); //debugging
-		System.out.println("all training data dumped");
+//		System.out.println("all training data dumped");
 		//now save the forest to the hd (on another thread to not slow us down):
 		if (Run.it.classification_method != Run.CLASSIFIER_CNN){
 			SaveClassifierToHardDrive();

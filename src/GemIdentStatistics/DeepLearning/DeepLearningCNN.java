@@ -264,10 +264,10 @@ public class DeepLearningCNN {
         scaler.fit(dataIter);
         dataIter.setPreProcessor(scaler);
         trainIter = new MultipleEpochsIterator(epochs, dataIter, Run.it.num_threads);
-        if(trainIter.hasNext()){
-            System.out.println("trainIter is not empty");
-        }
-        else System.out.println("trainIter is empty");
+//        if(trainIter.hasNext()){
+//            System.out.println("trainIter is not empty");
+//        }
+//        else System.out.println("trainIter is empty");
 
         network.fit(trainIter);
 
@@ -379,31 +379,40 @@ public class DeepLearningCNN {
 //               "subimage_"+i+"_"+j+
 //               ".bmp");
     	File outputimagefile = new File("e:/test" + Thread.currentThread().getName() + ".bmp");
-        ImageIO.write(image, "BMP", outputimagefile);
     	synchronized (this){
-//    	       INDArray d = new NativeImageLoader(image.getHeight(), image.getWidth(), 3).asMatrix(image);
-//    	    	scaler.transform(d);
-//    	    	System.out.println("features of original bufferedimage:\n" + d);
+    		ImageIO.write(image, "BMP", outputimagefile);
+    	}
+//    	synchronized (this){
+    	       INDArray d = new NativeImageLoader(image.getHeight(), image.getWidth(), 3).asMatrix(image);
+    	    	scaler.transform(d);
+    	    	System.out.println("features of original bufferedimage:\n" + d);
 //
-//    	    	
+//    	    	System.out.println("type of original bufferedimage:\n" + image.getType());
+    	    	
 //    	    	BufferedImage clone = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
 //    	    	for (int i0 = 0; i0 < clone.getWidth(); i0++){
 //    	        	for (int j0 = 0; j0 < clone.getWidth(); j0++){
 //    	        		clone.setRGB(i0, j0, image.getRGB(i0, j0));
 //    	        	}
 //    	    	}
-//    	    	
+//    	    	System.out.println("type of clone:\n" + clone);
 //    	        d = new NativeImageLoader(clone.getHeight(), clone.getWidth(), 3).asMatrix(clone);
 //    	    	scaler.transform(d);
-//    	    	System.out.println("features of cloned bufferedimage:\n" + d);
     	    	
     	    	
-    			INDArray d = new NativeImageLoader(image.getHeight(), image.getWidth(), 3).asMatrix(outputimagefile); 
-     	    	scaler.transform(d);
+//				BufferedImage image_read = ImageIO.read(outputimagefile);
+				
+//				System.out.println("original:\n" + image);
+//				System.out.println("clone:\n" + clone);
+//				System.out.println("image read:\n" + image_read);
+//				System.out.println("image read type:\n" + image_read.getType());
+    	    	
+//    			d = new NativeImageLoader(image.getHeight(), image.getWidth(), 3).asMatrix(outputimagefile); 
+//     	    	scaler.transform(d);
 //     	    	System.out.println("features of written and loaded image:\n" + d);
-    	    	
+//    	    	
     	        prediction_vector = network.predict(d);
-    	}
+//    	}
  
 //        for (int prediction :  prediction_vector){
 ////        	if (prediction == 1){

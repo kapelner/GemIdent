@@ -25,6 +25,7 @@
 package GemIdentImageSets.Nuance;
 
 import java.awt.Point;
+import java.awt.image.BufferedImage;
 
 import GemIdentImageSets.DataImage;
 import GemIdentImageSets.ImageAndScoresBank;
@@ -78,5 +79,16 @@ public final class SuperNuanceImage extends NuanceSubImage implements SuperImage
 	
 	public String filename() {
 		return filename;
-	}	
+	}
+	
+	public BufferedImage getSubimage(int x, int y, int w, int h, int type){
+		BufferedImage core = new BufferedImage(w, h, type);
+		for (int i = 0; i < w; i++){
+			for (int j = 0; j < h; j++){
+				core.setRGB(i, j, displayimage.getRGB(i + x, j + y));
+			}			
+		}
+		return core;		
+	}
+	
 }

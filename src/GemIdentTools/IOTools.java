@@ -139,7 +139,7 @@ public class IOTools {
 	 * @param is		The binary image to be written as a {@link BoolMatrix BoolMatrix} object
 	 * @param filename	The filename (without extension) to be written to
 	*/
-	public static void WriteIsMatrix(String filename,BoolMatrix is){
+	public static synchronized void WriteIsMatrix(String filename,BoolMatrix is){
 		WriteImage(filename,"BMP",is.getBinaryImage());
 	}
 

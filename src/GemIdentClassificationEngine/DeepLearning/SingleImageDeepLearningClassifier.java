@@ -47,7 +47,7 @@ public class SingleImageDeepLearningClassifier extends SingleImageClassicClassif
 //		new File((System.getProperty("user.dir")+"/Evaluation/")).mkdirs();
 		final AtomicInteger counter = new AtomicInteger(0);
 		
-//		ArrayList<Point> all_training_points = Run.it.getAllTrainingPointsImage(filename);
+		ArrayList<Point> all_training_points = Run.it.getAllTrainingPointsImage(filename);
 		
 //		System.out.println("ClassifyPixels " + filename);
 		
@@ -60,9 +60,11 @@ public class SingleImageDeepLearningClassifier extends SingleImageClassicClassif
 							for (int j = 0; j < height; j++){
 								for (int i = 0; i < width; i++){
 									if ((i + j) % Run.it.num_threads == c_0){
-//										if (!all_training_points.contains(new Point(i, j))){
-//										continue;
-//									}
+										
+										if (!all_training_points.contains(new Point(i, j))){
+											continue;
+										}
+										
 										if (stop.get()){
 											classifyPool.shutdownNow();
 										}
@@ -73,8 +75,11 @@ public class SingleImageDeepLearningClassifier extends SingleImageClassicClassif
 										//Where CNN gives its classification
 										int resultClass = (int)classifier.Evaluate(filename, i_f, j_f);
 				
-										if (resultClass != 0)
-											(is.get(Run.classMapBck.get(resultClass))).set(i_f, j_f, true);
+										if (resultClass != 0){
+											System.out.println("** pixel " + filename + "(" +  i_f + " " + j_f + ") classified to be a " + resultClass);
+											is.get(Run.classMapBck.get(resultClass)).set(i_f, j_f, true);
+										}
+											
 										if (counter.get() % Run.it.num_pixels_to_batch_updates == 0){
 											System.out.println("pixel " + filename + "(" +  i_f + " " + j_f + ") classified to be a " + resultClass);
 											new Thread(){ //thread this off to make classification faster

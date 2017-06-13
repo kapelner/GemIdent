@@ -65,6 +65,9 @@ public interface SuperImage {
 	 * in DataImage as well
 	 */
 	public BufferedImage getAsBufferedImage();
+
+	/** core out a subimage */
+	public BufferedImage getSubimage(int x, int y, int w, int h, int type);
 	
 	public String filename();
 	
