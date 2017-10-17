@@ -117,7 +117,7 @@ public class Run implements Serializable{
 	/** the default number of pixels to skip when {@link Classify classifying images} */
 	transient public static final int DEFAULT_PIXEL_SKIP= 1;
 	/** the default number of pixels to classify before {@link Classify updating the screen} */
-	transient public static final int DEFAULT_R_BATCH_SIZE = 1000;
+	transient public static final int DEFAULT_R_BATCH_SIZE = 100;
 	/** relevant only for CRI Nuance image sets, this is the default magnification that each picture will be loaded at (see {@link Thumbnails#ScaleImage Scale Image}) */
 	transient public static final float DEFAULT_MAGN=1; //so nothing bad happens
 		

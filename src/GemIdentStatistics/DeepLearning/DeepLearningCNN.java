@@ -37,11 +37,13 @@ import org.deeplearning4j.ui.stats.StatsListener;
 import org.deeplearning4j.ui.storage.InMemoryStatsStorage;
 import org.deeplearning4j.util.ModelSerializer;
 import org.nd4j.linalg.activations.Activation;
+import org.nd4j.linalg.api.complex.IComplexNDArray;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator;
 import org.nd4j.linalg.dataset.api.preprocessor.DataNormalization;
 import org.nd4j.linalg.dataset.api.preprocessor.ImagePreProcessingScaler;
+import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -130,6 +132,7 @@ public class DeepLearningCNN {
 
     protected static String modelType = "custom"; // LeNet, AlexNet or Custom but you need to fill it out
     private MultiLayerNetwork network;
+	private ParallelInference pi;
 	private JProgressBarAndLabel buildProgressBar;
 
     public DeepLearningCNN(int height, int width, int channels, int numExamples, int numLabels, int iterations, int epochs, double splitTrainTest, JProgressBarAndLabel buildProgressBar){
@@ -349,15 +352,15 @@ public class DeepLearningCNN {
         // Example on how to get predict results with trained model
         
         
-        ParallelInference pi = new ParallelInference.Builder(network)
+        pi = new ParallelInference.Builder(network)
                 // BATCHED mode is kind of optimization: if number of incoming requests is too high - PI will be batching individual queries into single batch. If number of requests will be low - queries will be processed without batching
                 .inferenceMode(InferenceMode.BATCHED)
 
                 // max size of batch for BATCHED mode. you should set this value with respect to your environment (i.e. gpu memory amounts)
-                .batchLimit(32)
+                .batchLimit(128)
 
                 // set this value to number of available computational devices, either CPUs or GPUs
-                .workers(2)
+                .workers(Run.it.num_threads)
 
                 .build();
         
@@ -382,62 +385,43 @@ public class DeepLearningCNN {
      * @throws IOException 
      */
     public double classify(BufferedImage image, int i, int j, String filename) throws IOException{
-    	int prediction_vector[] = null;
-		//    	System.out.println("classify for image " + image + " i " + i + " j " + j + " filename " + filename);
-//        File outputimagefile = new File(
-//        		Run.it.imageset.getFilenameWithHomePath("ClassLabels" +"_" + Run.it.getProjectName()) + 
-//        		File.separator +
-//        		"TEST" + 
-//        		File.separator +
-//               "subimage_"+i+"_"+j+
-//               ".bmp");
-//    	synchronized (this){
-//    		ImageIO.write(image, "BMP", outputimagefile);
-//    	}
-//    	synchronized (this){
-    	       INDArray d = new NativeImageLoader(image.getHeight(), image.getWidth(), 3).asMatrix(image);
-    	    	scaler.transform(d);
-//    	    	System.out.println("features of original bufferedimage:\n" + d);
-//
-//    	    	System.out.println("type of original bufferedimage:" + image.getType());
-    	    	
-//    	    	BufferedImage clone = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
-//    	    	for (int i0 = 0; i0 < clone.getWidth(); i0++){
-//    	        	for (int j0 = 0; j0 < clone.getWidth(); j0++){
-//    	        		clone.setRGB(i0, j0, image.getRGB(i0, j0));
-//    	        	}
-//    	    	}
-//    	    	System.out.println("type of clone:\n" + clone);
-//    	        d = new NativeImageLoader(clone.getHeight(), clone.getWidth(), 3).asMatrix(clone);
-//    	    	scaler.transform(d);
-    	    	
-    	    	
-//				BufferedImage image_read = ImageIO.read(outputimagefile);
-				
-//				System.out.println("original:\n" + image);
-//				System.out.println("clone:\n" + clone);
-//				System.out.println("image read:\n" + image_read);
-//				System.out.println("image read type:\n" + image_read.getType());
-    	    	
-//    			d = new NativeImageLoader(image.getHeight(), image.getWidth(), 3).asMatrix(outputimagefile); 
-//     	    	scaler.transform(d);
-//     	    	System.out.println("features of written and loaded image:\n" + d);
-//    	    	
-//    	    	synchronized (network){
-    	    		prediction_vector = network.predict(d);
-//    	    	}
-//    	}
+    	INDArray d = new NativeImageLoader(image.getHeight(), image.getWidth(), 3).asMatrix(image);
+    	scaler.transform(d);
+//    	int[] prediction_vector1 = network.predict(d);
+    	int[] prediction_vector2 = probArrayToPredArray(d, pi.output(d));
  
-        for (int prediction :  prediction_vector){
-        	if (prediction == 1){
-
-            	System.out.println("                          POSITIVE PREDICTION!!!!!");
-        	}
-
-        }
-        return (double)prediction_vector[0];
+//    	System.out.print("prediction_vector1: ");
+//        for (int prediction :  prediction_vector1){
+//        	System.out.print(prediction + ", ");
+//        }
+//        System.out.print("\n");
+//    	System.out.print("prediction_vector2: ");
+//        for (int prediction :  prediction_vector2){
+//        	System.out.print(prediction + ", ");
+//        }
+//        System.out.print("\n");
+//    	
+//        for (int prediction :  prediction_vector1){
+//        	if (prediction == 1){
+//
+//            	System.out.println("                          POSITIVE PREDICTION!!!!!");
+//        	}
+//
+//        }
+//        return (double)prediction_vector1[0];
+        return (double)prediction_vector2[0];
     }
     
+    public static int[] probArrayToPredArray(INDArray d, INDArray output){
+        int[] ret = new int[d.size(0)];
+        if (d.isRowVector())
+            ret[0] = Nd4j.getBlasWrapper().iamax(output);
+        else {
+            for (int i = 0; i < ret.length; i++)
+                ret[i] = Nd4j.getBlasWrapper().iamax(output.getRow(i));
+        }
+        return ret;
+    }
 
 
 
