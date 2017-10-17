@@ -30,6 +30,8 @@ import org.deeplearning4j.nn.conf.inputs.InvalidInputTypeException;
 import org.deeplearning4j.nn.conf.layers.*;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.nn.weights.WeightInit;
+import org.deeplearning4j.parallelism.ParallelInference;
+import org.deeplearning4j.parallelism.inference.InferenceMode;
 import org.deeplearning4j.ui.api.UIServer;
 import org.deeplearning4j.ui.stats.StatsListener;
 import org.deeplearning4j.ui.storage.InMemoryStatsStorage;
@@ -324,13 +326,13 @@ public class DeepLearningCNN {
 	            System.out.println("  numExamples: " + t.numExamples());
 //	            System.out.println("  getFeatureMatrix cols: " + t.getFeatureMatrix());
 //	            if (i == 1){
-		            System.out.println("  getFeatures: " + t.getFeatures());	            	
+//		            System.out.println("  getFeatures: " + t.getFeatures());	            	
 //	            }
 	            for (String lab : t.getLabelNamesList()){
-	            	System.out.println("  label name: " + lab);
+//	            	System.out.println("  label name: " + lab);
 	            }
 	            
-	            System.out.println("  labels: " + t.getLabels());
+//	            System.out.println("  labels: " + t.getLabels());
 //	            System.out.println("  toString: " + t.toString());
 	            
 	            
@@ -338,7 +340,7 @@ public class DeepLearningCNN {
 //	            String expectedResult = t.getLabelName(0);
 	            int[] predict = network.predict(t.getFeatures());
 	            for (int prediction :  predict){
-	            	System.out.println("  prediction: " + prediction);
+//	            	System.out.println("  prediction: " + prediction);
 	            }
 			}
         }
@@ -346,9 +348,20 @@ public class DeepLearningCNN {
 
         // Example on how to get predict results with trained model
         
+        
+        ParallelInference pi = new ParallelInference.Builder(network)
+                // BATCHED mode is kind of optimization: if number of incoming requests is too high - PI will be batching individual queries into single batch. If number of requests will be low - queries will be processed without batching
+                .inferenceMode(InferenceMode.BATCHED)
 
+                // max size of batch for BATCHED mode. you should set this value with respect to your environment (i.e. gpu memory amounts)
+                .batchLimit(32)
 
+                // set this value to number of available computational devices, either CPUs or GPUs
+                .workers(2)
 
+                .build();
+        
+        
         if (save) {
             log.info("Save model....");
             String basePath = FilenameUtils.concat(System.getProperty("user.dir"), "src/main/resources/");
@@ -378,16 +391,15 @@ public class DeepLearningCNN {
 //        		File.separator +
 //               "subimage_"+i+"_"+j+
 //               ".bmp");
-    	File outputimagefile = new File("e:/test" + Thread.currentThread().getName() + ".bmp");
-    	synchronized (this){
-    		ImageIO.write(image, "BMP", outputimagefile);
-    	}
+//    	synchronized (this){
+//    		ImageIO.write(image, "BMP", outputimagefile);
+//    	}
 //    	synchronized (this){
     	       INDArray d = new NativeImageLoader(image.getHeight(), image.getWidth(), 3).asMatrix(image);
     	    	scaler.transform(d);
-    	    	System.out.println("features of original bufferedimage:\n" + d);
+//    	    	System.out.println("features of original bufferedimage:\n" + d);
 //
-//    	    	System.out.println("type of original bufferedimage:\n" + image.getType());
+//    	    	System.out.println("type of original bufferedimage:" + image.getType());
     	    	
 //    	    	BufferedImage clone = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
 //    	    	for (int i0 = 0; i0 < clone.getWidth(); i0++){
@@ -411,16 +423,18 @@ public class DeepLearningCNN {
 //     	    	scaler.transform(d);
 //     	    	System.out.println("features of written and loaded image:\n" + d);
 //    	    	
-    	        prediction_vector = network.predict(d);
+//    	    	synchronized (network){
+    	    		prediction_vector = network.predict(d);
+//    	    	}
 //    	}
  
-//        for (int prediction :  prediction_vector){
-////        	if (prediction == 1){
-//
-//            	System.out.println("  prediction: " + prediction);
-////        	}
-//
-//        }
+        for (int prediction :  prediction_vector){
+        	if (prediction == 1){
+
+            	System.out.println("                          POSITIVE PREDICTION!!!!!");
+        	}
+
+        }
         return (double)prediction_vector[0];
     }
     

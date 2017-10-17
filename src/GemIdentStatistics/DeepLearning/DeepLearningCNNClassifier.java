@@ -61,6 +61,7 @@ public class DeepLearningCNNClassifier extends Classifier {
 	
 	@Override
 	public double Evaluate(String filename, int i, int j){
+		
        try {
 		return cnn.classify(
 				   DeepLearningTrainingData.coreOutSuperImage(

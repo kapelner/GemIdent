@@ -61,9 +61,9 @@ public class SingleImageDeepLearningClassifier extends SingleImageClassicClassif
 								for (int i = 0; i < width; i++){
 									if ((i + j) % Run.it.num_threads == c_0){
 										
-										if (!all_training_points.contains(new Point(i, j))){
-											continue;
-										}
+//										if (!all_training_points.contains(new Point(i, j))){
+//											continue;
+//										}
 										
 										if (stop.get()){
 											classifyPool.shutdownNow();
@@ -74,7 +74,7 @@ public class SingleImageDeepLearningClassifier extends SingleImageClassicClassif
 										counter.incrementAndGet();
 										//Where CNN gives its classification
 										int resultClass = (int)classifier.Evaluate(filename, i_f, j_f);
-				
+										System.out.println("evaluating " + filename + " i = " + i + " j = " + j + " yhat = " + resultClass);
 										if (resultClass != 0){
 											System.out.println("** pixel " + filename + "(" +  i_f + " " + j_f + ") classified to be a " + resultClass);
 											is.get(Run.classMapBck.get(resultClass)).set(i_f, j_f, true);
