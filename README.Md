@@ -1,7 +1,6 @@
 GemIdent --- Interactive Image Segmentation Software via Supervised Statistical Learning
-http://gemident.com
 
-Copyright (C) 2016
+Copyright (C) 2022
 --
 Adam Kapelner, Queens College, CUNY 
 http://kapelner.com &
